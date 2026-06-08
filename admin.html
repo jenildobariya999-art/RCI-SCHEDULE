@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeetBoard – Admin Panel</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body class="admin-page">
+
+  <div class="bg-grid"></div>
+
+  <nav class="navbar admin-nav">
+    <div class="nav-brand">
+      <span class="nav-icon">🔐</span>
+      <span class="nav-title">Admin Panel</span>
+    </div>
+    <div class="nav-user">
+      <span class="admin-badge">ADMIN</span>
+      <button class="btn-ghost" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ADMIN TABS -->
+  <div class="tab-bar admin-tab-bar">
+    <button class="tab-btn active" onclick="adminTab('post')">📢 Post Notice</button>
+    <button class="tab-btn" onclick="adminTab('members')">👥 Members</button>
+    <button class="tab-btn" onclick="adminTab('raisehand')">✋ Raise Hands</button>
+    <button class="tab-btn" onclick="adminTab('manage')">🗂 Manage Posts</button>
+  </div>
+
+  <main class="main-content">
+
+    <!-- POST NOTICE TAB -->
+    <div class="tab-content active" id="admin-tab-post">
+      <div class="section-header">
+        <h2>📢 Post New Announcement</h2>
+      </div>
+
+      <div class="post-form card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type</label>
+            <select id="postType">
+              <option value="notice">📋 Notice Board</option>
+              <option value="meetup">📍 Meetup</option>
+              <option value="alert">🔔 Alert</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="postPriority">
+              <option value="normal">Normal</option>
+              <option value="high">🔴 High</option>
+              <option value="urgent">🚨 Urgent</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="postTitle" placeholder="e.g. Group Study Session"/>
+        </div>
+
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="postMessage" rows="3" placeholder="Announcement details..."></textarea>
+        </div>
+
+        <!-- Meetup fields (shown when type=meetup) -->
+        <div id="meetupFields" class="meetup-fields hidden">
+          <div class="form-row">
+            <div class="form-group">
+              <label>📅 Date</label>
+              <input type="date" id="postDate"/>
+            </div>
+            <div class="form-group">
+              <label>🕐 Time</label>
+              <input type="time" id="postTime"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>📍 Place / Location</label>
+            <input type="text" id="postPlace" placeholder="e.g. Cafe Coffee Day, SG Highway"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Send Push Notification to members?</label>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" id="sendPush" checked/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span id="pushLabel">Yes – Send notification via SMS</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="postNotice()">
+          📢 Post & Notify Members
+        </button>
+      </div>
+    </div>
+
+    <!-- MEMBERS TAB -->
+    <div class="tab-content" id="admin-tab-members">
+      <div class="section-header">
+        <h2>👥 Member Requests</h2>
+        <p class="section-sub">Approve or reject registrations</p>
+      </div>
+
+      <div class="members-list" id="pendingMembers">
+        <div class="loading-state">Loading pending requests...</div>
+      </div>
+
+      <div class="section-header" style="margin-top:2rem">
+        <h2>✅ Approved Members</h2>
+      </div>
+      <div class="members-list" id="approvedMembers">
+        <div class="loading-state">Loading members...</div>
+      </div>
+    </div>
+
+    <!-- RAISE HAND TAB -->
+    <div class="tab-content" id="admin-tab-raisehand">
+      <div class="section-header">
+        <h2>✋ Support Requests</h2>
+        <p class="section-sub">Private messages from members</p>
+      </div>
+      <div class="raise-hand-list" id="raiseHandList">
+        <div class="loading-state">Loading requests...</div>
+      </div>
+    </div>
+
+    <!-- MANAGE POSTS TAB -->
+    <div class="tab-content" id="admin-tab-manage">
+      <div class="section-header">
+        <h2>🗂 All Posted Notices</h2>
+      </div>
+      <div class="notices-grid" id="adminAllNotices">
+        <div class="loading-state">Loading...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>
