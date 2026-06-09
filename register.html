@@ -2,290 +2,253 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Register — CA Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
-.box{width:100%;max-width:400px;background:#111;border:1px solid #222;border-radius:20px;padding:1.75rem;animation:pop .3s ease}
-@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-.logo{text-align:center;margin-bottom:1.75rem}
-.logo-icon{font-size:44px;display:block;margin-bottom:.5rem}
-.logo h1{font-size:22px;font-weight:900;letter-spacing:-.03em}
-.logo h1 span{color:#f59e0b}
-.logo p{font-size:13px;color:#666;margin-top:.3rem}
-.step{display:none}
-.step.on{display:block}
-label{display:block;font-size:11px;font-weight:600;color:#555;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
-input,textarea{width:100%;background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:10px;padding:12px 14px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
-input:focus,textarea:focus{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
-input::placeholder,textarea::placeholder{color:#444}
+:root{
+  --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#1e1e28;
+  --b1:#2a2a38;--b2:#3a3a50;
+  --t1:#f0f0ff;--t2:#9090b0;--t3:#55556a;
+  --acc:#f5a623;--acc2:#e0911a;
+  --grn:#22c55e;--red:#ef4444;--blue:#3b82f6;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--t1);font-family:'Syne',sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;align-items:center;justify-content:center;padding:1.5rem;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(245,166,35,.13) 0%,transparent 65%), var(--bg);}
+
+.box{width:100%;max-width:400px;background:var(--s1);border:1px solid var(--b1);border-radius:20px;padding:2rem;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.logo{text-align:center;margin-bottom:2rem}
+.logo-icon{font-size:44px;margin-bottom:.6rem}
+.logo h1{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.logo h1 span{color:var(--acc)}
+.logo p{font-size:13px;color:var(--t2);margin-top:.35rem}
+
+.step{display:none}.step.on{display:block}
+
+.lbl{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.07em;margin-bottom:6px;display:block}
 .field{margin-bottom:1rem}
-.err{font-size:12px;color:#ef4444;margin-top:5px;display:none}
-.hint{font-size:12px;color:#555;margin-top:5px}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .18s;margin-top:.25rem}
-.btn-yellow{background:#f59e0b;color:#000}
-.btn-yellow:hover{background:#d97706}
-.btn-ghost{background:#1a1a1a;color:#888;border:1.5px solid #2a2a2a;margin-top:.5rem}
-.btn-ghost:hover{border-color:#444;color:#ccc}
-.btn:disabled{opacity:.4;pointer-events:none}
-.phone-row{display:flex;gap:8px}
-.prefix{background:#1a1a1a;border:1.5px solid #2a2a2a;color:#888;padding:12px 13px;border-radius:10px;font-size:14px;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:600}
+input,textarea{width:100%;background:var(--s2);border:1.5px solid var(--b1);color:var(--t1);border-radius:10px;padding:12px 14px;font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
+input::placeholder{color:var(--t3)}
+
+.ph-row{display:flex;gap:8px}
+.ph-pre{background:var(--s3);border:1.5px solid var(--b1);color:var(--t2);border-radius:10px;padding:12px 12px;font-family:'DM Mono',monospace;font-size:14px;white-space:nowrap}
+
+.btn{width:100%;background:var(--acc);color:#000;border:none;border-radius:10px;padding:13px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:var(--acc2);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn-out{background:transparent;color:var(--t2);border:1.5px solid var(--b1);margin-top:.6rem}
+.btn-out:hover{border-color:var(--b2);color:var(--t1);transform:none}
+
+.err{font-size:12px;color:var(--red);margin-top:6px;display:none;padding:6px 10px;background:rgba(239,68,68,.08);border-radius:6px}
+
 .otp-row{display:flex;gap:8px}
-.otp-row input{flex:1;text-align:center;font-size:24px;font-weight:700;padding:12px 4px;letter-spacing:.05em;height:58px}
-.demo-box{background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.3);border-radius:10px;padding:.75rem 1rem;font-size:13px;color:#f59e0b;margin-bottom:1rem;display:none}
-.demo-box .otp-show{font-size:26px;font-weight:900;letter-spacing:.15em;display:block;margin-top:4px;font-family:'Inter',monospace}
+.otp-row input{flex:1;text-align:center;font-size:24px;font-family:'DM Mono',monospace;padding:12px 4px;letter-spacing:.05em}
+
+.demo-alert{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:.7rem 1rem;font-size:13px;color:var(--acc);margin-bottom:1rem;display:none}
+.demo-alert strong{display:block;margin-bottom:2px}
+.demo-otp{font-size:26px;font-family:'DM Mono',monospace;letter-spacing:.15em;color:var(--t1);font-weight:500}
+
 .resend-row{display:flex;justify-content:flex-end;margin-top:.4rem}
-.resend-btn{font-size:12px;color:#555;background:none;border:none;font-family:'Inter',sans-serif;cursor:pointer}
-.resend-btn:not(:disabled):hover{color:#f59e0b}
-.resend-btn:disabled{opacity:.4}
-.admin-link{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border:1.5px solid #222;border-radius:10px;font-size:14px;color:#666;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;margin-top:.5rem;transition:.18s}
-.admin-link:hover{border-color:#f59e0b;color:#f59e0b}
-.divider{text-align:center;color:#333;font-size:12px;margin:.75rem 0;position:relative}
-.divider::before,.divider::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:#222}
-.divider::before{left:0}.divider::after{right:0}
-.pending-card{background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem;font-size:14px;color:#888;line-height:1.7}
-.pending-card strong{color:#fff;display:block;margin-bottom:.25rem}
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#222;border:1px solid #333;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
-.toast.on{opacity:1}
-.back{text-align:center;font-size:13px;color:#555;margin-top:1rem;cursor:pointer}
-.back:hover{color:#aaa}
+.resend-btn{background:none;border:none;font-family:'Syne',sans-serif;font-size:12px;color:var(--t3);cursor:pointer;transition:.15s}
+.resend-btn:not(:disabled):hover{color:var(--acc)}
+.resend-btn:disabled{opacity:.5}
+
+.pending-box{text-align:center;padding:.5rem 0}
+.pending-box .big{font-size:52px;margin-bottom:1rem}
+.pending-box h2{font-size:20px;font-weight:800;margin-bottom:.5rem}
+.info-pill{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:.9rem 1.2rem;font-size:13px;color:var(--t2);line-height:1.7;margin:1rem 0}
+.info-pill strong{color:var(--t1)}
+
+.or{text-align:center;color:var(--t3);font-size:12px;margin:.9rem 0;position:relative}
+.or::before,.or::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--b1)}
+.or::before{left:0}.or::after{right:0}
+
+a.admin-link{display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--b1);border-radius:10px;padding:11px;font-size:13px;color:var(--t2);text-decoration:none;transition:.18s}
+a.admin-link:hover{border-color:var(--acc);color:var(--acc)}
+
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--b2);color:var(--t1);padding:10px 20px;border-radius:30px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
+#toast.on{opacity:1}
 </style>
 </head>
 <body>
-
 <div class="box">
   <div class="logo">
-    <span class="logo-icon">📚</span>
+    <div class="logo-icon">📚</div>
     <h1>CA <span>Study Board</span></h1>
     <p>Register to join your study group</p>
   </div>
 
-  <!-- Step 1: Details -->
+  <!-- Step 1: Name + Phone -->
   <div class="step on" id="s1">
+    <div class="field"><label class="lbl">YOUR NAME</label><input id="r-name" type="text" placeholder="e.g. Ravi Patel" autocomplete="name"/></div>
     <div class="field">
-      <label>Full Name</label>
-      <input type="text" id="r-name" placeholder="e.g. Ravi Patel" autocomplete="name"/>
+      <label class="lbl">MOBILE NUMBER</label>
+      <div class="ph-row"><span class="ph-pre">+91</span><input id="r-phone" type="tel" placeholder="9876543210" maxlength="10" inputmode="numeric"/></div>
+      <div class="err" id="e1">Please enter a valid name and 10-digit number</div>
     </div>
-    <div class="field">
-      <label>Mobile Number</label>
-      <div class="phone-row">
-        <span class="prefix">+91</span>
-        <input type="tel" id="r-phone" placeholder="9876543210" maxlength="10" inputmode="numeric"/>
-      </div>
-      <div class="hint">OTP will be sent to this number</div>
-      <div class="err" id="s1-err">Please enter valid name and 10-digit number</div>
-    </div>
-    <div class="demo-box" id="demo-notice">
-      ⚠️ <strong>Demo Mode</strong> — No SMS key set by admin. OTP will show on screen.
-    </div>
-    <button class="btn btn-yellow" id="send-btn" onclick="doSend()">Send OTP →</button>
-    <div class="divider">or</div>
+    <div class="demo-alert" id="demo-note"><strong>⚠️ Demo Mode</strong>OTP will be shown on screen (no SMS). Ask admin to add Fast2SMS key for real SMS.</div>
+    <button class="btn" onclick="doStep1()">Send OTP →</button>
+    <div class="or">or</div>
     <a href="admin.html" class="admin-link">🔐 Admin Login</a>
   </div>
 
   <!-- Step 2: OTP -->
   <div class="step" id="s2">
-    <p style="font-size:13px;color:#666;margin-bottom:1rem">OTP sent to <strong id="otp-target" style="color:#fff"></strong></p>
-    <div class="demo-box" id="demo-otp-box">
-      Your OTP (demo): <span class="otp-show" id="demo-otp-val">——</span>
-    </div>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:1.25rem">OTP sent to <strong id="otp-dest" style="color:var(--t1)">+91 —</strong></p>
+    <div class="demo-alert" id="demo-show"><strong>Your OTP (Demo Mode):</strong><div class="demo-otp" id="demo-val">——</div></div>
     <div class="field">
-      <label>Enter 6-Digit OTP</label>
-      <div class="otp-row" id="otp-inputs">
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,0)" onkeydown="onOtpKey(event,0)"/>
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,1)" onkeydown="onOtpKey(event,1)"/>
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,2)" onkeydown="onOtpKey(event,2)"/>
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,3)" onkeydown="onOtpKey(event,3)"/>
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,4)" onkeydown="onOtpKey(event,4)"/>
-        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,5)" onkeydown="onOtpKey(event,5)"/>
+      <label class="lbl">ENTER 6-DIGIT OTP</label>
+      <div class="otp-row">
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,0)" onkeydown="onOtpKey(event,0)"/>
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,1)" onkeydown="onOtpKey(event,1)"/>
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,2)" onkeydown="onOtpKey(event,2)"/>
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,3)" onkeydown="onOtpKey(event,3)"/>
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,4)" onkeydown="onOtpKey(event,4)"/>
+        <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,5)" onkeydown="onOtpKey(event,5)"/>
       </div>
-      <div class="resend-row">
-        <button class="resend-btn" id="resend-btn" disabled onclick="doResend()">
-          Resend (<span id="rtimer">30</span>s)
-        </button>
-      </div>
-      <div class="err" id="otp-err">Wrong OTP. Try again.</div>
+      <div class="resend-row"><button class="resend-btn" id="resend" disabled onclick="doResend()">Resend (<span id="rtimer">30</span>s)</button></div>
+      <div class="err" id="e2">❌ Wrong OTP. Try again.</div>
     </div>
-    <button class="btn btn-yellow" onclick="doVerify()">Verify & Register</button>
-    <div class="back" onclick="goStep(1)">← Change number</div>
+    <button class="btn" onclick="doStep2()">Verify & Register</button>
+    <button class="btn btn-out" onclick="goStep(1)">← Change number</button>
   </div>
 
   <!-- Step 3: Pending -->
   <div class="step" id="s3">
-    <div style="text-align:center">
-      <div style="font-size:60px;margin-bottom:1rem">⏳</div>
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:.5rem">Request Sent!</h2>
-      <p style="font-size:14px;color:#666;line-height:1.7;margin-bottom:1.25rem">Your registration is complete. Admin will approve your number. You'll get access once approved.</p>
-      <div class="pending-card">
-        <strong id="p-name"></strong>
-        <span id="p-phone" style="font-family:monospace"></span>
-      </div>
-      <button class="btn btn-ghost" style="margin-top:1rem" onclick="checkStatus()">🔄 Check Status</button>
-      <button class="btn btn-ghost" onclick="doLogout()">← Logout</button>
+    <div class="pending-box">
+      <div class="big">⏳</div>
+      <h2>You're Registered!</h2>
+      <p style="font-size:13px;color:var(--t2)">Waiting for admin approval</p>
+      <div class="info-pill"><strong id="pname">—</strong><br/><span id="pphone" style="font-family:'DM Mono',monospace;font-size:13px">—</span><br/><br/>Once admin approves your number, you'll get full access to the board and chat.</div>
+      <button class="btn" onclick="checkApproval()">🔄 Check Approval</button>
+      <button class="btn btn-out" onclick="doLogout()">Logout</button>
     </div>
   </div>
 
-  <!-- Step 4: Blocked -->
-  <div class="step" id="s4">
-    <div style="text-align:center">
-      <div style="font-size:60px;margin-bottom:1rem">🚫</div>
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:.5rem">Access Blocked</h2>
-      <p style="font-size:14px;color:#666;margin-bottom:1.25rem">Your number has been blocked by the admin.</p>
-      <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
-    </div>
-  </div>
 </div>
-
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-// ─── STORAGE ──────────────────────────────────────────────────────────────
-const K={PW:'cb_pw',NAME:'cb_name',USERS:'cb_users',POSTS:'cb_posts',MSGS:'cb_msgs',HANDS:'cb_hands',F2S:'cb_f2s',SESSION:'cb_sess'};
+// ── STORAGE ──
+const K={PW:'cab_pw',NAME:'cab_name',POSTS:'cab_posts',USERS:'cab_users',MSGS:'cab_msgs',HANDS:'cab_hands',F2S:'cab_f2s'};
+const OTP_MAP={};
+let rtInterval;
+let regPhone='',regName='';
+
 function sg(k,d=[]){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
 function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function getSession(){try{return JSON.parse(sessionStorage.getItem(K.SESSION))||null}catch{return null}}
-function setSession(d){sessionStorage.setItem(K.SESSION,JSON.stringify(d))}
-function clearSession(){sessionStorage.removeItem(K.SESSION)}
+function getSession(){try{return JSON.parse(sessionStorage.getItem('cab_s'))||null}catch{return null}}
+function setSession(d){sessionStorage.setItem('cab_s',JSON.stringify(d))}
+function clearSession(){sessionStorage.removeItem('cab_s')}
 function isAdmin(){return getSession()?.role==='admin'}
 function isMember(){return getSession()?.role==='member'}
-function currentPhone(){return getSession()?.phone||null}
 function getUsers(){return sg(K.USERS,[])}
-function findUser(p){return getUsers().find(u=>u.phone===p)||null}
+function findUser(ph){return getUsers().find(u=>u.phone===ph)||null}
+function getF2SKey(){return localStorage.getItem(K.F2S)||''}
 
-// ─── OTP ──────────────────────────────────────────────────────────────────
-const OTP_MAP={};
-function makeOTP(){return String(100000+Math.floor(Math.random()*900000))}
-
-async function sendOTP(phone){
-  const otp=makeOTP();
+function genOtp(){return String(Math.floor(100000+Math.random()*900000))}
+async function sendOtp(phone){
+  const otp=genOtp();
   OTP_MAP[phone]={otp,ts:Date.now()};
-  const key=localStorage.getItem(K.F2S)||'';
-  if(key.length>10){
+  const key=getF2SKey();
+  if(key&&key.length>10){
     try{
-      await fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(key)}&variables_values=${otp}&route=otp&numbers=${phone}`,{method:'GET'});
-    }catch(e){console.warn('Fast2SMS error',e)}
+      await fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${key}&variables_values=${otp}&route=otp&numbers=${phone}`,{method:'GET',headers:{'Cache-Control':'no-cache'}});
+    }catch(e){console.warn('SMS failed',e)}
   }
   return otp;
 }
-function checkOTP(phone,entered){
+function verifyOtp(phone,entered){
   const s=OTP_MAP[phone];
   if(!s)return false;
-  if(Date.now()-s.ts>600000)return false;
+  if(Date.now()-s.ts>10*60*1000)return false;
   return s.otp===entered.trim();
 }
 
-// ─── STATE ────────────────────────────────────────────────────────────────
-let rPhone='',rName='',rTimer;
-const demoMode=()=>!(localStorage.getItem(K.F2S)||'').length>10;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800)}
+function goStep(n){document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i===n-1))}
 
-window.onload=()=>{
-  if(!localStorage.getItem(K.F2S)) document.getElementById('demo-notice').style.display='block';
+window.addEventListener('load',()=>{
   if(isAdmin()){location.href='admin.html';return}
   if(isMember()){
-    const u=findUser(currentPhone());
+    const u=findUser(getSession()?.phone);
     if(u?.approved){location.href='index.html';return}
-    if(u){showStep3();return}
+    // show pending
+    regPhone=getSession()?.phone||'';
+    regName=u?.name||'';
+    document.getElementById('pname').textContent=regName;
+    document.getElementById('pphone').textContent='+91 '+regPhone;
+    goStep(3);return;
   }
-};
+  if(!getF2SKey())document.getElementById('demo-note').style.display='block';
+});
 
-// ─── STEP NAV ─────────────────────────────────────────────────────────────
-function goStep(n){document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i===n-1))}
-function showStep3(){
-  document.getElementById('p-name').textContent=rName||findUser(currentPhone())?.name||'';
-  document.getElementById('p-phone').textContent='+91 '+(rPhone||currentPhone()||'');
-  goStep(3);
-}
-
-// ─── SEND OTP ─────────────────────────────────────────────────────────────
-async function doSend(){
+async function doStep1(){
   const name=document.getElementById('r-name').value.trim();
   const phone=document.getElementById('r-phone').value.trim();
-  document.getElementById('s1-err').style.display='none';
-  if(!name||!/^[6-9]\d{9}$/.test(phone)){
-    document.getElementById('s1-err').style.display='block';return;
-  }
+  if(!name||!/^[6-9]\d{9}$/.test(phone)){document.getElementById('e1').style.display='block';return}
+  document.getElementById('e1').style.display='none';
   const u=findUser(phone);
-  if(u?.blocked){goStep(4);return}
-
-  rPhone=phone; rName=name;
-  const btn=document.getElementById('send-btn');
-  btn.disabled=true; btn.textContent='Sending...';
-  const otp=await sendOTP(phone);
-  btn.disabled=false; btn.textContent='Send OTP →';
-
-  document.getElementById('otp-target').textContent='+91 '+phone;
-  const noKey=!(localStorage.getItem(K.F2S)||'').length;
-  if(noKey||true){ // always show in demo since we can't verify Fast2SMS worked
-    document.getElementById('demo-otp-box').style.display='block';
-    document.getElementById('demo-otp-val').textContent=otp;
-  }
-  goStep(2);
-  startResend();
-  setTimeout(()=>document.querySelectorAll('.oc')[0].focus(),80);
+  if(u?.blocked){toast('🚫 Number blocked by admin');return}
+  regPhone=phone;regName=name;
+  const btn=event.target;btn.disabled=true;btn.textContent='Sending...';
+  const otp=await sendOtp(phone);
+  btn.disabled=false;btn.innerHTML='Send OTP →';
+  document.getElementById('otp-dest').textContent='+91 '+phone;
+  if(!getF2SKey()){document.getElementById('demo-show').style.display='block';document.getElementById('demo-val').textContent=otp}
+  goStep(2);startResend();
+  setTimeout(()=>document.querySelectorAll('.oc')[0].focus(),100);
 }
 
-// ─── VERIFY OTP ───────────────────────────────────────────────────────────
-function doVerify(){
-  const entered=Array.from(document.querySelectorAll('.oc')).map(i=>i.value).join('');
-  if(entered.length!==6){document.getElementById('otp-err').style.display='block';return}
-  if(!checkOTP(rPhone,entered)){
-    document.getElementById('otp-err').style.display='block';
-    document.querySelectorAll('.oc').forEach(i=>{i.value='';i.style.borderColor='#ef4444'});
+function startResend(){
+  let s=30;const el=document.getElementById('rtimer');const btn=document.getElementById('resend');
+  btn.disabled=true;clearInterval(rtInterval);
+  rtInterval=setInterval(()=>{s--;el.textContent=s;if(s<=0){clearInterval(rtInterval);btn.disabled=false;btn.textContent='Resend OTP'}},1000);
+}
+async function doResend(){
+  const otp=await sendOtp(regPhone);
+  if(!getF2SKey()){document.getElementById('demo-show').style.display='block';document.getElementById('demo-val').textContent=otp}
+  toast('OTP resent!');startResend();
+}
+
+function getOtpVal(){return Array.from(document.querySelectorAll('.oc')).map(i=>i.value).join('')}
+function doStep2(){
+  const otp=getOtpVal();
+  if(otp.length!==6){document.getElementById('e2').style.display='block';return}
+  if(!verifyOtp(regPhone,otp)){
+    document.getElementById('e2').style.display='block';
+    document.querySelectorAll('.oc').forEach(i=>{i.value='';i.style.borderColor='var(--red)'});
     setTimeout(()=>document.querySelectorAll('.oc').forEach(i=>i.style.borderColor=''),1500);
     return;
   }
-  document.getElementById('otp-err').style.display='none';
-  const ex=findUser(rPhone);
-  if(ex?.approved){setSession({role:'member',phone:rPhone});location.href='index.html';return}
-  if(ex){setSession({role:'member',phone:rPhone});showStep3();return}
-  // new user
-  const users=getUsers();
-  users.push({phone:rPhone,name:rName,approved:false,blocked:false,ts:Date.now()});
-  ss(K.USERS,users);
-  setSession({role:'member',phone:rPhone});
-  showStep3();
+  document.getElementById('e2').style.display='none';
+  const existing=findUser(regPhone);
+  if(existing?.approved){setSession({role:'member',phone:regPhone});location.href='index.html';return}
+  if(!existing){
+    const users=getUsers();users.push({phone:regPhone,name:regName,approved:false,blocked:false,joinedAt:Date.now()});ss(K.USERS,users);
+  }
+  setSession({role:'member',phone:regPhone});
+  document.getElementById('pname').textContent=regName;
+  document.getElementById('pphone').textContent='+91 '+regPhone;
+  goStep(3);
 }
 
-// ─── RESEND ───────────────────────────────────────────────────────────────
-function startResend(){
-  let s=30;const btn=document.getElementById('resend-btn');
-  btn.disabled=true;
-  clearInterval(rTimer);
-  rTimer=setInterval(()=>{
-    s--;document.getElementById('rtimer').textContent=s;
-    if(s<=0){clearInterval(rTimer);btn.disabled=false;btn.textContent='Resend OTP'}
-  },1000);
-}
-async function doResend(){
-  const otp=await sendOTP(rPhone);
-  document.getElementById('demo-otp-val').textContent=otp;
-  document.getElementById('demo-otp-box').style.display='block';
-  toast('OTP resent!'); startResend();
-}
-
-// ─── CHECK STATUS ─────────────────────────────────────────────────────────
-function checkStatus(){
-  const u=findUser(currentPhone());
+function checkApproval(){
+  const u=findUser(regPhone||getSession()?.phone);
   if(!u){location.href='register.html';return}
   if(u.approved){setSession({role:'member',phone:u.phone});location.href='index.html'}
-  else if(u.blocked){clearSession();goStep(4)}
-  else toast('⏳ Not approved yet. Please wait.')
+  else if(u.blocked){clearSession();location.href='register.html'}
+  else toast('⏳ Not approved yet. Ask admin.')
 }
-function doLogout(){clearSession();location.reload()}
+function doLogout(){clearSession();location.href='register.html'}
 
-// ─── OTP INPUT UX ─────────────────────────────────────────────────────────
-function onOtpIn(el,i){
-  el.value=el.value.replace(/\D/,'');
-  if(el.value&&i<5)document.querySelectorAll('.oc')[i+1].focus();
-  if(Array.from(document.querySelectorAll('.oc')).map(x=>x.value).join('').length===6)doVerify();
-}
+function onOtp(el,i){el.value=el.value.replace(/\D/,'');if(el.value&&i<5)document.querySelectorAll('.oc')[i+1].focus();if(getOtpVal().length===6)doStep2()}
 function onOtpKey(e,i){if(e.key==='Backspace'&&!e.target.value&&i>0)document.querySelectorAll('.oc')[i-1].focus()}
-
-// ─── TOAST ────────────────────────────────────────────────────────────────
-let _tt;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2800)}
 </script>
 </body>
 </html>
