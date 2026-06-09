@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Register — CA Study Board</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+.page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,158,11,.12) 0%, transparent 70%), var(--bg);
+}
+.register-box {
+  width: 100%; max-width: 420px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 2rem;
+  animation: popIn .3s ease;
+}
+.logo-top { text-align: center; margin-bottom: 2rem; }
+.logo-top .icon { font-size: 40px; margin-bottom: .5rem; }
+.logo-top h1 { font-size: 24px; font-weight: 800; }
+.logo-top h1 span { color: var(--accent); }
+.logo-top p { font-size: 13px; color: var(--text2); margin-top: .3rem; }
+
+.step { display: none; }
+.step.active { display: block; }
+
+.otp-grid { display: flex; gap: 10px; }
+.otp-grid input {
+  flex: 1; text-align: center; font-size: 22px; font-family: var(--mono);
+  padding: 12px 6px; letter-spacing: .1em;
+}
+
+.or-divider { text-align:center; color:var(--text3); font-size:12px; margin:1rem 0; position:relative; }
+.or-divider::before,.or-divider::after {
+  content:''; position:absolute; top:50%; width:42%; height:1px; background:var(--border);
+}
+.or-divider::before{left:0} .or-divider::after{right:0}
+
+.demo-box {
+  background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25);
+  border-radius: var(--radius); padding: .75rem 1rem;
+  font-size: 13px; color: var(--accent); margin-bottom: 1rem;
+  display: none;
+}
+.demo-box strong { display: block; margin-bottom: .25rem; }
+
+.pending-info {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; font-size: 13px;
+  color: var(--text2); margin-top: 1rem; text-align: center; line-height: 1.7;
+}
+
+.back-link { color: var(--text3); font-size: 13px; text-align: center; margin-top: 1rem; display: block; cursor: pointer; }
+.back-link:hover { color: var(--text); }
+.already-link { text-align: center; font-size: 13px; color: var(--text3); margin-top: 1rem; }
+.already-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+.phone-row { display: flex; gap: 8px; }
+.phone-prefix {
+  background: var(--surface3); border: 1px solid var(--border); color: var(--text2);
+  border-radius: var(--radius); padding: 11px 12px; font-size: 14px;
+  white-space: nowrap; font-family: var(--mono);
+}
+.resend-row { display: flex; justify-content: flex-end; margin-top: .5rem; }
+.resend-btn {
+  font-size: 12px; color: var(--text3); background: none; border: none;
+  cursor: pointer; font-family: var(--font); transition: .15s;
+}
+.resend-btn:hover:not(:disabled){ color: var(--accent); }
+.resend-btn:disabled { opacity: .4; cursor: default; }
+
+/* Admin login link */
+.admin-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 10px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 13px; color: var(--text2);
+  background: transparent; cursor: pointer; font-family: var(--font);
+  transition: .15s; text-decoration: none;
+}
+.admin-link:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="register-box">
+    <div class="logo-top">
+      <div class="icon">📚</div>
+      <h1>CA <span>Study Board</span></h1>
+      <p>Register to access announcements & chat</p>
+    </div>
+
+    <!-- STEP 1: Phone + Name -->
+    <div class="step active" id="step1">
+      <div class="field">
+        <label>FULL NAME</label>
+        <input type="text" id="r-name" placeholder="e.g. Ravi Patel" autocomplete="name"/>
+      </div>
+      <div class="field">
+        <label>MOBILE NUMBER</label>
+        <div class="phone-row">
+          <span class="phone-prefix">+91</span>
+          <input type="tel" id="r-phone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}" inputmode="numeric"/>
+        </div>
+        <div class="field-hint">OTP will be sent to this number</div>
+        <div class="field-err" id="step1-err">Please enter valid details</div>
+      </div>
+      <div class="demo-box" id="demo-box">
+        <strong>⚠️ Demo Mode (no Fast2SMS key set)</strong>
+        Your OTP will be shown on screen. Ask admin to configure Fast2SMS for real SMS.
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="sendOTPStep()">Send OTP →</button>
+      <div class="or-divider">or</div>
+      <a href="admin.html" class="admin-link">🔐 Admin Login</a>
+    </div>
+
+    <!-- STEP 2: OTP -->
+    <div class="step" id="step2">
+      <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem">
+        OTP sent to <strong id="otp-sent-to" style="color:var(--text)"></strong>
+      </p>
+      <div class="demo-box" id="demo-otp-box">
+        <strong>Demo OTP:</strong>
+        <span id="demo-otp-code" style="font-family:var(--mono);font-size:20px;letter-spacing:.15em"></span>
+      </div>
+      <div class="field">
+        <label>ENTER 6-DIGIT OTP</label>
+        <div class="otp-grid" id="otp-grid">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,0)" onkeydown="otpBack(event,0)"/>
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,1)" onkeydown="otpBack(event,1)"/>
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,2)" onkeydown="otpBack(event,2)"/>
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,3)" onkeydown="otpBack(event,3)"/>
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,4)" onkeydown="otpBack(event,4)"/>
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,5)" onkeydown="otpBack(event,5)"/>
+        </div>
+        <div class="resend-row">
+          <button class="resend-btn" id="resend-btn" disabled onclick="resendOTP()">
+            Resend OTP (<span id="resend-timer">30</span>s)
+          </button>
+        </div>
+        <div class="field-err" id="otp-err">Incorrect OTP. Try again.</div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="verifyOTPStep()">Verify & Register</button>
+      <span class="back-link" onclick="goStep(1)">← Change number</span>
+    </div>
+
+    <!-- STEP 3: Pending approval -->
+    <div class="step" id="step3">
+      <div style="text-align:center;font-size:52px;margin-bottom:1rem">⏳</div>
+      <h2 style="text-align:center;margin-bottom:.75rem">Registration Sent!</h2>
+      <div class="pending-info">
+        Your request has been sent to the admin.<br/>
+        You will get access once admin approves your number.<br/><br/>
+        <strong id="pending-name" style="color:var(--text)"></strong><br/>
+        <span id="pending-phone" style="font-family:var(--mono);color:var(--text2)"></span>
+      </div>
+      <button class="btn btn-ghost btn-full" style="margin-top:1rem" onclick="checkApproval()">
+        🔄 Check Approval Status
+      </button>
+    </div>
+
+    <!-- STEP 4: Already registered / blocked -->
+    <div class="step" id="step4">
+      <div style="text-align:center;font-size:48px;margin-bottom:1rem" id="s4-icon">🚫</div>
+      <h2 style="text-align:center;margin-bottom:.75rem" id="s4-title">Access Denied</h2>
+      <div class="pending-info" id="s4-msg">You are not allowed to access this board.</div>
+      <button class="btn btn-ghost btn-full" style="margin-top:1rem" onclick="goStep(1)">← Back</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script>
+let regPhone = '', regName = '', resendInterval;
+
+// check demo mode
+window.addEventListener('load', () => {
+  if(!getF2SKey()) document.getElementById('demo-box').style.display='block';
+  // if already logged in, redirect
+  if(isAdmin())  window.location.href='admin.html';
+  else if(isMember()) {
+    const u = findUser(currentPhone());
+    if(u?.approved) window.location.href='index.html';
+    else goStep(3);
+  }
+});
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+}
+
+async function sendOTPStep(){
+  const name  = document.getElementById('r-name').value.trim();
+  const phone = document.getElementById('r-phone').value.trim();
+  if(!name || !/^[6-9]\d{9}$/.test(phone)){
+    document.getElementById('step1-err').style.display='block';
+    return;
+  }
+  document.getElementById('step1-err').style.display='none';
+
+  // check if blocked
+  const u = findUser(phone);
+  if(u?.blocked){
+    document.getElementById('s4-icon').textContent='🚫';
+    document.getElementById('s4-title').textContent='Number Blocked';
+    document.getElementById('s4-msg').textContent='Your number has been blocked by the admin. Contact admin for help.';
+    goStep(4); return;
+  }
+
+  regPhone = phone; regName = name;
+
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const otp = await sendOTP(phone, getF2SKey());
+  btn.disabled = false; btn.textContent = 'Send OTP →';
+
+  document.getElementById('otp-sent-to').textContent = '+91 ' + phone;
+  // demo mode
+  if(!getF2SKey()){
+    document.getElementById('demo-otp-box').style.display='block';
+    document.getElementById('demo-otp-code').textContent = otp;
+  }
+  goStep(2);
+  startResendTimer();
+  setTimeout(()=>document.querySelector('.otp-char').focus(), 100);
+}
+
+function startResendTimer(){
+  let sec = 30;
+  const timerEl = document.getElementById('resend-timer');
+  const btn = document.getElementById('resend-btn');
+  btn.disabled = true;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(()=>{
+    sec--;
+    timerEl.textContent = sec;
+    if(sec<=0){
+      clearInterval(resendInterval);
+      btn.disabled = false;
+      btn.textContent = 'Resend OTP';
+    }
+  }, 1000);
+}
+
+async function resendOTP(){
+  const otp = await sendOTP(regPhone, getF2SKey());
+  if(!getF2SKey()){
+    document.getElementById('demo-otp-box').style.display='block';
+    document.getElementById('demo-otp-code').textContent = otp;
+  }
+  showToast('OTP resent!');
+  startResendTimer();
+}
+
+function getOTPValue(){
+  return Array.from(document.querySelectorAll('.otp-char')).map(i=>i.value).join('');
+}
+
+function verifyOTPStep(){
+  const otp = getOTPValue();
+  if(otp.length !== 6){ document.getElementById('otp-err').style.display='block'; return; }
+
+  if(!verifyOTP(regPhone, otp)){
+    document.getElementById('otp-err').style.display='block';
+    document.querySelectorAll('.otp-char').forEach(i=>{ i.value=''; i.style.borderColor='var(--red)'; });
+    setTimeout(()=>{ document.querySelectorAll('.otp-char').forEach(i=>i.style.borderColor=''); }, 1500);
+    return;
+  }
+  document.getElementById('otp-err').style.display='none';
+
+  // register user
+  const existing = findUser(regPhone);
+  if(existing){
+    if(existing.approved){
+      setSession({role:'member', phone:regPhone});
+      window.location.href='index.html';
+      return;
+    } else {
+      document.getElementById('pending-name').textContent = existing.name;
+      document.getElementById('pending-phone').textContent = '+91 ' + regPhone;
+      goStep(3); return;
+    }
+  }
+
+  registerUser(regPhone, regName);
+  setSession({role:'member', phone:regPhone});
+  document.getElementById('pending-name').textContent = regName;
+  document.getElementById('pending-phone').textContent = '+91 ' + regPhone;
+  goStep(3);
+}
+
+function checkApproval(){
+  const u = findUser(regPhone || currentPhone());
+  if(!u){ showToast('Not registered yet'); return; }
+  if(u.approved){
+    setSession({role:'member', phone:u.phone});
+    window.location.href='index.html';
+  } else if(u.blocked){
+    document.getElementById('s4-icon').textContent='🚫';
+    document.getElementById('s4-title').textContent='Number Blocked';
+    document.getElementById('s4-msg').textContent='Your number has been blocked by admin.';
+    goStep(4);
+  } else {
+    showToast('⏳ Not approved yet. Please wait.');
+  }
+}
+
+// OTP input UX
+function otpNext(el, idx){
+  el.value = el.value.replace(/\D/,'');
+  if(el.value && idx < 5){
+    document.querySelectorAll('.otp-char')[idx+1].focus();
+  }
+  if(getOTPValue().length===6) verifyOTPStep();
+}
+function otpBack(e, idx){
+  if(e.key==='Backspace' && !e.target.value && idx>0)
+    document.querySelectorAll('.otp-char')[idx-1].focus();
+}
+</script>
+</body>
+</html>

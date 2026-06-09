@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pending — CA Study Board</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+.box{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:2rem;text-align:center}
+.icon{font-size:56px;margin-bottom:1rem}
+h1{font-size:22px;font-weight:800;margin-bottom:.5rem}
+p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:1.5rem}
+.phone-tag{font-family:var(--mono);background:var(--surface2);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:14px;color:var(--text);display:inline-block;margin-bottom:1.25rem}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="box">
+    <div class="icon">⏳</div>
+    <h1>Waiting for Approval</h1>
+    <p>Your registration is complete! Admin will approve your number shortly. Once approved, you'll get full access to the board and chat.</p>
+    <div class="phone-tag" id="phone-tag">+91 —</div>
+    <button class="btn btn-primary btn-full" onclick="checkNow()">🔄 Check Again</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:.5rem" onclick="doLogout()">← Logout</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script>
+window.addEventListener('load',()=>{
+  if(!isLoggedIn()){ window.location.href='register.html'; return; }
+  const ph = currentPhone();
+  if(ph) document.getElementById('phone-tag').textContent='+91 '+ph;
+  const u = findUser(ph);
+  if(u?.approved){ window.location.href='index.html'; }
+});
+function checkNow(){
+  const u=findUser(currentPhone());
+  if(!u){ window.location.href='register.html'; return; }
+  if(u.approved){ window.location.href='index.html'; }
+  else if(u.blocked){ clearSession(); window.location.href='register.html'; }
+  else showToast('⏳ Not approved yet. Please wait.');
+}
+function doLogout(){ clearSession(); window.location.href='register.html'; }
+</script>
+</body>
+</html>

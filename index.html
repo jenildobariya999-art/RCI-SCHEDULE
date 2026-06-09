@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Notice Board — CA Study Board</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+/* ── LAYOUT ── */
+.main { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 5rem; }
+
+/* ── HERO ── */
+.hero { text-align: center; padding: 2.5rem 0 2rem; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-family: var(--mono); letter-spacing: .08em;
+  color: var(--text2); background: var(--surface2); border: 1px solid var(--border);
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 1rem;
+}
+.hero h1 { font-size: clamp(26px,6vw,44px); font-weight: 800; line-height: 1.05; }
+.hero h1 span { color: var(--accent); }
+.hero-sub { color: var(--text2); font-size: 14px; margin-top: .5rem; }
+
+/* ── NOTIF BAR ── */
+.notif-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: .75rem 1rem; margin-bottom: 1.25rem;
+  font-size: 13px; color: var(--text2);
+}
+.notif-bar.granted { border-color: rgba(34,197,94,.3); color: var(--green); }
+.notif-bar button {
+  margin-left: auto; font-size: 12px; padding: 5px 12px;
+  background: var(--accent); color: #000; border: none;
+  border-radius: 6px; cursor: pointer; font-family: var(--font); font-weight: 600;
+}
+.notif-bar.granted button { background: rgba(34,197,94,.15); color: var(--green); }
+
+/* ── TABS ── */
+.tabs-wrap { margin-bottom: 1.25rem; }
+
+/* ── POST CARD ── */
+.post {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+  margin-bottom: .75rem; position: relative; overflow: hidden;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.post::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:2px 0 0 2px; }
+.post.meet::before   { background: var(--blue); }
+.post.urgent::before { background: var(--red); }
+.post.notice::before { background: var(--purple); }
+
+.post-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:.7rem; }
+.post-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
+.post-age { font-size: 11px; color: var(--text3); font-family: var(--mono); white-space:nowrap; }
+.post-meta { display:flex; flex-wrap:wrap; gap:10px; margin: .6rem 0; }
+.meta-chip {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size: 13px; color: var(--text2);
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 20px;
+}
+.meta-chip .mi { font-size: 14px; }
+.post-body { font-size: 13px; color: var(--text2); line-height: 1.65; margin-top: .5rem; }
+.post-footer { display:flex; align-items:center; justify-content:space-between; margin-top:.9rem; padding-top:.7rem; border-top:1px solid var(--border); }
+.post-from { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+.delete-btn {
+  font-size:12px; color:var(--text3); background:none; border:none;
+  cursor:pointer; padding:4px 8px; border-radius:6px; font-family:var(--font);
+  transition:.15s; display:none;
+}
+.delete-btn:hover { color:var(--red); background:rgba(239,68,68,.08); }
+body.admin-view .delete-btn { display: inline-flex; align-items:center; gap:4px; }
+
+/* ── RAISE HAND BUTTON (sticky bottom on mobile) ── */
+.hand-fab {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 80;
+  background: var(--accent); color: #000; border: none;
+  width: 56px; height: 56px; border-radius: 50%;
+  font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(245,158,11,.4);
+  transition: transform .18s, box-shadow .18s;
+  display: flex; align-items: center; justify-content: center;
+}
+.hand-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(245,158,11,.5); }
+
+/* ── RAISE HAND MODAL ── */
+.hand-modal textarea { min-height: 70px; }
+
+/* ── EMPTY ── */
+.empty { text-align:center; padding:4rem 1rem; color:var(--text3); }
+.empty .big { font-size:52px; margin-bottom:1rem; }
+
+/* ── USER CHIP (nav) ── */
+.user-chip {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:600;
+}
+.user-chip .logout {
+  font-size:12px; color:var(--text3); background:none; border:none;
+  cursor:pointer; padding:4px 8px; border-radius:6px;
+  font-family:var(--font); transition:.15s;
+}
+.user-chip .logout:hover { color:var(--red); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">CA <span>Board</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">📋 Board</a>
+    <a href="chat.html"  class="nav-link">💬 Chat</a>
+  </div>
+  <div class="user-chip">
+    <div class="avatar" id="nav-avatar" style="width:30px;height:30px;font-size:13px">?</div>
+    <span id="nav-name" style="display:none"></span>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="hero">
+    <div class="hero-eyebrow"><span class="dot pulse"></span> LIVE BOARD</div>
+    <h1>Study Group<br/><span>Announcements</span></h1>
+    <p class="hero-sub">All updates from your admin, instantly</p>
+  </div>
+
+  <div class="notif-bar" id="notif-bar">
+    🔔 Enable push notifications to get alerted instantly
+    <button onclick="enableNotif()">Enable</button>
+  </div>
+
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active" onclick="setFilter('all',this)">All</button>
+      <button class="tab" onclick="setFilter('meet',this)">📍 Meet Up</button>
+      <button class="tab" onclick="setFilter('urgent',this)">🚨 Urgent</button>
+      <button class="tab" onclick="setFilter('notice',this)">📋 Notice</button>
+    </div>
+  </div>
+
+  <div id="posts-container"></div>
+</div>
+
+<!-- RAISE HAND FAB -->
+<button class="hand-fab" onclick="openHandModal()" id="hand-fab" title="Raise hand for support">✋</button>
+
+<!-- RAISE HAND MODAL -->
+<div class="overlay" id="hand-overlay">
+  <div class="modal">
+    <div class="modal-title">✋ Raise <span>Hand</span></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem">
+      Send a support request to admin. Only admin will see this.
+    </p>
+    <div class="field">
+      <label>YOUR MESSAGE / QUESTION (optional)</label>
+      <textarea id="hand-note" placeholder="e.g. I'm confused about Chapter 5 topic, need help..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="submitHand()">Send to Admin ✋</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:.5rem" onclick="closeOverlay('hand-overlay')">Cancel</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/board.js"></script>
+</body>
+</html>
