@@ -2,325 +2,290 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Register — CA Study Board</title>
-<link rel="stylesheet" href="css/style.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Register — CA Board</title>
 <style>
-.page {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  padding: 2rem 1rem;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,158,11,.12) 0%, transparent 70%), var(--bg);
-}
-.register-box {
-  width: 100%; max-width: 420px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-xl); padding: 2rem;
-  animation: popIn .3s ease;
-}
-.logo-top { text-align: center; margin-bottom: 2rem; }
-.logo-top .icon { font-size: 40px; margin-bottom: .5rem; }
-.logo-top h1 { font-size: 24px; font-weight: 800; }
-.logo-top h1 span { color: var(--accent); }
-.logo-top p { font-size: 13px; color: var(--text2); margin-top: .3rem; }
-
-.step { display: none; }
-.step.active { display: block; }
-
-.otp-grid { display: flex; gap: 10px; }
-.otp-grid input {
-  flex: 1; text-align: center; font-size: 22px; font-family: var(--mono);
-  padding: 12px 6px; letter-spacing: .1em;
-}
-
-.or-divider { text-align:center; color:var(--text3); font-size:12px; margin:1rem 0; position:relative; }
-.or-divider::before,.or-divider::after {
-  content:''; position:absolute; top:50%; width:42%; height:1px; background:var(--border);
-}
-.or-divider::before{left:0} .or-divider::after{right:0}
-
-.demo-box {
-  background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25);
-  border-radius: var(--radius); padding: .75rem 1rem;
-  font-size: 13px; color: var(--accent); margin-bottom: 1rem;
-  display: none;
-}
-.demo-box strong { display: block; margin-bottom: .25rem; }
-
-.pending-info {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem; font-size: 13px;
-  color: var(--text2); margin-top: 1rem; text-align: center; line-height: 1.7;
-}
-
-.back-link { color: var(--text3); font-size: 13px; text-align: center; margin-top: 1rem; display: block; cursor: pointer; }
-.back-link:hover { color: var(--text); }
-.already-link { text-align: center; font-size: 13px; color: var(--text3); margin-top: 1rem; }
-.already-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
-
-.phone-row { display: flex; gap: 8px; }
-.phone-prefix {
-  background: var(--surface3); border: 1px solid var(--border); color: var(--text2);
-  border-radius: var(--radius); padding: 11px 12px; font-size: 14px;
-  white-space: nowrap; font-family: var(--mono);
-}
-.resend-row { display: flex; justify-content: flex-end; margin-top: .5rem; }
-.resend-btn {
-  font-size: 12px; color: var(--text3); background: none; border: none;
-  cursor: pointer; font-family: var(--font); transition: .15s;
-}
-.resend-btn:hover:not(:disabled){ color: var(--accent); }
-.resend-btn:disabled { opacity: .4; cursor: default; }
-
-/* Admin login link */
-.admin-link {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  width: 100%; padding: 10px; border: 1px solid var(--border);
-  border-radius: var(--radius); font-size: 13px; color: var(--text2);
-  background: transparent; cursor: pointer; font-family: var(--font);
-  transition: .15s; text-decoration: none;
-}
-.admin-link:hover { border-color: var(--accent); color: var(--accent); }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.box{width:100%;max-width:400px;background:#111;border:1px solid #222;border-radius:20px;padding:1.75rem;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.logo{text-align:center;margin-bottom:1.75rem}
+.logo-icon{font-size:44px;display:block;margin-bottom:.5rem}
+.logo h1{font-size:22px;font-weight:900;letter-spacing:-.03em}
+.logo h1 span{color:#f59e0b}
+.logo p{font-size:13px;color:#666;margin-top:.3rem}
+.step{display:none}
+.step.on{display:block}
+label{display:block;font-size:11px;font-weight:600;color:#555;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+input,textarea{width:100%;background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:10px;padding:12px 14px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
+input:focus,textarea:focus{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+input::placeholder,textarea::placeholder{color:#444}
+.field{margin-bottom:1rem}
+.err{font-size:12px;color:#ef4444;margin-top:5px;display:none}
+.hint{font-size:12px;color:#555;margin-top:5px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .18s;margin-top:.25rem}
+.btn-yellow{background:#f59e0b;color:#000}
+.btn-yellow:hover{background:#d97706}
+.btn-ghost{background:#1a1a1a;color:#888;border:1.5px solid #2a2a2a;margin-top:.5rem}
+.btn-ghost:hover{border-color:#444;color:#ccc}
+.btn:disabled{opacity:.4;pointer-events:none}
+.phone-row{display:flex;gap:8px}
+.prefix{background:#1a1a1a;border:1.5px solid #2a2a2a;color:#888;padding:12px 13px;border-radius:10px;font-size:14px;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:600}
+.otp-row{display:flex;gap:8px}
+.otp-row input{flex:1;text-align:center;font-size:24px;font-weight:700;padding:12px 4px;letter-spacing:.05em;height:58px}
+.demo-box{background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.3);border-radius:10px;padding:.75rem 1rem;font-size:13px;color:#f59e0b;margin-bottom:1rem;display:none}
+.demo-box .otp-show{font-size:26px;font-weight:900;letter-spacing:.15em;display:block;margin-top:4px;font-family:'Inter',monospace}
+.resend-row{display:flex;justify-content:flex-end;margin-top:.4rem}
+.resend-btn{font-size:12px;color:#555;background:none;border:none;font-family:'Inter',sans-serif;cursor:pointer}
+.resend-btn:not(:disabled):hover{color:#f59e0b}
+.resend-btn:disabled{opacity:.4}
+.admin-link{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border:1.5px solid #222;border-radius:10px;font-size:14px;color:#666;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;margin-top:.5rem;transition:.18s}
+.admin-link:hover{border-color:#f59e0b;color:#f59e0b}
+.divider{text-align:center;color:#333;font-size:12px;margin:.75rem 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:#222}
+.divider::before{left:0}.divider::after{right:0}
+.pending-card{background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem;font-size:14px;color:#888;line-height:1.7}
+.pending-card strong{color:#fff;display:block;margin-bottom:.25rem}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#222;border:1px solid #333;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
+.toast.on{opacity:1}
+.back{text-align:center;font-size:13px;color:#555;margin-top:1rem;cursor:pointer}
+.back:hover{color:#aaa}
 </style>
 </head>
 <body>
 
-<div class="page">
-  <div class="register-box">
-    <div class="logo-top">
-      <div class="icon">📚</div>
-      <h1>CA <span>Study Board</span></h1>
-      <p>Register to access announcements & chat</p>
-    </div>
+<div class="box">
+  <div class="logo">
+    <span class="logo-icon">📚</span>
+    <h1>CA <span>Study Board</span></h1>
+    <p>Register to join your study group</p>
+  </div>
 
-    <!-- STEP 1: Phone + Name -->
-    <div class="step active" id="step1">
-      <div class="field">
-        <label>FULL NAME</label>
-        <input type="text" id="r-name" placeholder="e.g. Ravi Patel" autocomplete="name"/>
-      </div>
-      <div class="field">
-        <label>MOBILE NUMBER</label>
-        <div class="phone-row">
-          <span class="phone-prefix">+91</span>
-          <input type="tel" id="r-phone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}" inputmode="numeric"/>
-        </div>
-        <div class="field-hint">OTP will be sent to this number</div>
-        <div class="field-err" id="step1-err">Please enter valid details</div>
-      </div>
-      <div class="demo-box" id="demo-box">
-        <strong>⚠️ Demo Mode (no Fast2SMS key set)</strong>
-        Your OTP will be shown on screen. Ask admin to configure Fast2SMS for real SMS.
-      </div>
-      <button class="btn btn-primary btn-full btn-lg" onclick="sendOTPStep()">Send OTP →</button>
-      <div class="or-divider">or</div>
-      <a href="admin.html" class="admin-link">🔐 Admin Login</a>
+  <!-- Step 1: Details -->
+  <div class="step on" id="s1">
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="r-name" placeholder="e.g. Ravi Patel" autocomplete="name"/>
     </div>
-
-    <!-- STEP 2: OTP -->
-    <div class="step" id="step2">
-      <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem">
-        OTP sent to <strong id="otp-sent-to" style="color:var(--text)"></strong>
-      </p>
-      <div class="demo-box" id="demo-otp-box">
-        <strong>Demo OTP:</strong>
-        <span id="demo-otp-code" style="font-family:var(--mono);font-size:20px;letter-spacing:.15em"></span>
+    <div class="field">
+      <label>Mobile Number</label>
+      <div class="phone-row">
+        <span class="prefix">+91</span>
+        <input type="tel" id="r-phone" placeholder="9876543210" maxlength="10" inputmode="numeric"/>
       </div>
-      <div class="field">
-        <label>ENTER 6-DIGIT OTP</label>
-        <div class="otp-grid" id="otp-grid">
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,0)" onkeydown="otpBack(event,0)"/>
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,1)" onkeydown="otpBack(event,1)"/>
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,2)" onkeydown="otpBack(event,2)"/>
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,3)" onkeydown="otpBack(event,3)"/>
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,4)" onkeydown="otpBack(event,4)"/>
-          <input type="text" maxlength="1" inputmode="numeric" class="otp-char" oninput="otpNext(this,5)" onkeydown="otpBack(event,5)"/>
-        </div>
-        <div class="resend-row">
-          <button class="resend-btn" id="resend-btn" disabled onclick="resendOTP()">
-            Resend OTP (<span id="resend-timer">30</span>s)
-          </button>
-        </div>
-        <div class="field-err" id="otp-err">Incorrect OTP. Try again.</div>
+      <div class="hint">OTP will be sent to this number</div>
+      <div class="err" id="s1-err">Please enter valid name and 10-digit number</div>
+    </div>
+    <div class="demo-box" id="demo-notice">
+      ⚠️ <strong>Demo Mode</strong> — No SMS key set by admin. OTP will show on screen.
+    </div>
+    <button class="btn btn-yellow" id="send-btn" onclick="doSend()">Send OTP →</button>
+    <div class="divider">or</div>
+    <a href="admin.html" class="admin-link">🔐 Admin Login</a>
+  </div>
+
+  <!-- Step 2: OTP -->
+  <div class="step" id="s2">
+    <p style="font-size:13px;color:#666;margin-bottom:1rem">OTP sent to <strong id="otp-target" style="color:#fff"></strong></p>
+    <div class="demo-box" id="demo-otp-box">
+      Your OTP (demo): <span class="otp-show" id="demo-otp-val">——</span>
+    </div>
+    <div class="field">
+      <label>Enter 6-Digit OTP</label>
+      <div class="otp-row" id="otp-inputs">
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,0)" onkeydown="onOtpKey(event,0)"/>
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,1)" onkeydown="onOtpKey(event,1)"/>
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,2)" onkeydown="onOtpKey(event,2)"/>
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,3)" onkeydown="onOtpKey(event,3)"/>
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,4)" onkeydown="onOtpKey(event,4)"/>
+        <input type="tel" maxlength="1" inputmode="numeric" class="oc" oninput="onOtpIn(this,5)" onkeydown="onOtpKey(event,5)"/>
       </div>
-      <button class="btn btn-primary btn-full btn-lg" onclick="verifyOTPStep()">Verify & Register</button>
-      <span class="back-link" onclick="goStep(1)">← Change number</span>
-    </div>
-
-    <!-- STEP 3: Pending approval -->
-    <div class="step" id="step3">
-      <div style="text-align:center;font-size:52px;margin-bottom:1rem">⏳</div>
-      <h2 style="text-align:center;margin-bottom:.75rem">Registration Sent!</h2>
-      <div class="pending-info">
-        Your request has been sent to the admin.<br/>
-        You will get access once admin approves your number.<br/><br/>
-        <strong id="pending-name" style="color:var(--text)"></strong><br/>
-        <span id="pending-phone" style="font-family:var(--mono);color:var(--text2)"></span>
+      <div class="resend-row">
+        <button class="resend-btn" id="resend-btn" disabled onclick="doResend()">
+          Resend (<span id="rtimer">30</span>s)
+        </button>
       </div>
-      <button class="btn btn-ghost btn-full" style="margin-top:1rem" onclick="checkApproval()">
-        🔄 Check Approval Status
-      </button>
+      <div class="err" id="otp-err">Wrong OTP. Try again.</div>
     </div>
+    <button class="btn btn-yellow" onclick="doVerify()">Verify & Register</button>
+    <div class="back" onclick="goStep(1)">← Change number</div>
+  </div>
 
-    <!-- STEP 4: Already registered / blocked -->
-    <div class="step" id="step4">
-      <div style="text-align:center;font-size:48px;margin-bottom:1rem" id="s4-icon">🚫</div>
-      <h2 style="text-align:center;margin-bottom:.75rem" id="s4-title">Access Denied</h2>
-      <div class="pending-info" id="s4-msg">You are not allowed to access this board.</div>
-      <button class="btn btn-ghost btn-full" style="margin-top:1rem" onclick="goStep(1)">← Back</button>
+  <!-- Step 3: Pending -->
+  <div class="step" id="s3">
+    <div style="text-align:center">
+      <div style="font-size:60px;margin-bottom:1rem">⏳</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:.5rem">Request Sent!</h2>
+      <p style="font-size:14px;color:#666;line-height:1.7;margin-bottom:1.25rem">Your registration is complete. Admin will approve your number. You'll get access once approved.</p>
+      <div class="pending-card">
+        <strong id="p-name"></strong>
+        <span id="p-phone" style="font-family:monospace"></span>
+      </div>
+      <button class="btn btn-ghost" style="margin-top:1rem" onclick="checkStatus()">🔄 Check Status</button>
+      <button class="btn btn-ghost" onclick="doLogout()">← Logout</button>
     </div>
+  </div>
 
+  <!-- Step 4: Blocked -->
+  <div class="step" id="s4">
+    <div style="text-align:center">
+      <div style="font-size:60px;margin-bottom:1rem">🚫</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:.5rem">Access Blocked</h2>
+      <p style="font-size:14px;color:#666;margin-bottom:1.25rem">Your number has been blocked by the admin.</p>
+      <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+    </div>
   </div>
 </div>
 
-<div id="toast"></div>
-<script src="js/app.js"></script>
+<div class="toast" id="toast"></div>
+
 <script>
-let regPhone = '', regName = '', resendInterval;
+// ─── STORAGE ──────────────────────────────────────────────────────────────
+const K={PW:'cb_pw',NAME:'cb_name',USERS:'cb_users',POSTS:'cb_posts',MSGS:'cb_msgs',HANDS:'cb_hands',F2S:'cb_f2s',SESSION:'cb_sess'};
+function sg(k,d=[]){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
+function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function getSession(){try{return JSON.parse(sessionStorage.getItem(K.SESSION))||null}catch{return null}}
+function setSession(d){sessionStorage.setItem(K.SESSION,JSON.stringify(d))}
+function clearSession(){sessionStorage.removeItem(K.SESSION)}
+function isAdmin(){return getSession()?.role==='admin'}
+function isMember(){return getSession()?.role==='member'}
+function currentPhone(){return getSession()?.phone||null}
+function getUsers(){return sg(K.USERS,[])}
+function findUser(p){return getUsers().find(u=>u.phone===p)||null}
 
-// check demo mode
-window.addEventListener('load', () => {
-  if(!getF2SKey()) document.getElementById('demo-box').style.display='block';
-  // if already logged in, redirect
-  if(isAdmin())  window.location.href='admin.html';
-  else if(isMember()) {
-    const u = findUser(currentPhone());
-    if(u?.approved) window.location.href='index.html';
-    else goStep(3);
+// ─── OTP ──────────────────────────────────────────────────────────────────
+const OTP_MAP={};
+function makeOTP(){return String(100000+Math.floor(Math.random()*900000))}
+
+async function sendOTP(phone){
+  const otp=makeOTP();
+  OTP_MAP[phone]={otp,ts:Date.now()};
+  const key=localStorage.getItem(K.F2S)||'';
+  if(key.length>10){
+    try{
+      await fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(key)}&variables_values=${otp}&route=otp&numbers=${phone}`,{method:'GET'});
+    }catch(e){console.warn('Fast2SMS error',e)}
   }
-});
-
-function goStep(n){
-  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+  return otp;
+}
+function checkOTP(phone,entered){
+  const s=OTP_MAP[phone];
+  if(!s)return false;
+  if(Date.now()-s.ts>600000)return false;
+  return s.otp===entered.trim();
 }
 
-async function sendOTPStep(){
-  const name  = document.getElementById('r-name').value.trim();
-  const phone = document.getElementById('r-phone').value.trim();
-  if(!name || !/^[6-9]\d{9}$/.test(phone)){
-    document.getElementById('step1-err').style.display='block';
-    return;
+// ─── STATE ────────────────────────────────────────────────────────────────
+let rPhone='',rName='',rTimer;
+const demoMode=()=>!(localStorage.getItem(K.F2S)||'').length>10;
+
+window.onload=()=>{
+  if(!localStorage.getItem(K.F2S)) document.getElementById('demo-notice').style.display='block';
+  if(isAdmin()){location.href='admin.html';return}
+  if(isMember()){
+    const u=findUser(currentPhone());
+    if(u?.approved){location.href='index.html';return}
+    if(u){showStep3();return}
   }
-  document.getElementById('step1-err').style.display='none';
+};
 
-  // check if blocked
-  const u = findUser(phone);
-  if(u?.blocked){
-    document.getElementById('s4-icon').textContent='🚫';
-    document.getElementById('s4-title').textContent='Number Blocked';
-    document.getElementById('s4-msg').textContent='Your number has been blocked by the admin. Contact admin for help.';
-    goStep(4); return;
-  }
-
-  regPhone = phone; regName = name;
-
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = 'Sending...';
-  const otp = await sendOTP(phone, getF2SKey());
-  btn.disabled = false; btn.textContent = 'Send OTP →';
-
-  document.getElementById('otp-sent-to').textContent = '+91 ' + phone;
-  // demo mode
-  if(!getF2SKey()){
-    document.getElementById('demo-otp-box').style.display='block';
-    document.getElementById('demo-otp-code').textContent = otp;
-  }
-  goStep(2);
-  startResendTimer();
-  setTimeout(()=>document.querySelector('.otp-char').focus(), 100);
-}
-
-function startResendTimer(){
-  let sec = 30;
-  const timerEl = document.getElementById('resend-timer');
-  const btn = document.getElementById('resend-btn');
-  btn.disabled = true;
-  clearInterval(resendInterval);
-  resendInterval = setInterval(()=>{
-    sec--;
-    timerEl.textContent = sec;
-    if(sec<=0){
-      clearInterval(resendInterval);
-      btn.disabled = false;
-      btn.textContent = 'Resend OTP';
-    }
-  }, 1000);
-}
-
-async function resendOTP(){
-  const otp = await sendOTP(regPhone, getF2SKey());
-  if(!getF2SKey()){
-    document.getElementById('demo-otp-box').style.display='block';
-    document.getElementById('demo-otp-code').textContent = otp;
-  }
-  showToast('OTP resent!');
-  startResendTimer();
-}
-
-function getOTPValue(){
-  return Array.from(document.querySelectorAll('.otp-char')).map(i=>i.value).join('');
-}
-
-function verifyOTPStep(){
-  const otp = getOTPValue();
-  if(otp.length !== 6){ document.getElementById('otp-err').style.display='block'; return; }
-
-  if(!verifyOTP(regPhone, otp)){
-    document.getElementById('otp-err').style.display='block';
-    document.querySelectorAll('.otp-char').forEach(i=>{ i.value=''; i.style.borderColor='var(--red)'; });
-    setTimeout(()=>{ document.querySelectorAll('.otp-char').forEach(i=>i.style.borderColor=''); }, 1500);
-    return;
-  }
-  document.getElementById('otp-err').style.display='none';
-
-  // register user
-  const existing = findUser(regPhone);
-  if(existing){
-    if(existing.approved){
-      setSession({role:'member', phone:regPhone});
-      window.location.href='index.html';
-      return;
-    } else {
-      document.getElementById('pending-name').textContent = existing.name;
-      document.getElementById('pending-phone').textContent = '+91 ' + regPhone;
-      goStep(3); return;
-    }
-  }
-
-  registerUser(regPhone, regName);
-  setSession({role:'member', phone:regPhone});
-  document.getElementById('pending-name').textContent = regName;
-  document.getElementById('pending-phone').textContent = '+91 ' + regPhone;
+// ─── STEP NAV ─────────────────────────────────────────────────────────────
+function goStep(n){document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i===n-1))}
+function showStep3(){
+  document.getElementById('p-name').textContent=rName||findUser(currentPhone())?.name||'';
+  document.getElementById('p-phone').textContent='+91 '+(rPhone||currentPhone()||'');
   goStep(3);
 }
 
-function checkApproval(){
-  const u = findUser(regPhone || currentPhone());
-  if(!u){ showToast('Not registered yet'); return; }
-  if(u.approved){
-    setSession({role:'member', phone:u.phone});
-    window.location.href='index.html';
-  } else if(u.blocked){
-    document.getElementById('s4-icon').textContent='🚫';
-    document.getElementById('s4-title').textContent='Number Blocked';
-    document.getElementById('s4-msg').textContent='Your number has been blocked by admin.';
-    goStep(4);
-  } else {
-    showToast('⏳ Not approved yet. Please wait.');
+// ─── SEND OTP ─────────────────────────────────────────────────────────────
+async function doSend(){
+  const name=document.getElementById('r-name').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  document.getElementById('s1-err').style.display='none';
+  if(!name||!/^[6-9]\d{9}$/.test(phone)){
+    document.getElementById('s1-err').style.display='block';return;
   }
+  const u=findUser(phone);
+  if(u?.blocked){goStep(4);return}
+
+  rPhone=phone; rName=name;
+  const btn=document.getElementById('send-btn');
+  btn.disabled=true; btn.textContent='Sending...';
+  const otp=await sendOTP(phone);
+  btn.disabled=false; btn.textContent='Send OTP →';
+
+  document.getElementById('otp-target').textContent='+91 '+phone;
+  const noKey=!(localStorage.getItem(K.F2S)||'').length;
+  if(noKey||true){ // always show in demo since we can't verify Fast2SMS worked
+    document.getElementById('demo-otp-box').style.display='block';
+    document.getElementById('demo-otp-val').textContent=otp;
+  }
+  goStep(2);
+  startResend();
+  setTimeout(()=>document.querySelectorAll('.oc')[0].focus(),80);
 }
 
-// OTP input UX
-function otpNext(el, idx){
-  el.value = el.value.replace(/\D/,'');
-  if(el.value && idx < 5){
-    document.querySelectorAll('.otp-char')[idx+1].focus();
+// ─── VERIFY OTP ───────────────────────────────────────────────────────────
+function doVerify(){
+  const entered=Array.from(document.querySelectorAll('.oc')).map(i=>i.value).join('');
+  if(entered.length!==6){document.getElementById('otp-err').style.display='block';return}
+  if(!checkOTP(rPhone,entered)){
+    document.getElementById('otp-err').style.display='block';
+    document.querySelectorAll('.oc').forEach(i=>{i.value='';i.style.borderColor='#ef4444'});
+    setTimeout(()=>document.querySelectorAll('.oc').forEach(i=>i.style.borderColor=''),1500);
+    return;
   }
-  if(getOTPValue().length===6) verifyOTPStep();
+  document.getElementById('otp-err').style.display='none';
+  const ex=findUser(rPhone);
+  if(ex?.approved){setSession({role:'member',phone:rPhone});location.href='index.html';return}
+  if(ex){setSession({role:'member',phone:rPhone});showStep3();return}
+  // new user
+  const users=getUsers();
+  users.push({phone:rPhone,name:rName,approved:false,blocked:false,ts:Date.now()});
+  ss(K.USERS,users);
+  setSession({role:'member',phone:rPhone});
+  showStep3();
 }
-function otpBack(e, idx){
-  if(e.key==='Backspace' && !e.target.value && idx>0)
-    document.querySelectorAll('.otp-char')[idx-1].focus();
+
+// ─── RESEND ───────────────────────────────────────────────────────────────
+function startResend(){
+  let s=30;const btn=document.getElementById('resend-btn');
+  btn.disabled=true;
+  clearInterval(rTimer);
+  rTimer=setInterval(()=>{
+    s--;document.getElementById('rtimer').textContent=s;
+    if(s<=0){clearInterval(rTimer);btn.disabled=false;btn.textContent='Resend OTP'}
+  },1000);
 }
+async function doResend(){
+  const otp=await sendOTP(rPhone);
+  document.getElementById('demo-otp-val').textContent=otp;
+  document.getElementById('demo-otp-box').style.display='block';
+  toast('OTP resent!'); startResend();
+}
+
+// ─── CHECK STATUS ─────────────────────────────────────────────────────────
+function checkStatus(){
+  const u=findUser(currentPhone());
+  if(!u){location.href='register.html';return}
+  if(u.approved){setSession({role:'member',phone:u.phone});location.href='index.html'}
+  else if(u.blocked){clearSession();goStep(4)}
+  else toast('⏳ Not approved yet. Please wait.')
+}
+function doLogout(){clearSession();location.reload()}
+
+// ─── OTP INPUT UX ─────────────────────────────────────────────────────────
+function onOtpIn(el,i){
+  el.value=el.value.replace(/\D/,'');
+  if(el.value&&i<5)document.querySelectorAll('.oc')[i+1].focus();
+  if(Array.from(document.querySelectorAll('.oc')).map(x=>x.value).join('').length===6)doVerify();
+}
+function onOtpKey(e,i){if(e.key==='Backspace'&&!e.target.value&&i>0)document.querySelectorAll('.oc')[i-1].focus()}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────
+let _tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2800)}
 </script>
 </body>
 </html>
