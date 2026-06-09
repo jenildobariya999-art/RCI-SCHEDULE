@@ -1,97 +1,71 @@
-# 📚 CA Study Board
+# 📚 CA Study Board v2
 
-A private notice board + group chat for CA students. Admin-only posting, OTP-verified registration, push notifications.
-
----
-
-## 📁 File Structure
-
-```
-ca-noticeboard/
-├── index.html        ← Main notice board (All, Meet Up, Urgent, Notice tabs)
-├── register.html     ← Register with OTP verification
-├── chat.html         ← Group chat (approved members only)
-├── admin.html        ← Admin panel (post, manage members, see raise-hand)
-├── pending.html      ← Shown to users waiting for approval
-├── css/
-│   └── style.css     ← Shared styles
-└── js/
-    ├── app.js        ← Shared logic (auth, storage, OTP, notifications)
-    ├── board.js      ← Notice board logic
-    ├── chat.js       ← Chat logic
-    └── admin.js      ← Admin panel logic
-```
+**Each file is 100% self-contained — no external CSS/JS files needed.**
+Works perfectly on GitHub Pages, Vercel, Netlify, or any static host.
 
 ---
 
-## 🚀 Deploy on GitHub Pages (Free)
+## 📁 Files (just 4 HTML files!)
+
+| File | Page |
+|------|------|
+| `index.html` | 📋 Notice Board — All / Meet Up / Urgent / Notice |
+| `register.html` | 📲 Register + OTP Verification |
+| `chat.html` | 💬 Group Chat |
+| `admin.html` | 🔐 Admin Panel |
+
+---
+
+## 🚀 Deploy on GitHub Pages
 
 1. Create a new GitHub repo (e.g. `ca-board`)
-2. Upload all files keeping the folder structure
-3. Go to **Settings → Pages → Source → main branch → / (root)**
-4. Your site will be live at: `https://yourusername.github.io/ca-board/`
+2. Upload these **4 HTML files** directly (no folders needed)
+3. Go to **Settings → Pages → Source → Branch: main → Save**
+4. Live at: `https://yourusername.github.io/ca-board/`
+
+> Share `register.html` link with friends to join
 
 ---
 
-## 🔐 Default Admin Password
+## 🔐 Admin Login
 
-```
-admin123
-```
-
-> **Change it immediately** after first login via Admin Panel → Settings → Change Password
+- Go to `yoursite.com/admin.html`
+- Default password: **`admin123`**
+- Change it in **Admin → Settings → Change Password**
 
 ---
 
-## 📲 Fast2SMS Setup (for real OTP)
+## 📲 OTP — Two Modes
 
-1. Go to [fast2sms.com](https://fast2sms.com) and create a free account
-2. Go to **Dashboard → Dev API** and copy your API key
-3. In Admin Panel → **Settings → Fast2SMS API Key** → paste it → Save
-4. Now real OTPs will be sent via SMS to Indian numbers
+### Demo Mode (default, no setup needed)
+- OTP is shown on screen when registering
+- Good for testing or small trusted groups
 
-> Without API key, the app runs in **Demo Mode** — OTP is shown on screen (good for testing)
+### Real SMS via Fast2SMS (recommended)
+1. Go to [fast2sms.com](https://fast2sms.com) → Sign up free
+2. Dashboard → Dev API → Copy your API key
+3. Admin Panel → Settings → Fast2SMS API Key → Paste → Save
+4. Now friends get real OTP via SMS ✅
 
 ---
 
 ## 🔔 Push Notifications
-
-- Friends click **"Enable Notifications"** on the board page
-- Every time admin posts, they get an instant browser notification
-- Works on Chrome, Edge, Firefox (not Safari on iOS)
-
----
-
-## ✋ Raise Hand Feature
-
-- Members see a ✋ button on the board
-- They can send a support request with a message
-- **Only admin sees it** in Admin Panel → Raise Hand section
-- Admin can mark it as resolved
+- Friends click **"Enable"** on the board page
+- Every time you post, they get a browser notification instantly
+- Works on Chrome + Android (not Safari iOS)
 
 ---
 
-## 👥 How Member Access Works
-
-1. Friend opens the site → **Register** with name + phone
-2. OTP verification (proves real phone number)
-3. Sent to **"Pending Approval"** screen
-4. Admin opens **Admin Panel → Members** → clicks **Approve**
-5. Friend can now access board and chat
+## ✋ Raise Hand
+- Members tap ✋ button → send message to admin
+- **Only admin sees it** in Admin → Hands section
+- Admin marks it resolved when done
 
 ---
 
-## 💡 Notes
-
-- All data stored in **localStorage** (browser storage)
-- Works 100% on GitHub Pages — no server needed
-- If friends use different devices, they won't see each other's data (localStorage is per-device per-browser)
-- For shared real-time data across devices, you'd need Firebase (can be added later)
-
----
-
-## 🛠 Quick Customization
-
-- **Change group name**: Edit `CA <span>Board</span>` in all HTML files
-- **Change default password**: In `js/app.js`, replace `DEFAULT_PW_HASH` with SHA-256 hash of your password
-- **Add more tabs**: Edit the `.tabs` section in `index.html` and update `board.js`
+## 👥 Member Flow
+1. Friend opens `register.html`
+2. Enters name + phone → gets OTP
+3. Verifies → goes to "Pending" screen
+4. You open Admin → Members → **Approve** their number
+5. They tap "Check Approval" → get access to board + chat ✅
