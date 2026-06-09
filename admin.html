@@ -3,246 +3,243 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Admin Panel — CA Study Board</title>
-<link rel="stylesheet" href="css/style.css"/>
+<title>Admin — CA Study Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-.page { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-
-/* ── LOGIN ── */
-.login-wrap {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem;
-  background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(245,158,11,.1) 0%, transparent 65%), var(--bg);
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#1e1e28;
+  --b1:#2a2a38;--b2:#3a3a50;
+  --t1:#f0f0ff;--t2:#9090b0;--t3:#55556a;
+  --acc:#f5a623;--acc2:#e0911a;
+  --grn:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#a78bfa;
 }
-.login-box {
-  width:100%; max-width:400px; background:var(--surface);
-  border:1px solid var(--border); border-radius:var(--radius-xl); padding:2rem;
-}
-.login-logo { text-align:center; margin-bottom:1.75rem; }
-.login-logo .icon { font-size:36px; }
-.login-logo h1 { font-size:22px; font-weight:800; margin-top:.5rem; }
-.login-logo h1 span { color:var(--accent); }
-.pw-wrap { position:relative; }
-.pw-wrap input { padding-right: 44px; }
-.pw-eye { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text3); font-size:16px; }
+html,body{min-height:100vh;background:var(--bg);color:var(--t1);font-family:'Syne',sans-serif;-webkit-font-smoothing:antialiased}
 
-/* ── DASHBOARD ── */
-.admin-header {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 1.75rem;
-  padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-}
-.admin-avatar-lg {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-d));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0;
-}
-.admin-meta strong { font-size: 18px; font-weight: 800; }
-.admin-meta p { font-size: 13px; color: var(--text2); }
-.header-actions { margin-left: auto; display:flex; gap:8px; }
+/* NAV */
+nav{height:56px;display:flex;align-items:center;padding:0 1rem;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(10,10,15,.92);backdrop-filter:blur(10px);z-index:50;gap:10px}
+.nav-logo{font-size:16px;font-weight:800;letter-spacing:-.03em;text-decoration:none;color:var(--t1)}
+.nav-logo span{color:var(--acc)}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nl{font-size:13px;font-weight:600;color:var(--t2);padding:6px 12px;border-radius:8px;text-decoration:none;transition:.15s}
+.nl:hover{color:var(--t1);background:var(--s2)}.nl.on{color:var(--t1);background:var(--s3)}
 
-/* ── SECTION TABS ── */
-.section-tabs { display:flex; gap:8px; margin-bottom:1.25rem; flex-wrap:wrap; }
+/* LOGIN */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(245,166,35,.13) 0%,transparent 65%), var(--bg)}
+.login-box{width:100%;max-width:380px;background:var(--s1);border:1px solid var(--b1);border-radius:20px;padding:2rem;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.login-logo{text-align:center;margin-bottom:1.75rem}
+.login-logo .icon{font-size:40px;margin-bottom:.5rem}
+.login-logo h1{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.login-logo h1 span{color:var(--acc)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--t3);font-size:16px;padding:2px}
 
-/* ── GRID ── */
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 1.5rem; }
-.stat-card {
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
-  padding:1rem; text-align:center;
-}
-.stat-card .num { font-size:28px; font-weight:800; color:var(--accent); font-family:var(--mono); }
-.stat-card .lbl { font-size:11px; color:var(--text2); margin-top:2px; font-family:var(--mono); letter-spacing:.05em; }
+/* MAIN */
+.page{max-width:720px;margin:0 auto;padding:1.5rem 1rem 4rem}
 
-/* ── COMPOSE CARD ── */
-.compose-card { margin-bottom:1.25rem; }
-.type-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-.type-opt {
-  background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius);
-  padding:10px 8px; text-align:center; cursor:pointer; transition:.18s; font-size:13px; font-weight:500;
-}
-.type-opt:hover { border-color:var(--border2); }
-.type-opt.selected { border-color:var(--accent); color:var(--accent); background:rgba(245,158,11,.07); }
-.type-opt .t-icon { font-size:20px; display:block; margin-bottom:3px; }
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+/* HEADER CARD */
+.adm-hdr{display:flex;align-items:center;gap:14px;padding:1.25rem;background:var(--s1);border:1px solid var(--b1);border-radius:14px;margin-bottom:1.25rem}
+.adm-av{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#000;flex-shrink:0}
+.adm-info strong{font-size:17px;font-weight:800}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.adm-info p{font-size:12px;color:var(--t2);margin-top:2px;display:flex;align-items:center;gap:5px}
+.hdr-btns{margin-left:auto;display:flex;gap:8px}
 
-/* ── USER TABLE ── */
-.user-list { display:flex; flex-direction:column; gap:8px; }
-.user-row {
-  display:flex; align-items:center; gap:12px;
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
-  padding:.9rem 1rem;
-}
-.user-info { flex:1; }
-.user-info strong { font-size:14px; font-weight:700; }
-.user-info p { font-size:12px; color:var(--text2); font-family:var(--mono); }
-.user-actions { display:flex; gap:6px; }
-.user-actions button {
-  font-size:12px; padding:5px 12px; border-radius:6px;
-  border:none; cursor:pointer; font-family:var(--font); font-weight:500;
-  transition:.15s;
-}
-.btn-approve { background:rgba(34,197,94,.15); color:var(--green); }
-.btn-approve:hover { background:rgba(34,197,94,.25); }
-.btn-block   { background:rgba(239,68,68,.1);  color:var(--red); }
-.btn-block:hover { background:rgba(239,68,68,.2); }
-.btn-remove  { background:var(--surface3); color:var(--text3); }
-.btn-remove:hover { color:var(--text); }
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:.9rem;text-align:center}
+.stat .n{font-size:26px;font-weight:800;color:var(--acc);font-family:'DM Mono',monospace}
+.stat .l{font-size:10px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.06em}
 
-/* ── HAND REQUESTS ── */
-.hand-row {
-  background:var(--surface); border:1px solid rgba(245,158,11,.2);
-  border-radius:var(--radius-lg); padding:.9rem 1rem;
-  display:flex; align-items:flex-start; gap:12px; margin-bottom:8px;
-}
-.hand-row .hand-body { flex:1; }
-.hand-row .hand-name { font-size:14px; font-weight:700; }
-.hand-row .hand-note { font-size:13px; color:var(--text2); margin-top:3px; }
-.hand-row .hand-time { font-size:11px; color:var(--text3); font-family:var(--mono); margin-top:4px; }
-.resolve-btn { font-size:12px; padding:5px 12px; border-radius:6px; background:rgba(34,197,94,.15); color:var(--green); border:none; cursor:pointer; font-family:var(--font); font-weight:500; white-space:nowrap; }
+/* SECTION TABS */
+.sec-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:1.25rem}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{flex-shrink:0;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;padding:7px 18px;border-radius:30px;border:1.5px solid var(--b1);background:var(--s2);color:var(--t2);cursor:pointer;transition:.18s}
+.stab:hover{border-color:var(--b2);color:var(--t1)}.stab.on{background:var(--acc);border-color:var(--acc);color:#000}
 
-/* ── SECTION ── */
-.section { display:none; }
-.section.active { display:block; }
+.sec{display:none}.sec.on{display:block}
 
-/* ── SETTINGS ── */
-.settings-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.25rem; margin-bottom:1rem; }
-.settings-card h3 { font-size:15px; font-weight:700; margin-bottom:1rem; }
+/* FORMS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.25rem;margin-bottom:.9rem}
+.card h3{font-size:14px;font-weight:700;margin-bottom:1rem}
+.lbl{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.06em;margin-bottom:6px;display:block}
+.field{margin-bottom:.9rem}
+input,textarea,select{width:100%;background:var(--s2);border:1.5px solid var(--b1);color:var(--t1);border-radius:10px;padding:11px 14px;font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:.2s}
+input:focus,textarea:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(245,166,35,.1)}
+input::placeholder,textarea::placeholder{color:var(--t3)}
+textarea{resize:vertical;min-height:70px}
+select option{background:var(--s2)}
 
-.empty-state { text-align:center; padding:2.5rem 1rem; color:var(--text3); font-size:14px; }
-.empty-state .big { font-size:40px; margin-bottom:.5rem; }
+.type-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.topt{background:var(--s2);border:1.5px solid var(--b1);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:.18s;font-size:13px;font-weight:600;color:var(--t2)}
+.topt:hover{border-color:var(--b2);color:var(--t1)}.topt.on{border-color:var(--acc);color:var(--acc);background:rgba(245,166,35,.06)}
+.topt .ti{font-size:20px;display:block;margin-bottom:3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.btn{background:var(--acc);color:#000;border:none;border-radius:10px;padding:12px 20px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--acc2)}.btn-full{width:100%;justify-content:center}
+.btn-g{background:transparent;color:var(--t2);border:1.5px solid var(--b1)}.btn-g:hover{border-color:var(--b2);color:var(--t1)}
+.btn-danger{background:transparent;color:var(--red);border:1.5px solid rgba(239,68,68,.25)}.btn-danger:hover{background:rgba(239,68,68,.08)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:7px}
+
+/* USERS */
+.urow{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:.85rem 1rem;margin-bottom:7px}
+.uav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.uinfo{flex:1;min-width:0}
+.uinfo strong{font-size:14px;font-weight:700;display:block}
+.uinfo p{font-size:12px;color:var(--t2);font-family:'DM Mono',monospace}
+.uactions{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap}
+.badge{font-size:10px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px}
+.badge.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--grn)}
+.badge.pend{background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);color:var(--acc)}
+.badge.blk{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+
+/* HANDS */
+.hrow{display:flex;gap:10px;background:var(--s1);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:.85rem 1rem;margin-bottom:7px}
+.hinfo{flex:1}
+.hname{font-size:14px;font-weight:700}
+.hnote{font-size:13px;color:var(--t2);margin-top:3px}
+.htime{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-top:4px}
+
+/* RECENT */
+.rpost{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:.8rem 1rem;margin-bottom:6px}
+.rpost-icon{font-size:20px;flex-shrink:0}
+.rpost-info{flex:1}.rpost-info strong{font-size:13px;font-weight:700;display:block}
+.rpost-info p{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace}
+.err{font-size:12px;color:var(--red);margin-top:5px;display:none}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--t3);font-size:13px}
+.empty-state .big{font-size:38px;margin-bottom:.5rem}
+
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--b2);color:var(--t1);padding:10px 20px;border-radius:30px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
+#toast.on{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN VIEW ── -->
-<div id="login-view" class="login-wrap">
+<!-- LOGIN -->
+<div id="login-pg" class="login-page">
   <div class="login-box">
-    <div class="login-logo">
-      <div class="icon">🔐</div>
-      <h1>Admin <span>Login</span></h1>
-    </div>
-    <div class="field">
-      <label>ADMIN PASSWORD</label>
+    <div class="login-logo"><div class="icon">🔐</div><h1>Admin <span>Login</span></h1></div>
+    <div class="field"><label class="lbl">PASSWORD</label>
       <div class="pw-wrap">
-        <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+        <input type="password" id="pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()"/>
         <button class="pw-eye" onclick="togglePw()">👁</button>
       </div>
-      <div class="field-err" id="pw-err" style="display:none">❌ Wrong password</div>
+      <div class="err" id="pw-err">❌ Wrong password. Try again.</div>
     </div>
-    <button class="btn btn-primary btn-full btn-lg" onclick="doAdminLogin()">Login</button>
-    <a href="index.html" style="display:block;text-align:center;color:var(--text3);font-size:13px;margin-top:1rem;text-decoration:none">← Back to Board</a>
-    <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:1.5rem;font-family:var(--mono)">Default password: admin123</p>
+    <button class="btn btn-full" onclick="doLogin()">Login →</button>
+    <a href="index.html" style="display:block;text-align:center;color:var(--t3);font-size:13px;margin-top:1rem;text-decoration:none">← Back to Board</a>
+    <p style="font-size:11px;color:var(--t3);text-align:center;margin-top:1rem;font-family:'DM Mono',monospace">Default: admin123</p>
   </div>
 </div>
 
-<!-- ── DASHBOARD VIEW ── -->
-<div id="dashboard-view" style="display:none">
-<nav class="nav">
+<!-- DASHBOARD -->
+<div id="dash-pg" style="display:none">
+<nav>
   <a class="nav-logo" href="index.html">CA <span>Board</span></a>
   <div class="nav-links">
-    <a href="index.html" class="nav-link">📋 Board</a>
-    <a href="chat.html"  class="nav-link">💬 Chat</a>
-    <a href="admin.html" class="nav-link active">⚙️ Admin</a>
+    <a href="index.html" class="nl">📋 Board</a>
+    <a href="chat.html"  class="nl">💬 Chat</a>
+    <a href="admin.html" class="nl on">⚙️ Admin</a>
   </div>
-  <button class="btn btn-ghost" style="font-size:13px;padding:6px 12px" onclick="adminLogout()">Logout</button>
+  <button class="btn btn-sm btn-g" style="margin-left:10px" onclick="doLogout()">Logout</button>
 </nav>
 
 <div class="page">
   <!-- Header -->
-  <div class="admin-header">
-    <div class="admin-avatar-lg" id="adm-avatar">A</div>
-    <div class="admin-meta">
-      <strong id="adm-name">Admin</strong>
-      <p>👑 Administrator · <span class="dot pulse"></span> Active</p>
+  <div class="adm-hdr">
+    <div class="adm-av" id="adm-av">A</div>
+    <div class="adm-info">
+      <strong id="adm-nm">Admin</strong>
+      <p><span class="dot"></span> Administrator · Active</p>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-primary" onclick="showSection('post')">✏️ New Post</button>
+    <div class="hdr-btns">
+      <button class="btn btn-sm" onclick="switchSec('post',null)">✏️ Post</button>
     </div>
   </div>
 
   <!-- Stats -->
-  <div class="stat-grid">
-    <div class="stat-card"><div class="num" id="s-posts">0</div><div class="lbl">POSTS</div></div>
-    <div class="stat-card"><div class="num" id="s-members">0</div><div class="lbl">MEMBERS</div></div>
-    <div class="stat-card"><div class="num" id="s-pending">0</div><div class="lbl">PENDING</div></div>
-    <div class="stat-card"><div class="num" id="s-hands">0</div><div class="lbl">HANDS RAISED</div></div>
+  <div class="stats">
+    <div class="stat"><div class="n" id="st-posts">0</div><div class="l">POSTS</div></div>
+    <div class="stat"><div class="n" id="st-mem">0</div><div class="l">MEMBERS</div></div>
+    <div class="stat"><div class="n" id="st-pend">0</div><div class="l">PENDING</div></div>
+    <div class="stat"><div class="n" id="st-hands" style="color:var(--red)">0</div><div class="l">HANDS</div></div>
   </div>
 
-  <!-- Section Tabs -->
-  <div class="section-tabs">
-    <button class="tab active" onclick="showSection('post',this)">✏️ Post</button>
-    <button class="tab" onclick="showSection('members',this)">👥 Members</button>
-    <button class="tab" onclick="showSection('hands',this)">✋ Raise Hand</button>
-    <button class="tab" onclick="showSection('settings',this)">⚙️ Settings</button>
+  <!-- Tabs -->
+  <div class="sec-tabs">
+    <button class="stab on" onclick="switchSec('post',this)">✏️ Post</button>
+    <button class="stab" onclick="switchSec('members',this)">👥 Members</button>
+    <button class="stab" onclick="switchSec('hands',this)">✋ Hands</button>
+    <button class="stab" onclick="switchSec('settings',this)">⚙️ Settings</button>
   </div>
 
-  <!-- SECTION: Post -->
-  <div class="section active" id="sec-post">
-    <div class="card compose-card">
-      <div class="field">
-        <label>TYPE</label>
+  <!-- POST SECTION -->
+  <div class="sec on" id="sec-post">
+    <div class="card">
+      <div class="field"><label class="lbl">TYPE</label>
         <div class="type-grid">
-          <div class="type-opt selected" onclick="selType('meet',this)"><span class="t-icon">📍</span>Meet Up</div>
-          <div class="type-opt" onclick="selType('urgent',this)"><span class="t-icon">🚨</span>Urgent</div>
-          <div class="type-opt" onclick="selType('notice',this)"><span class="t-icon">📋</span>Notice</div>
+          <div class="topt on" onclick="selType('meet',this)"><span class="ti">📍</span>Meet Up</div>
+          <div class="topt" onclick="selType('urgent',this)"><span class="ti">🚨</span>Urgent</div>
+          <div class="topt" onclick="selType('notice',this)"><span class="ti">📋</span>Notice</div>
         </div>
       </div>
-      <div class="field"><label>TITLE</label><input type="text" id="c-title" placeholder="e.g. Meeting at library tomorrow"/></div>
-      <div id="meet-fields">
-        <div class="two-col">
-          <div class="field"><label>DATE</label><input type="date" id="c-date"/></div>
-          <div class="field"><label>TIME</label><input type="time" id="c-time"/></div>
+      <div class="field"><label class="lbl">TITLE</label><input id="c-title" type="text" placeholder="e.g. Library meeting tomorrow"/></div>
+      <div id="meet-flds">
+        <div class="two">
+          <div class="field"><label class="lbl">DATE</label><input id="c-date" type="date"/></div>
+          <div class="field"><label class="lbl">TIME</label><input id="c-time" type="time"/></div>
         </div>
-        <div class="field"><label>PLACE</label><input type="text" id="c-place" placeholder="e.g. ICAI Bhavan, Room 3"/></div>
+        <div class="field"><label class="lbl">PLACE</label><input id="c-place" type="text" placeholder="e.g. ICAI Bhavan, Room 3"/></div>
       </div>
-      <div class="field"><label>EXTRA DETAILS (optional)</label><textarea id="c-body" placeholder="Any extra info..."></textarea></div>
-      <button class="btn btn-primary btn-full btn-lg" onclick="postAnnouncement()">📢 Post Announcement</button>
+      <div class="field"><label class="lbl">EXTRA DETAILS (optional)</label><textarea id="c-body" placeholder="Any extra info..."></textarea></div>
+      <button class="btn btn-full" onclick="doPost()">📢 Post Announcement</button>
     </div>
-
-    <!-- Recent posts -->
-    <h3 style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:.75rem;font-family:var(--mono);letter-spacing:.05em">RECENT POSTS</h3>
+    <h3 style="font-size:12px;font-weight:700;color:var(--t3);margin-bottom:.75rem;font-family:'DM Mono',monospace;letter-spacing:.06em">RECENT POSTS</h3>
     <div id="recent-posts"></div>
   </div>
 
-  <!-- SECTION: Members -->
-  <div class="section" id="sec-members">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-      <h3 style="font-size:15px;font-weight:700">Registered Members</h3>
-      <span id="member-summary" style="font-size:12px;color:var(--text3);font-family:var(--mono)"></span>
+  <!-- MEMBERS SECTION -->
+  <div class="sec" id="sec-members">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+      <strong style="font-size:15px">Members</strong>
+      <span style="font-size:12px;color:var(--t3);font-family:'DM Mono',monospace" id="mem-summary"></span>
     </div>
-    <div class="user-list" id="user-list"></div>
+    <div id="user-list"></div>
   </div>
 
-  <!-- SECTION: Hands -->
-  <div class="section" id="sec-hands">
-    <h3 style="font-size:15px;font-weight:700;margin-bottom:1rem">Raise Hand Requests</h3>
+  <!-- HANDS SECTION -->
+  <div class="sec" id="sec-hands">
+    <strong style="font-size:15px;display:block;margin-bottom:.9rem">Raise Hand Requests</strong>
     <div id="hand-list"></div>
   </div>
 
-  <!-- SECTION: Settings -->
-  <div class="section" id="sec-settings">
-    <div class="settings-card">
-      <h3>Admin Profile</h3>
-      <div class="field"><label>DISPLAY NAME</label><input type="text" id="s-name" placeholder="Your name"/></div>
-      <button class="btn btn-primary" onclick="saveProfile()">Save Name</button>
+  <!-- SETTINGS SECTION -->
+  <div class="sec" id="sec-settings">
+    <div class="card"><h3>Admin Profile</h3>
+      <div class="field"><label class="lbl">DISPLAY NAME</label><input id="s-name" type="text" placeholder="Your name"/></div>
+      <button class="btn" onclick="saveName()">Save Name</button>
     </div>
-    <div class="settings-card">
-      <h3>Change Password</h3>
-      <div class="field"><label>NEW PASSWORD</label><input type="password" id="s-pw" placeholder="New password (min 6 chars)"/></div>
-      <div class="field"><label>CONFIRM PASSWORD</label><input type="password" id="s-pw2" placeholder="Repeat"/></div>
-      <div class="field-err" id="pw-match-err" style="display:none">Passwords don't match</div>
-      <button class="btn btn-primary" onclick="savePassword()">Change Password</button>
+    <div class="card"><h3>Change Password</h3>
+      <div class="field"><label class="lbl">NEW PASSWORD</label><input id="s-pw" type="password" placeholder="New password (min 6)"/></div>
+      <div class="field"><label class="lbl">CONFIRM</label><input id="s-pw2" type="password" placeholder="Repeat"/></div>
+      <div class="err" id="pw2-err">Passwords don't match</div>
+      <button class="btn" onclick="savePw()">Change Password</button>
     </div>
-    <div class="settings-card">
-      <h3>Fast2SMS API Key <span style="font-size:11px;color:var(--text3);font-weight:400">(for real OTP)</span></h3>
-      <div class="field"><label>API KEY</label><input type="text" id="s-f2s" placeholder="Paste your Fast2SMS API key here"/></div>
-      <div class="field-hint">Get free key at <strong>fast2sms.com</strong> → Dashboard → Dev API</div>
-      <button class="btn btn-primary" onclick="saveF2S()">Save Key</button>
+    <div class="card"><h3>Fast2SMS API Key <span style="font-size:11px;font-weight:400;color:var(--t3)">(for real OTP SMS)</span></h3>
+      <div class="field"><label class="lbl">API KEY</label><input id="s-f2s" type="text" placeholder="Paste your Fast2SMS key here"/></div>
+      <p style="font-size:12px;color:var(--t3);margin-bottom:.75rem">Get free key → <strong style="color:var(--t2)">fast2sms.com → Dashboard → Dev API</strong></p>
+      <button class="btn" onclick="saveF2S()">Save Key</button>
     </div>
-    <div class="settings-card" style="border-color:rgba(239,68,68,.2)">
-      <h3 style="color:var(--red)">Danger Zone</h3>
-      <button class="btn btn-danger" onclick="clearAllPosts()">🗑 Delete All Posts</button>
-      &nbsp;
-      <button class="btn btn-danger" onclick="clearAllMessages()">🗑 Clear Chat</button>
+    <div class="card" style="border-color:rgba(239,68,68,.2)"><h3 style="color:var(--red)">Danger Zone</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-danger" onclick="clearPosts()">🗑 Delete All Posts</button>
+        <button class="btn btn-danger" onclick="clearChat()">🗑 Clear Chat</button>
+      </div>
     </div>
   </div>
 
@@ -250,7 +247,98 @@
 </div>
 
 <div id="toast"></div>
-<script src="js/app.js"></script>
-<script src="js/admin.js"></script>
-</body>
-</html>
+<script>
+const K={PW:'cab_pw',NAME:'cab_name',POSTS:'cab_posts',USERS:'cab_users',MSGS:'cab_msgs',HANDS:'cab_hands',F2S:'cab_f2s'};
+const DEFAULT_PW='admin123';
+function sg(k,d=[]){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
+function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function getSession(){try{return JSON.parse(sessionStorage.getItem('cab_s'))||null}catch{return null}}
+function setSession(d){sessionStorage.setItem('cab_s',JSON.stringify(d))}
+function clearSession(){sessionStorage.removeItem('cab_s')}
+function isAdmin(){return getSession()?.role==='admin'}
+function getAdminPw(){return localStorage.getItem(K.PW)||DEFAULT_PW}
+function getAdminName(){return sg(K.NAME,'Admin')}
+function getUsers(){return sg(K.USERS,[])}
+function findUser(ph){return getUsers().find(u=>u.phone===ph)||null}
+function getPosts(){return sg(K.POSTS,[])}
+function getHands(){return sg(K.HANDS,[])}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtDate(d){if(!d)return'';const[y,mo,day]=d.split('-');const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const dt=new Date(y,parseInt(mo)-1,parseInt(day));return['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]+', '+parseInt(day)+' '+ms[parseInt(mo)-1]}
+function fmtTime(t){if(!t)return'';const[h,m]=t.split(':');const hh=parseInt(h);return`${hh%12||12}:${m} ${hh>=12?'PM':'AM'}`}
+function ago(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
+
+window.addEventListener('load',()=>{
+  if(isAdmin()){showDash();return}
+  document.getElementById('login-pg').style.display='flex';
+  document.getElementById('dash-pg').style.display='none';
+  setTimeout(()=>document.getElementById('pw').focus(),100);
+});
+
+// LOGIN — plain text comparison (simple, works without crypto on all browsers)
+function doLogin(){
+  const pw=document.getElementById('pw').value;
+  if(pw===getAdminPw()){
+    setSession({role:'admin',phone:'admin'});
+    document.getElementById('pw').value='';
+    showDash();
+  } else {
+    document.getElementById('pw-err').style.display='block';
+    document.getElementById('pw').value='';
+    setTimeout(()=>document.getElementById('pw-err').style.display='none',2000);
+  }
+}
+function doLogout(){clearSession();document.getElementById('dash-pg').style.display='none';document.getElementById('login-pg').style.display='flex'}
+function togglePw(){const i=document.getElementById('pw');i.type=i.type==='password'?'text':'password'}
+
+function showDash(){
+  document.getElementById('login-pg').style.display='none';
+  document.getElementById('dash-pg').style.display='block';
+  const n=getAdminName();
+  document.getElementById('adm-nm').textContent=n;
+  document.getElementById('adm-av').textContent=n[0].toUpperCase();
+  document.getElementById('s-name').value=n;
+  document.getElementById('s-f2s').value=localStorage.getItem(K.F2S)||'';
+  const t=new Date();t.setDate(t.getDate()+1);
+  document.getElementById('c-date').value=t.toISOString().split('T')[0];
+  updateStats();renderRecent();renderUsers();renderHands();
+  setInterval(()=>{updateStats();renderUsers();renderHands()},5000);
+}
+
+let selPostType='meet';
+function selType(type,el){
+  selPostType=type;
+  document.querySelectorAll('.topt').forEach(e=>e.classList.remove('on'));el.classList.add('on');
+  document.getElementById('meet-flds').style.display=type==='meet'?'block':'none';
+}
+
+function doPost(){
+  const title=document.getElementById('c-title').value.trim();
+  if(!title){toast('⚠️ Add a title!');return}
+  const posts=getPosts();
+  posts.push({id:Date.now(),ts:Date.now(),type:selPostType,title,date:document.getElementById('c-date').value,time:document.getElementById('c-time').value,place:document.getElementById('c-place').value.trim(),body:document.getElementById('c-body').value.trim(),from:getAdminName()});
+  ss(K.POSTS,posts);
+  document.getElementById('c-title').value='';document.getElementById('c-body').value='';document.getElementById('c-place').value='';
+  toast('📢 Posted!');updateStats();renderRecent();
+  // push notification
+  if(Notification?.permission==='granted')new Notification('📢 '+title,{body:document.getElementById('c-place').value||'New announcement'});
+}
+
+function updateStats(){
+  const posts=getPosts(),users=getUsers();
+  const pend=users.filter(u=>!u.approved&&!u.blocked).length;
+  const hands=getHands().filter(h=>!h.resolved).length;
+  document.getElementById('st-posts').textContent=posts.length;
+  document.getElementById('st-mem').textContent=users.filter(u=>u.approved).length;
+  document.getElementById('st-pend').textContent=pend;
+  document.getElementById('st-hands').textContent=hands;
+  document.getElementById('st-pend').style.color=pend>0?'var(--acc)':'var(--acc)';
+  document.getElementById('st-hands').style.color=hands>0?'var(--red)':'var(--acc)';
+}
+
+function renderRecent(){
+  const posts=getPosts().slice().reverse().slice(0,5);
+  const c=document.getElementById('recent-posts');
+  if(!posts.length){c.innerHTML=`<div class="empty-state"><div class="big">📭</div>No posts yet</div>`;return}
+  const icons={meet:'📍',urgent:'🚨',notice:'📋'};
+  c.innerHTM
