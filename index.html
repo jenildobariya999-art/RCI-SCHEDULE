@@ -2,258 +2,253 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>CA Study Board</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Notice Board — CA Study Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#1e1e28;
+  --b1:#2a2a38;--b2:#3a3a50;
+  --t1:#f0f0ff;--t2:#9090b0;--t3:#55556a;
+  --acc:#f5a623;--acc2:#e0911a;
+  --grn:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#a78bfa;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--t1);font-family:'Syne',sans-serif;-webkit-font-smoothing:antialiased}
 
 /* NAV */
-.nav{position:sticky;top:0;z-index:80;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);border-bottom:1px solid #1e1e1e;padding:0 1rem;height:56px;display:flex;align-items:center;gap:10px}
-.nav-logo{font-size:17px;font-weight:900;letter-spacing:-.04em;margin-right:auto}
-.nav-logo span{color:#f59e0b}
-.nav-link{font-size:13px;font-weight:600;color:#666;padding:6px 12px;border-radius:8px;text-decoration:none;transition:.15s;white-space:nowrap}
-.nav-link:hover,.nav-link.on{color:#fff;background:#1a1a1a}
-.logout-btn{font-size:12px;color:#555;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:6px;transition:.15s}
-.logout-btn:hover{color:#ef4444}
-.nav-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#000;flex-shrink:0}
+nav{height:56px;display:flex;align-items:center;padding:0 1rem;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(10,10,15,.92);backdrop-filter:blur(10px);z-index:50;gap:10px}
+.nav-logo{font-size:16px;font-weight:800;letter-spacing:-.03em;text-decoration:none;color:var(--t1)}
+.nav-logo span{color:var(--acc)}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nl{font-size:13px;font-weight:600;color:var(--t2);padding:6px 12px;border-radius:8px;text-decoration:none;transition:.15s}
+.nl:hover{color:var(--t1);background:var(--s2)}.nl.on{color:var(--t1);background:var(--s3)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:10px}
+.nav-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;flex-shrink:0}
+.nav-logout{font-size:12px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:'Syne',sans-serif;padding:5px 8px;border-radius:6px;transition:.15s}
+.nav-logout:hover{color:var(--red)}
 
 /* MAIN */
-.main{max-width:640px;margin:0 auto;padding:1.25rem 1rem 6rem}
+.main{max-width:660px;margin:0 auto;padding:1.5rem 1rem 5rem}
 
 /* HERO */
-.hero{text-align:center;padding:2rem 0 1.5rem}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:#111;border:1px solid #222;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;color:#666;letter-spacing:.07em;margin-bottom:1rem}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:blink 2s infinite}
-@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
-.hero h1{font-size:clamp(24px,7vw,42px);font-weight:900;letter-spacing:-.04em;line-height:1.05;margin-bottom:.5rem}
-.hero h1 span{color:#f59e0b}
-.hero p{font-size:14px;color:#555}
+.hero{text-align:center;padding:2rem 0 1.75rem}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.07em;color:var(--t2);background:var(--s2);border:1px solid var(--b1);padding:4px 14px;border-radius:20px;margin-bottom:.9rem}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.hero h1{font-size:clamp(24px,7vw,40px);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+.hero h1 span{color:var(--acc)}
+.hero-sub{font-size:13px;color:var(--t2);margin-top:.5rem}
 
 /* NOTIF BAR */
-.notif-bar{display:flex;align-items:center;gap:10px;background:#111;border:1px solid #222;border-radius:12px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:13px;color:#666}
-.notif-bar.ok{border-color:rgba(34,197,94,.3);color:#22c55e}
-.notif-bar button{margin-left:auto;background:#f59e0b;color:#000;border:none;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap}
-.notif-bar.ok button{background:rgba(34,197,94,.15);color:#22c55e}
+.notif-bar{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--t2)}
+.notif-bar.ok{border-color:rgba(34,197,94,.3);color:var(--grn)}
+.notif-bar button{margin-left:auto;background:var(--acc);color:#000;border:none;padding:6px 14px;border-radius:7px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.notif-bar.ok button{background:rgba(34,197,94,.15);color:var(--grn)}
 
 /* TABS */
-.tabs{display:flex;gap:7px;margin-bottom:1.25rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:1.25rem;padding-bottom:2px}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;background:#111;border:1.5px solid #222;color:#666;padding:7px 16px;border-radius:30px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:.18s;white-space:nowrap}
-.tab:hover{border-color:#333;color:#ccc}
-.tab.on{background:#f59e0b;border-color:#f59e0b;color:#000}
+.tab{flex-shrink:0;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;padding:7px 18px;border-radius:30px;border:1.5px solid var(--b1);background:var(--s2);color:var(--t2);cursor:pointer;transition:.18s}
+.tab:hover{border-color:var(--b2);color:var(--t1)}
+.tab.on{background:var(--acc);border-color:var(--acc);color:#000}
 
 /* POST CARD */
-.post{background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:1.1rem 1.1rem 1.1rem 1.4rem;margin-bottom:.75rem;position:relative;overflow:hidden;animation:slideUp .25s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.post::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px}
-.post.meet::before{background:#3b82f6}
-.post.urgent::before{background:#ef4444}
-.post.notice::before{background:#a78bfa}
-
-.post-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:.6rem}
-.post-type-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.05em}
-.meet .post-type-tag{background:rgba(59,130,246,.15);color:#60a5fa}
-.urgent .post-type-tag{background:rgba(239,68,68,.15);color:#fca5a5}
-.notice .post-type-tag{background:rgba(167,139,250,.15);color:#c4b5fd}
-.post-age{font-size:11px;color:#444;white-space:nowrap}
-.post-title{font-size:16px;font-weight:800;line-height:1.3;margin-bottom:.5rem;letter-spacing:-.02em}
-.post-chips{display:flex;flex-wrap:wrap;gap:7px;margin:.5rem 0}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#888;background:#1a1a1a;border:1px solid #252525;padding:4px 10px;border-radius:20px}
-.post-body{font-size:13px;color:#666;line-height:1.65;margin-top:.4rem}
-.post-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.8rem;padding-top:.7rem;border-top:1px solid #1a1a1a}
-.post-from{font-size:11px;color:#444;font-family:monospace}
-.del-btn{font-size:11px;color:#444;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:'Inter',sans-serif;display:none;transition:.15s}
-.del-btn:hover{color:#ef4444;background:rgba(239,68,68,.08)}
-.admin-mode .del-btn{display:block}
-
-/* EMPTY */
-.empty{text-align:center;padding:4rem 1rem;color:#444}
-.empty .big{font-size:50px;margin-bottom:.75rem}
+.post{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-bottom:.7rem;position:relative;overflow:hidden;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.post::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px}
+.post.meet::before{background:var(--blue)}.post.urgent::before{background:var(--red)}.post.notice::before{background:var(--purple)}
+.pt{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:.6rem}
+.pbadge{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.06em;padding:3px 9px;border-radius:20px;margin-bottom:5px;display:inline-block}
+.meet .pbadge{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:#60a5fa}
+.urgent .pbadge{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.notice .pbadge{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:#c4b5fd}
+.ptitle{font-size:15px;font-weight:700;line-height:1.3}
+.page{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0}
+.pmeta{display:flex;flex-wrap:wrap;gap:8px;margin:.55rem 0}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);background:var(--s2);border:1px solid var(--b1);padding:3px 10px;border-radius:20px}
+.pbody{font-size:13px;color:var(--t2);line-height:1.65;margin-top:.4rem}
+.pfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.8rem;padding-top:.65rem;border-top:1px solid var(--b1)}
+.pfrom{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace}
+.del-btn{font-size:12px;color:var(--t3);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:'Syne',sans-serif;display:none;transition:.15s}
+.del-btn:hover{color:var(--red);background:rgba(239,68,68,.08)}
+body.adm .del-btn{display:inline-flex;align-items:center;gap:3px}
 
 /* RAISE HAND FAB */
-.fab{position:fixed;bottom:1.5rem;right:1.25rem;width:54px;height:54px;border-radius:50%;background:#f59e0b;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(245,158,11,.45);transition:.18s;z-index:70}
-.fab:hover{transform:scale(1.08)}
-.fab:active{transform:scale(.96)}
+.hand-fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:40;width:54px;height:54px;border-radius:50%;background:var(--acc);border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(245,166,35,.4);transition:.18s;display:flex;align-items:center;justify-content:center}
+.hand-fab:hover{transform:scale(1.08)}
 
-/* OVERLAY + MODAL */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:flex-end;justify-content:center;padding:0}
-.overlay.on{display:flex}
-.modal{background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:500px;animation:slideModal .25s ease}
-@keyframes slideModal{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
-.modal-title{font-size:18px;font-weight:800;margin-bottom:.4rem;letter-spacing:-.03em}
-.modal-sub{font-size:13px;color:#555;margin-bottom:1.25rem}
-label{display:block;font-size:11px;font-weight:600;color:#555;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
-input[type=text],input[type=tel],textarea{width:100%;background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:10px;padding:12px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
-input:focus,textarea:focus{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.1)}
-input::placeholder,textarea::placeholder{color:#444}
-textarea{resize:none;min-height:80px}
-.field-m{margin-bottom:.9rem}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .18s}
-.btn-y{background:#f59e0b;color:#000;margin-bottom:.5rem}
-.btn-y:hover{background:#d97706}
-.btn-g{background:#1a1a1a;color:#888;border:1.5px solid #222}
-.btn-g:hover{border-color:#333;color:#ccc}
+/* OVERLAY */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:80;align-items:flex-end;justify-content:center;padding:0}
+.ov.on{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:20px 20px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:500px;animation:slideUp .25s ease}
+@media(min-width:520px){.ov{align-items:center;padding:1rem}.modal{border-radius:20px}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.modal h2{font-size:19px;font-weight:800;margin-bottom:1.25rem}
+.modal h2 span{color:var(--acc)}
+.lbl{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.06em;margin-bottom:6px;display:block}
+.field{margin-bottom:1rem}
+textarea{width:100%;background:var(--s2);border:1.5px solid var(--b1);color:var(--t1);border-radius:10px;padding:11px 14px;font-family:'Syne',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;transition:.2s}
+textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(245,166,35,.1)}
+textarea::placeholder{color:var(--t3)}
+.btn{width:100%;background:var(--acc);color:#000;border:none;border-radius:10px;padding:13px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.18s}
+.btn:hover{background:var(--acc2)}
+.btn-g{background:transparent;color:var(--t2);border:1.5px solid var(--b1);margin-top:.6rem}
+.btn-g:hover{border-color:var(--b2);color:var(--t1)}
+
+/* EMPTY */
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--t3)}
+.empty .big{font-size:48px;margin-bottom:.75rem}
 
 /* TOAST */
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1e1e1e;border:1px solid #2a2a2a;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
-.toast.on{opacity:1}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--b2);color:var(--t1);padding:10px 20px;border-radius:30px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw}
+#toast.on{opacity:1}
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-logo">CA <span>Board</span></div>
-  <a href="index.html" class="nav-link on">📋 Board</a>
-  <a href="chat.html" class="nav-link">💬 Chat</a>
-  <div class="nav-av" id="nav-av">?</div>
-  <button class="logout-btn" onclick="doLogout()">✕</button>
+<nav>
+  <a class="nav-logo" href="index.html">CA <span>Board</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nl on">📋 Board</a>
+    <a href="chat.html"  class="nl">💬 Chat</a>
+  </div>
+  <div class="nav-r">
+    <div class="nav-av" id="nav-av">?</div>
+    <button class="nav-logout" onclick="doLogout()">Logout</button>
+  </div>
 </nav>
 
 <div class="main">
   <div class="hero">
-    <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+    <div class="hero-badge"><span class="dot"></span> LIVE BOARD</div>
     <h1>Study Group<br/><span>Announcements</span></h1>
-    <p>Posts from your admin appear here instantly</p>
+    <p class="hero-sub">All updates from your admin, instantly</p>
   </div>
 
-  <div class="notif-bar" id="nb">
-    🔔 Tap to get notified when admin posts
+  <div class="notif-bar" id="nbar">
+    🔔 Enable push notifications for instant alerts
     <button onclick="enableNotif()">Enable</button>
   </div>
 
   <div class="tabs">
-    <button class="tab on" onclick="filter('all',this)">All</button>
-    <button class="tab" onclick="filter('meet',this)">📍 Meet Up</button>
-    <button class="tab" onclick="filter('urgent',this)">🚨 Urgent</button>
-    <button class="tab" onclick="filter('notice',this)">📋 Notice</button>
+    <button class="tab on" onclick="setFilter('all',this)">All</button>
+    <button class="tab" onclick="setFilter('meet',this)">📍 Meet Up</button>
+    <button class="tab" onclick="setFilter('urgent',this)">🚨 Urgent</button>
+    <button class="tab" onclick="setFilter('notice',this)">📋 Notice</button>
   </div>
 
   <div id="posts"></div>
 </div>
 
-<button class="fab" id="hand-fab" onclick="openHand()" title="Raise hand">✋</button>
+<button class="hand-fab" id="hand-fab" onclick="openHand()" title="Raise hand">✋</button>
 
-<!-- RAISE HAND MODAL -->
-<div class="overlay" id="hand-ov" onclick="closeOv(event,'hand-ov')">
+<!-- Raise Hand Modal -->
+<div class="ov" id="hand-ov" onclick="if(event.target===this)this.classList.remove('on')">
   <div class="modal">
-    <div class="modal-title">✋ Raise Hand</div>
-    <div class="modal-sub">Send a private message to admin. Only admin will see this.</div>
-    <div class="field-m">
-      <label>Your Question / Message (optional)</label>
-      <textarea id="hand-txt" placeholder="e.g. Can you explain Chapter 5 taxation topic?"></textarea>
-    </div>
-    <button class="btn btn-y" onclick="submitHand()">Send to Admin</button>
+    <h2>✋ Raise <span>Hand</span></h2>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:1.25rem">Send a private support request to admin. Only admin sees this.</p>
+    <div class="field"><label class="lbl">YOUR MESSAGE (optional)</label><textarea id="hand-msg" placeholder="e.g. I'm confused about Chapter 5, need help..."></textarea></div>
+    <button class="btn" onclick="submitHand()">Send to Admin ✋</button>
     <button class="btn btn-g" onclick="document.getElementById('hand-ov').classList.remove('on')">Cancel</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-// ─── STORAGE (same as register.html) ─────────────────────────────────────
-const K={PW:'cb_pw',NAME:'cb_name',USERS:'cb_users',POSTS:'cb_posts',MSGS:'cb_msgs',HANDS:'cb_hands',F2S:'cb_f2s',SESSION:'cb_sess'};
+// ── STORAGE / SESSION ──
+const K={PW:'cab_pw',NAME:'cab_name',POSTS:'cab_posts',USERS:'cab_users',MSGS:'cab_msgs',HANDS:'cab_hands'};
 function sg(k,d=[]){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
 function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function getSession(){try{return JSON.parse(sessionStorage.getItem(K.SESSION))||null}catch{return null}}
-function clearSession(){sessionStorage.removeItem(K.SESSION)}
+function getSession(){try{return JSON.parse(sessionStorage.getItem('cab_s'))||null}catch{return null}}
+function setSession(d){sessionStorage.setItem('cab_s',JSON.stringify(d))}
+function clearSession(){sessionStorage.removeItem('cab_s')}
 function isAdmin(){return getSession()?.role==='admin'}
 function isMember(){return getSession()?.role==='member'}
 function currentPhone(){return getSession()?.phone||null}
-function currentName(){
-  if(isAdmin())return localStorage.getItem(K.NAME)||'Admin';
-  const u=(sg(K.USERS,[])).find(u=>u.phone===currentPhone());
-  return u?.name||'Member';
-}
 function getUsers(){return sg(K.USERS,[])}
-function findUser(p){return getUsers().find(u=>u.phone===p)||null}
+function findUser(ph){return getUsers().find(u=>u.phone===ph)||null}
 function getPosts(){return sg(K.POSTS,[])}
 function getHands(){return sg(K.HANDS,[])}
-function timeAgo(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
-function fmtDate(d){if(!d)return'';const[y,mo,day]=d.split('-');const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const dt=new Date(y,parseInt(mo)-1,parseInt(day));const D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return`${D[dt.getDay()]}, ${parseInt(day)} ${M[parseInt(mo)-1]}`}
+function currentName(){
+  if(isAdmin())return sg(K.NAME,'Admin');
+  return findUser(currentPhone())?.name||'Member';
+}
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800)}
+function fmtDate(d){if(!d)return'';const[y,mo,day]=d.split('-');const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const dt=new Date(y,parseInt(mo)-1,parseInt(day));return['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]+', '+parseInt(day)+' '+ms[parseInt(mo)-1]}
 function fmtTime(t){if(!t)return'';const[h,m]=t.split(':');const hh=parseInt(h);return`${hh%12||12}:${m} ${hh>=12?'PM':'AM'}`}
+function ago(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-// ─── INIT ─────────────────────────────────────────────────────────────────
-let curFilter='all';
-window.onload=()=>{
+let filter='all';
+
+window.addEventListener('load',()=>{
+  // auth check
   if(!isAdmin()&&!isMember()){location.href='register.html';return}
   if(!isAdmin()){
     const u=findUser(currentPhone());
     if(!u||u.blocked){clearSession();location.href='register.html';return}
-    if(!u.approved){location.href='pending.html';return}
+    if(!u.approved){location.href='register.html';return}
   }
-  const name=currentName();
-  document.getElementById('nav-av').textContent=name[0].toUpperCase();
-  if(isAdmin())document.body.classList.add('admin-mode');
+  if(isAdmin())document.body.classList.add('adm');
+
+  // notif bar
+  if(Notification?.permission==='granted'){const b=document.getElementById('nbar');b.className='notif-bar ok';b.innerHTML='<span class="dot"></span> Push notifications on'}
+
+  // nav avatar
+  const n=currentName();
+  document.getElementById('nav-av').textContent=n[0].toUpperCase();
+
+  // hide hand fab for admin
   if(isAdmin())document.getElementById('hand-fab').style.display='none';
-  if(Notification.permission==='granted'){const nb=document.getElementById('nb');nb.className='notif-bar ok';nb.innerHTML='<span style="font-size:14px">🔔</span> Notifications enabled ✓<button style="cursor:default">On</button>'}
+
   renderPosts();
   setInterval(renderPosts,8000);
-};
+});
 
-// ─── RENDER ───────────────────────────────────────────────────────────────
-function filter(f,el){
-  curFilter=f;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');renderPosts();
-}
+function setFilter(f,el){filter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderPosts()}
+
 function renderPosts(){
   let posts=getPosts().slice().reverse();
-  if(curFilter!=='all')posts=posts.filter(p=>p.type===curFilter);
+  if(filter!=='all')posts=posts.filter(p=>p.type===filter);
   const c=document.getElementById('posts');
   if(!posts.length){c.innerHTML=`<div class="empty"><div class="big">📭</div><p>No announcements yet</p></div>`;return}
-  const tags={meet:'📍 MEET UP',urgent:'🚨 URGENT',notice:'📋 NOTICE'};
+  const lbl={meet:'📍 MEET UP',urgent:'🚨 URGENT',notice:'📋 NOTICE'};
   c.innerHTML=posts.map(p=>`
     <div class="post ${p.type}">
-      <div class="post-top">
-        <span class="post-type-tag">${tags[p.type]||p.type.toUpperCase()}</span>
-        <span class="post-age">${timeAgo(p.ts)}</span>
+      <div class="pt">
+        <div><span class="pbadge">${lbl[p.type]||p.type}</span><div class="ptitle">${esc(p.title)}</div></div>
+        <span class="page">${ago(p.ts)}</span>
       </div>
-      <div class="post-title">${esc(p.title)}</div>
-      ${(p.date||p.time||p.place)?`<div class="post-chips">
-        ${p.date?`<span class="chip">📅 ${fmtDate(p.date)}</span>`:''}
-        ${p.time?`<span class="chip">🕐 ${fmtTime(p.time)}</span>`:''}
-        ${p.place?`<span class="chip">📍 ${esc(p.place)}</span>`:''}
-      </div>`:''}
-      ${p.body?`<div class="post-body">${esc(p.body)}</div>`:''}
-      <div class="post-footer">
-        <span class="post-from">— ${esc(p.from)}</span>
-        <button class="del-btn" onclick="delPost(${p.id})">🗑 Delete</button>
-      </div>
+      ${(p.date||p.time||p.place)?`<div class="pmeta">${p.date?`<span class="chip">📅 ${fmtDate(p.date)}</span>`:''}${p.time?`<span class="chip">🕐 ${fmtTime(p.time)}</span>`:''}${p.place?`<span class="chip">📍 ${esc(p.place)}</span>`:''}</div>`:''}
+      ${p.body?`<div class="pbody">${esc(p.body)}</div>`:''}
+      <div class="pfoot"><span class="pfrom">— ${esc(p.from)}</span><button class="del-btn" onclick="delPost(${p.id})">🗑 Delete</button></div>
     </div>`).join('');
 }
-function delPost(id){if(!confirm('Delete?'))return;ss(K.POSTS,getPosts().filter(p=>p.id!==id));renderPosts();toast('🗑 Deleted')}
 
-// ─── NOTIF ────────────────────────────────────────────────────────────────
+function delPost(id){if(confirm('Delete this post?')){ss(K.POSTS,getPosts().filter(p=>p.id!==id));renderPosts();toast('🗑 Deleted')}}
+
 async function enableNotif(){
+  if(!('Notification' in window)){toast('❌ Browser not supported');return}
   const p=await Notification.requestPermission();
-  if(p==='granted'){
-    const nb=document.getElementById('nb');nb.className='notif-bar ok';nb.innerHTML='<span>🔔</span> Notifications enabled ✓<button style="cursor:default">On</button>';
-    new Notification('CA Board',{body:'You will now get notified for new announcements!'});
-    toast('🔔 Notifications ON!');
-  }else toast('❌ Denied — allow in browser settings')
+  if(p==='granted'){const b=document.getElementById('nbar');b.className='notif-bar ok';b.innerHTML='<span class="dot"></span> Push notifications on';toast('🔔 Enabled!');new Notification('CA Board',{body:'You\'ll get notified for new posts!'})}
+  else toast('❌ Permission denied — allow in browser settings')
 }
 
-// ─── RAISE HAND ───────────────────────────────────────────────────────────
-function openHand(){document.getElementById('hand-txt').value='';document.getElementById('hand-ov').classList.add('on')}
+function openHand(){document.getElementById('hand-msg').value='';document.getElementById('hand-ov').classList.add('on')}
 function submitHand(){
-  const note=document.getElementById('hand-txt').value.trim();
-  const phone=currentPhone(),name=currentName();
+  const note=document.getElementById('hand-msg').value.trim();
+  const phone=currentPhone();const name=currentName();
   const hands=getHands();
   if(hands.find(h=>h.phone===phone&&!h.resolved)){toast('⚠️ You already have a pending request');document.getElementById('hand-ov').classList.remove('on');return}
   hands.push({id:Date.now(),phone,name,note,resolved:false,ts:Date.now()});
   ss(K.HANDS,hands);
   document.getElementById('hand-ov').classList.remove('on');
-  toast('✋ Sent to admin!');
+  toast('✋ Request sent to admin!')
 }
-function closeOv(e,id){if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on')}
 function doLogout(){clearSession();location.href='register.html'}
-
-// ─── TOAST ────────────────────────────────────────────────────────────────
-let _tt;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2800)}
 </script>
 </body>
 </html>
