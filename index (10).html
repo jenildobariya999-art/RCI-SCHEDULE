@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Notice Board — CA Study Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080e;--card:#0e0e1a;--card2:#13131f;--card3:#191926;
+  --line:#ffffff0d;--line2:#ffffff16;--line3:#ffffff22;--line4:#ffffff30;
+  --t1:#f4f4ff;--t2:#a0a0c8;--t3:#58587a;--t4:#30304a;
+  --amber:#f59e0b;--amber2:#fbbf24;
+  --indigo:#6366f1;--violet:#8b5cf6;
+  --green:#22c55e;--red:#f87171;--blue:#60a5fa;--purple:#c084fc;
+  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{min-height:100vh;font-family:var(--font);-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--t1)}
+
+/* ── NAV ── */
+.nav{
+  height:58px;display:flex;align-items:center;padding:0 1.25rem;
+  border-bottom:1px solid var(--line2);position:sticky;top:0;
+  background:rgba(8,8,14,.88);backdrop-filter:blur(16px);z-index:60;gap:10px;
+}
+.logo{font-size:16px;font-weight:800;letter-spacing:-.04em;text-decoration:none;color:var(--t1);display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.logo span{color:var(--amber)}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nl{font-size:13px;font-weight:600;color:var(--t3);padding:6px 13px;border-radius:8px;text-decoration:none;transition:.15s}
+.nl:hover{color:var(--t1);background:var(--card2)}.nl.on{color:var(--t1);background:var(--card3);border:1px solid var(--line2)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:12px}
+.avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--amber),var(--amber2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;flex-shrink:0}
+.nav-name{font-size:13px;font-weight:600;color:var(--t2)}
+.logout-btn{font-size:12px;font-weight:600;color:var(--t3);background:none;border:1px solid var(--line2);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:var(--font);transition:.15s}
+.logout-btn:hover{color:var(--red);border-color:rgba(248,113,113,.3)}
+
+/* ── MAIN ── */
+.main{max-width:640px;margin:0 auto;padding:2rem 1.25rem 6rem}
+
+/* ── HERO ── */
+.hero{margin-bottom:2rem}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem}
+.live-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:.08em;
+  color:var(--green);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  padding:4px 12px;border-radius:20px;
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.hero h1{font-size:clamp(26px,6vw,36px);font-weight:800;letter-spacing:-.04em;line-height:1.05;color:var(--t1)}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero-sub{font-size:13px;font-weight:500;color:var(--t3);margin-top:.5rem}
+
+/* ── NOTIF BAR ── */
+.notif-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card);border:1px solid var(--line2);
+  border-radius:12px;padding:.8rem 1rem;margin-bottom:1.5rem;
+  font-size:13px;font-weight:500;color:var(--t3);
+}
+.notif-bar button{
+  margin-left:auto;background:var(--amber);color:#000;border:none;
+  padding:6px 14px;border-radius:8px;font-family:var(--font);font-size:12px;
+  font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.notif-bar button:hover{background:var(--amber2)}
+.notif-bar.ok{border-color:rgba(34,197,94,.2);color:var(--green)}
+.notif-bar.ok button{background:rgba(34,197,94,.12);color:var(--green)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:1.5rem}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;font-family:var(--font);font-size:13px;font-weight:700;
+  padding:8px 18px;border-radius:30px;
+  border:1px solid var(--line2);background:var(--card2);color:var(--t3);
+  cursor:pointer;transition:all .18s;
+}
+.tab:hover{border-color:var(--line3);color:var(--t2)}
+.tab.on{background:var(--amber);border-color:var(--amber);color:#000;box-shadow:0 4px 16px rgba(245,158,11,.3)}
+
+/* ── POST CARD ── */
+.post{
+  background:var(--card);border:1px solid var(--line2);
+  border-radius:16px;padding:1.25rem;margin-bottom:.75rem;
+  position:relative;overflow:hidden;
+  animation:slideUp .25s cubic-bezier(.22,1,.36,1);
+  transition:border-color .2s;
+}
+.post:hover{border-color:var(--line3)}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Left accent bar */
+.post::before{content:'';position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:0 2px 2px 0}
+.post.meet::before{background:var(--blue)}
+.post.urgent::before{background:var(--red)}
+.post.notice::before{background:var(--purple)}
+
+.post-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:.75rem}
+.post-left{}
+.type-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;font-family:var(--mono);letter-spacing:.08em;
+  padding:3px 10px;border-radius:20px;margin-bottom:7px;
+}
+.meet .type-tag{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);color:var(--blue)}
+.urgent .type-tag{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red)}
+.notice .type-tag{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:var(--purple)}
+.post-title{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--t1);line-height:1.3}
+.post-age{font-size:11px;font-family:var(--mono);color:var(--t4);white-space:nowrap;flex-shrink:0;margin-top:2px}
+
+.post-chips{display:flex;flex-wrap:wrap;gap:7px;margin:.75rem 0}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:500;color:var(--t2);
+  background:var(--card2);border:1px solid var(--line2);
+  padding:4px 11px;border-radius:20px;
+}
+.post-body{font-size:13px;font-weight:500;color:var(--t3);line-height:1.65;margin-top:.5rem}
+
+.post-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:.9rem;padding-top:.75rem;border-top:1px solid var(--line);
+}
+.post-from{font-size:11px;font-family:var(--mono);color:var(--t4)}
+.del-btn{
+  font-size:12px;font-weight:600;color:var(--t4);background:none;border:none;
+  cursor:pointer;padding:4px 8px;border-radius:6px;font-family:var(--font);
+  transition:.15s;display:none;
+}
+.del-btn:hover{color:var(--red);background:rgba(248,113,113,.08)}
+body.adm .del-btn{display:inline-flex;align-items:center;gap:4px}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:4rem 1rem;color:var(--t4)}
+.empty .big{font-size:52px;margin-bottom:.75rem;filter:grayscale(1);opacity:.4}
+.empty p{font-size:14px;font-weight:500;color:var(--t3)}
+
+/* ── HAND FAB ── */
+.hand-fab{
+  position:fixed;bottom:1.75rem;right:1.25rem;z-index:50;
+  width:54px;height:54px;border-radius:16px;
+  background:linear-gradient(135deg,var(--amber),var(--amber2));
+  border:none;font-size:22px;cursor:pointer;
+  box-shadow:0 8px 28px rgba(245,158,11,.4);
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+}
+.hand-fab:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(245,158,11,.5)}
+
+/* ── BOTTOM MODAL ── */
+.ov{
+  display:none;position:fixed;inset:0;z-index:80;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  align-items:flex-end;justify-content:center;
+}
+.ov.on{display:flex}
+.modal{
+  background:var(--card);border:1px solid var(--line2);border-top:none;
+  border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2rem;
+  width:100%;max-width:540px;
+  animation:slideModal .28s cubic-bezier(.22,1,.36,1);
+}
+@media(min-width:560px){.ov{align-items:center;padding:1rem}.modal{border:1px solid var(--line2);border-radius:24px;padding:2rem}}
+@keyframes slideModal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.modal-handle{width:36px;height:4px;background:var(--line3);border-radius:4px;margin:0 auto 1.25rem;display:block}
+@media(min-width:560px){.modal-handle{display:none}}
+.modal h2{font-size:19px;font-weight:800;letter-spacing:-.03em;margin-bottom:1.25rem}
+.modal h2 span{color:var(--amber)}
+.lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;font-family:var(--mono)}
+.field{margin-bottom:1rem}
+textarea{width:100%;background:var(--card2);border:1.5px solid var(--line2);color:var(--t1);border-radius:12px;padding:12px 16px;font-family:var(--font);font-size:14px;font-weight:500;outline:none;resize:vertical;min-height:80px;transition:.2s}
+textarea:focus{border-color:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.1)}
+textarea::placeholder{color:var(--t4)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--amber),var(--amber2));color:#000;border:none;border-radius:12px;padding:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(245,158,11,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,158,11,.35)}
+.btn-ghost{width:100%;background:transparent;color:var(--t2);border:1.5px solid var(--line2);border-radius:12px;padding:13px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;margin-top:.6rem;transition:.15s}
+.btn-ghost:hover{border-color:var(--line3);color:var(--t1)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card3);border:1px solid var(--line3);color:var(--t1);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>CA <span>Board</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nl on">📋 Board</a>
+    <a href="chat.html"  class="nl">💬 Chat</a>
+  </div>
+  <div class="nav-r">
+    <div class="avatar" id="nav-av">?</div>
+    <span class="nav-name" id="nav-name"></span>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+    </div>
+    <h1>Study Group<br/><em>Announcements</em></h1>
+    <p class="hero-sub">All updates from your admin — instantly</p>
+  </div>
+
+  <div class="notif-bar" id="nbar">
+    🔔 Enable alerts to get notified when admin posts
+    <button onclick="enableNotif()">Enable</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="setFilter('all',this)">All</button>
+    <button class="tab" onclick="setFilter('meet',this)">📍 Meet Up</button>
+    <button class="tab" onclick="setFilter('urgent',this)">🚨 Urgent</button>
+    <button class="tab" onclick="setFilter('notice',this)">📋 Notice</button>
+  </div>
+
+  <div id="posts"></div>
+</div>
+
+<button class="hand-fab" id="hand-fab" onclick="openHand()" title="Raise hand for support">✋</button>
+
+<div class="ov" id="hand-ov" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal">
+    <span class="modal-handle"></span>
+    <h2>✋ Raise <span>Hand</span></h2>
+    <p style="font-size:13px;font-weight:500;color:var(--t3);margin-bottom:1.25rem">Send a private support request. Only admin sees this.</p>
+    <div class="field">
+      <label class="lbl">Your Message (optional)</label>
+      <textarea id="hand-msg" placeholder="e.g. Need help with Chapter 5 journal entries..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="submitHand()">Send to Admin ✋</button>
+    <button class="btn-ghost" onclick="document.getElementById('hand-ov').classList.remove('on')">Cancel</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+const K={POSTS:'cab_posts',USERS:'cab_users',HANDS:'cab_hands',NAME:'cab_name'};
+function sg(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):d}catch{return d}}
+function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function getS(){try{return JSON.parse(sessionStorage.getItem('cab_s'))||null}catch{return null}}
+function clearS(){sessionStorage.removeItem('cab_s')}
+function isAdmin(){return getS()?.role==='admin'}
+function isMember(){return getS()?.role==='member'}
+function cPhone(){return getS()?.phone||null}
+function getUsers(){return sg(K.USERS,[])}
+function findUser(p){return getUsers().find(u=>u.phone===p)||null}
+function cName(){if(isAdmin())return sg(K.NAME,'Admin');return findUser(cPhone())?.name||'Member'}
+function getPosts(){return sg(K.POSTS,[])}
+function getHands(){return sg(K.HANDS,[])}
+function toast(m,dur=2800){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur)}
+function fmtD(d){if(!d)return'';const[y,mo,day]=d.split('-');const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const dt=new Date(y,+mo-1,+day);return['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]+', '+parseInt(day)+' '+ms[+mo-1]}
+function fmtT(t){if(!t)return'';const[h,m]=t.split(':');const hh=+h;return`${hh%12||12}:${m} ${hh>=12?'PM':'AM'}`}
+function ago(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';if(s<3600)return~~(s/60)+'m ago';if(s<86400)return~~(s/3600)+'h ago';return~~(s/86400)+'d ago'}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+let filter='all';
+
+window.addEventListener('load',()=>{
+  if(!isAdmin()&&!isMember()){location.href='register.html';return}
+  if(isMember()){const u=findUser(cPhone());if(!u||u.blocked){clearS();location.href='register.html';return}if(!u.approved){clearS();location.href='register.html';return}}
+  if(isAdmin())document.body.classList.add('adm');
+  const n=cName();
+  document.getElementById('nav-av').textContent=n[0].toUpperCase();
+  document.getElementById('nav-name').textContent=n;
+  if(isAdmin())document.getElementById('hand-fab').style.display='none';
+  if(Notification?.permission==='granted'){const b=document.getElementById('nbar');b.className='notif-bar ok';b.innerHTML='<span class="live-dot" style="display:inline-block;margin-right:6px"></span>Notifications on'}
+  renderPosts();
+  setInterval(renderPosts,8000);
+});
+
+function setFilter(f,el){filter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderPosts()}
+
+function renderPosts(){
+  let posts=getPosts().slice().reverse();
+  if(filter!=='all')posts=posts.filter(p=>p.type===filter);
+  const c=document.getElementById('posts');
+  if(!posts.length){c.innerHTML=`<div class="empty"><div class="big">📭</div><p>No announcements yet.<br/>Check back soon!</p></div>`;return}
+  const lbl={meet:'📍 MEET UP',urgent:'🚨 URGENT',notice:'📋 NOTICE'};
+  c.innerHTML=posts.map(p=>`
+    <div class="post ${p.type}">
+      <div class="post-top">
+        <div class="post-left">
+          <div class="type-tag">${lbl[p.type]||'📢 POST'}</div>
+          <div class="post-title">${esc(p.title)}</div>
+        </div>
+        <span class="post-age">${ago(p.ts)}</span>
+      </div>
+      ${(p.date||p.time||p.place)?`<div class="post-chips">${p.date?`<span class="chip">📅 ${fmtD(p.date)}</span>`:''}${p.time?`<span class="chip">🕐 ${fmtT(p.time)}</span>`:''}${p.place?`<span class="chip">📍 ${esc(p.place)}</span>`:''}</div>`:''}
+      ${p.body?`<div class="post-body">${esc(p.body)}</div>`:''}
+      <div class="post-foot">
+        <span class="post-from">— ${esc(p.from)}</span>
+        <button class="del-btn" onclick="delPost(${p.id})">🗑 Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function delPost(id){if(confirm('Delete this post?')){ss(K.POSTS,getPosts().filter(p=>p.id!==id));renderPosts();toast('🗑 Deleted')}}
+
+async function enableNotif(){
+  if(!('Notification' in window)){toast('❌ Not supported in this browser');return}
+  const p=await Notification.requestPermission();
+  if(p==='granted'){const b=document.getElementById('nbar');b.className='notif-bar ok';b.innerHTML='<span class="live-dot" style="display:inline-block;margin-right:6px"></span>Notifications on';toast('🔔 Alerts enabled!');new Notification('CA Board',{body:'You\'ll get notified for every new post!'})}
+  else toast('❌ Denied — allow in browser settings')
+}
+
+function openHand(){document.getElementById('hand-msg').value='';document.getElementById('hand-ov').classList.add('on')}
+function submitHand(){
+  const note=document.getElementById('hand-msg').value.trim();
+  const phone=cPhone(),name=cName();
+  const hands=getHands();
+  if(hands.find(h=>h.phone===phone&&!h.resolved)){toast('⚠️ You already have a pending request');document.getElementById('hand-ov').classList.remove('on');return}
+  hands.push({id:Date.now(),phone,name,note,resolved:false,ts:Date.now()});
+  ss(K.HANDS,hands);
+  document.getElementById('hand-ov').classList.remove('on');
+  toast('✋ Request sent to admin!')
+}
+function doLogout(){clearS();location.href='register.html'}
+</script>
+</body>
+</html>
