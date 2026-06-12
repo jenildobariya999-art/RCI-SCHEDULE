@@ -11,19 +11,18 @@
   --bg:#08080e;--card:#0e0e1a;--card2:#13131f;--card3:#191926;
   --line2:#ffffff16;--line3:#ffffff22;
   --t1:#f4f4ff;--t2:#a0a0c8;--t3:#58587a;--t4:#30304a;
-  --amber:#f59e0b;--amber2:#fbbf24;
-  --green:#22c55e;--red:#f87171;
+  --amber:#f59e0b;--amber2:#fbbf24;--green:#22c55e;--red:#f87171;
   --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
 }
 html,body{min-height:100vh;font-family:var(--font);-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--t1)}
 body{display:flex;align-items:center;justify-content:center;padding:1.5rem;
-  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(245,158,11,.1) 0%,transparent 60%),var(--bg)}
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(245,158,11,.1),transparent 60%),var(--bg)}
 .card{width:100%;max-width:410px;background:var(--card);border:1px solid var(--line2);border-radius:24px;padding:2.25rem 2rem;box-shadow:0 40px 80px rgba(0,0,0,.5);animation:rise .4s cubic-bezier(.22,1,.36,1)}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-.logo{text-align:center;margin-bottom:2.25rem}
+.logo{text-align:center;margin-bottom:2rem}
 .logo-mark{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--amber),var(--amber2));display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto .9rem;box-shadow:0 8px 32px rgba(245,158,11,.3)}
-.logo h1{font-size:22px;font-weight:800;letter-spacing:-.04em;color:var(--t1)}
-.logo h1 span{color:var(--amber)}.logo p{font-size:13px;color:var(--t3);margin-top:.3rem;font-weight:500}
+.logo h1{font-size:22px;font-weight:800;letter-spacing:-.04em}.logo h1 span{color:var(--amber)}
+.logo p{font-size:13px;color:var(--t3);margin-top:.3rem;font-weight:500}
 .step{display:none}.step.on{display:block}
 .lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;font-family:var(--mono)}
 .field{margin-bottom:1.1rem}
@@ -32,10 +31,10 @@ input:focus{border-color:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.1);b
 input::placeholder{color:var(--t4);font-weight:400}
 .ph-row{display:flex;gap:8px}
 .prefix{background:var(--card2);border:1.5px solid var(--line2);color:var(--t3);border-radius:12px;padding:13px 14px;font-family:var(--mono);font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:5px;font-weight:500}
-.btn{width:100%;border:none;border-radius:12px;padding:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn{width:100%;border:none;border-radius:12px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p{background:linear-gradient(135deg,var(--amber),var(--amber2));color:#000;box-shadow:0 4px 24px rgba(245,158,11,.3)}
 .btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,158,11,.4)}
-.btn-p:disabled{opacity:.45;pointer-events:none}
+.btn-p:active{transform:translateY(0)}.btn-p:disabled{opacity:.45;pointer-events:none}
 .btn-g{background:transparent;color:var(--t2);border:1.5px solid var(--line2);margin-top:.6rem}
 .btn-g:hover{border-color:var(--line3);color:var(--t1)}
 .otp-row{display:flex;gap:8px}
@@ -44,12 +43,13 @@ input::placeholder{color:var(--t4);font-weight:400}
 .resend-row{display:flex;justify-content:flex-end;margin-top:.5rem}
 .resend-btn{background:none;border:none;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;font-family:var(--font);transition:.15s}
 .resend-btn:not(:disabled):hover{color:var(--amber)}.resend-btn:disabled{opacity:.35}
-.status-pill{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--t2);font-weight:500}
-.status-pill .pnum{font-family:var(--mono);font-weight:600;color:var(--t1);font-size:13px}
-.otp-display{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:none}
-.otp-display p{font-size:12px;font-weight:600;color:var(--amber);margin-bottom:.35rem}
-.otp-display .otp-code{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--t1);letter-spacing:.15em}
-.otp-display .otp-hint{font-size:11px;color:var(--t3);margin-top:.3rem}
+.status-pill{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--t2);font-weight:500}
+.pnum{font-family:var(--mono);font-weight:600;color:var(--t1)}
+/* OTP BACKUP BOX — always shown */
+.otp-backup{background:rgba(245,158,11,.07);border:1.5px solid rgba(245,158,11,.25);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;text-align:center}
+.otp-backup .ob-label{font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono);margin-bottom:.4rem}
+.otp-backup .ob-code{font-family:var(--mono);font-size:38px;font-weight:700;color:var(--t1);letter-spacing:.25em;line-height:1.1}
+.otp-backup .ob-hint{font-size:11px;color:var(--t3);margin-top:.35rem;font-weight:500}
 .err{font-size:12px;font-weight:600;color:var(--red);margin-top:7px;display:none;padding:8px 12px;background:rgba(248,113,113,.07);border-radius:8px;border:1px solid rgba(248,113,113,.15)}
 .or{text-align:center;color:var(--t4);font-size:12px;margin:.9rem 0;position:relative}
 .or::before,.or::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--line2)}
@@ -57,12 +57,12 @@ input::placeholder{color:var(--t4);font-weight:400}
 a.adm-link{display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--line2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:.2s}
 a.adm-link:hover{border-color:rgba(245,158,11,.3);color:var(--amber)}
 .pending-wrap{text-align:center;padding:.5rem 0}
-.pending-icon{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(251,191,36,.1));border:2px solid rgba(245,158,11,.25);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 1.25rem}
-.pending-wrap h2{font-size:20px;font-weight:800;color:var(--t1);margin-bottom:.4rem;letter-spacing:-.03em}
-.pending-wrap p{font-size:13px;color:var(--t3);line-height:1.65;font-weight:500}
+.pending-icon{width:68px;height:68px;border-radius:50%;background:rgba(34,197,94,.1);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 1.25rem}
+.pending-wrap h2{font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:.4rem}
+.pending-wrap>p{font-size:13px;color:var(--t3);line-height:1.7;font-weight:500}
 .info-card{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:1rem 1.25rem;margin:1.25rem 0;text-align:left;display:flex;flex-direction:column;gap:.5rem}
 .info-row{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--t2)}
-.info-row strong{color:var(--t1);font-family:var(--mono);font-size:13px}
+.info-row strong{color:var(--t1);font-family:var(--mono)}
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card3);border:1px solid var(--line3);color:var(--t1);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 #toast.on{opacity:1}
 </style>
@@ -91,13 +91,13 @@ a.adm-link:hover{border-color:rgba(245,158,11,.3);color:var(--amber)}
   <!-- S2 OTP -->
   <div class="step" id="s2">
     <div class="status-pill">📱 OTP sent to <span class="pnum" id="otp-dest">—</span></div>
-    <div class="otp-display" id="otp-display">
-      <p>⚠️ SMS failed — use this OTP:</p>
-      <div class="otp-code" id="otp-code">——</div>
-      <p class="otp-hint">Enter this code below to continue</p>
+    <div class="otp-backup">
+      <div class="ob-label">Your OTP (backup)</div>
+      <div class="ob-code" id="otp-code">——</div>
+      <div class="ob-hint">Use this if SMS doesn't arrive within 30 seconds</div>
     </div>
     <div class="field">
-      <label class="lbl">6-Digit OTP</label>
+      <label class="lbl">Enter 6-Digit OTP</label>
       <div class="otp-row">
         <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,0)" onkeydown="onOtpKey(event,0)"/>
         <input type="text" maxlength="1" inputmode="numeric" class="oc" oninput="onOtp(this,1)" onkeydown="onOtpKey(event,1)"/>
@@ -116,9 +116,9 @@ a.adm-link:hover{border-color:rgba(245,158,11,.3);color:var(--amber)}
   <!-- S3 Pending -->
   <div class="step" id="s3">
     <div class="pending-wrap">
-      <div class="pending-icon">⏳</div>
-      <h2>You're Registered!</h2>
-      <p>Waiting for admin approval.<br/>You'll get access once approved.</p>
+      <div class="pending-icon">✅</div>
+      <h2>Registered!</h2>
+      <p>Waiting for admin approval.<br/>Once approved, tap below to enter.</p>
       <div class="info-card">
         <div class="info-row">👤 <strong id="p-name">—</strong></div>
         <div class="info-row">📱 <strong id="p-phone">—</strong></div>
@@ -130,18 +130,17 @@ a.adm-link:hover{border-color:rgba(245,158,11,.3);color:var(--amber)}
 </div>
 <div id="toast"></div>
 <script>
-// Fast2SMS key
 const F2S = 'FGxDoXM9aHdhl8VqenctT4b7gYwfBCIrNA6mvK5j3OiJsLk01SJUcLGNAiWXqSmjyMxEV7KzZFhp5RYB';
-
 const K = {USERS:'cab_users'};
 const OTPS = {};
 let rPhone='', rName='', rtInt;
 
 function sg(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):d}catch{return d}}
 function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function getS(){try{return JSON.parse(sessionStorage.getItem('cab_s'))||null}catch{return null}}
-function setS(d){sessionStorage.setItem('cab_s',JSON.stringify(d))}
-function clearS(){sessionStorage.removeItem('cab_s')}
+// ✅ FIX 3: Use localStorage for persistent login (survives page refresh/reopen)
+function getS(){try{return JSON.parse(localStorage.getItem('cab_s'))||null}catch{return null}}
+function setS(d){localStorage.setItem('cab_s',JSON.stringify(d))}
+function clearS(){localStorage.removeItem('cab_s')}
 function getUsers(){return sg(K.USERS,[])}
 function findUser(p){return getUsers().find(u=>u.phone===p)||null}
 function toast(m,dur=2800){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur)}
@@ -158,62 +157,43 @@ window.addEventListener('load',()=>{
   }
 });
 
-// Send OTP via Fast2SMS using Image tag trick (bypasses CORS)
-function sendSMSviaImg(phone, otp){
-  return new Promise((resolve)=>{
-    const img = new Image();
-    const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${F2S}&variables_values=${otp}&route=otp&numbers=${phone}`;
-    img.onload = ()=> resolve(true);
-    img.onerror = ()=> resolve(false); // fast2sms returns non-image so onerror fires — but SMS is still sent!
-    img.src = url;
-    // Give it 4 seconds then assume sent
-    setTimeout(()=> resolve(true), 4000);
-  });
+// ✅ FIX 1: no-cors fetch — SMS fires, browser just can't read response (that's OK)
+async function sendSMS(phone, otp){
+  const url=`https://www.fast2sms.com/dev/bulkV2?authorization=${F2S}&variables_values=${otp}&route=otp&numbers=${phone}`;
+  try{ await fetch(url,{method:'GET',mode:'no-cors'}); }catch(e){}
 }
 
 async function doStep1(){
-  const name = document.getElementById('r-name').value.trim();
-  const phone = document.getElementById('r-phone').value.trim();
-  if(!name || !/^[6-9]\d{9}$/.test(phone)){document.getElementById('e1').style.display='block';return}
+  const name=document.getElementById('r-name').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  if(!name||!/^[6-9]\d{9}$/.test(phone)){document.getElementById('e1').style.display='block';return}
   document.getElementById('e1').style.display='none';
-  const u = findUser(phone);
+  const u=findUser(phone);
   if(u?.blocked){toast('🚫 Number blocked by admin');return}
   rPhone=phone; rName=name;
-
-  const btn = document.getElementById('send-btn');
+  const btn=document.getElementById('send-btn');
   btn.disabled=true; btn.textContent='Sending OTP…';
-
-  const otp = genOtp();
-  OTPS[phone] = {otp, ts:Date.now()};
-
-  // Try SMS via img tag
-  await sendSMSviaImg(phone, otp);
-
+  const otp=genOtp();
+  OTPS[phone]={otp,ts:Date.now()};
+  await sendSMS(phone,otp);
   btn.disabled=false; btn.innerHTML='Send OTP →';
-
   document.getElementById('otp-dest').textContent='+91 '+phone;
-  
-  // Always show OTP on screen too (as backup since we can't confirm delivery from browser)
-  document.getElementById('otp-display').style.display='block';
   document.getElementById('otp-code').textContent=otp;
-
   goStep(2); startResend();
   setTimeout(()=>document.querySelectorAll('.oc')[0].focus(),80);
-  toast('OTP sent! Check SMS or use the code shown above.',4000);
+  toast('OTP sent! Also shown above as backup.',4000);
 }
 
 function startResend(){
-  let s=30; const el=document.getElementById('rtimer'), btn=document.getElementById('resend-btn');
+  let s=30; const el=document.getElementById('rtimer'),btn=document.getElementById('resend-btn');
   btn.disabled=true; clearInterval(rtInt);
-  rtInt=setInterval(()=>{s--; el.textContent=s; if(s<=0){clearInterval(rtInt);btn.disabled=false;btn.textContent='Resend OTP'}},1000);
+  rtInt=setInterval(()=>{s--;el.textContent=s;if(s<=0){clearInterval(rtInt);btn.disabled=false;btn.textContent='Resend OTP'}},1000);
 }
 async function doResend(){
-  const otp=genOtp();
-  OTPS[rPhone]={otp,ts:Date.now()};
-  await sendSMSviaImg(rPhone,otp);
-  document.getElementById('otp-display').style.display='block';
+  const otp=genOtp(); OTPS[rPhone]={otp,ts:Date.now()};
+  await sendSMS(rPhone,otp);
   document.getElementById('otp-code').textContent=otp;
-  toast('New OTP sent!');startResend();
+  toast('New OTP sent!'); startResend();
 }
 
 function getOtpVal(){return[...document.querySelectorAll('.oc')].map(i=>i.value).join('')}
@@ -232,7 +212,7 @@ function doStep2(){
   const existing=findUser(rPhone);
   if(existing?.approved){setS({role:'member',phone:rPhone});location.href='index.html';return}
   if(!existing){const users=getUsers();users.push({phone:rPhone,name:rName,approved:false,blocked:false,joinedAt:Date.now()});ss(K.USERS,users)}
-  setS({role:'member',phone:rPhone});
+  setS({role:'member',phone:rPhone}); // ✅ persistent
   document.getElementById('p-name').textContent=rName;
   document.getElementById('p-phone').textContent='+91 '+rPhone;
   goStep(3);
@@ -243,7 +223,7 @@ function checkApproval(){
   if(!u){toast('Not found, register again');return}
   if(u.approved){setS({role:'member',phone:u.phone});location.href='index.html'}
   else if(u.blocked){clearS();location.href='register.html'}
-  else toast('⏳ Not approved yet. Contact admin.',3500)
+  else toast('⏳ Not approved yet. Ask admin.',3500)
 }
 function doLogout(){clearS();location.href='register.html'}
 function onOtp(el,i){el.value=el.value.replace(/\D/,'');el.classList.toggle('filled',!!el.value);if(el.value&&i<5)document.querySelectorAll('.oc')[i+1].focus();if(getOtpVal().length===6)setTimeout(doStep2,120)}
