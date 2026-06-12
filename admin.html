@@ -344,3 +344,29 @@ for all subscribed members
     });
   }
 }
+
+function updateStats(){
+  const posts=getPosts(),users=getUsers();
+  const pend=users.filter(u=>!u.approved&&!u.blocked).length;
+  const hands=getHands().filter(h=>!h.resolved).length;
+  document.getElementById('st-posts').textContent=posts.length;
+  document.getElementById('st-mem').textContent=users.filter(u=>u.approved).length;
+  document.getElementById('st-pend').textContent=pend;
+  document.getElementById('st-hands').textContent=hands;
+  document.getElementById('tab-members').style.outline=pend>0?'2px solid rgba(245,158,11,.4)':'none';
+  document.getElementById('tab-hands').style.outline=hands>0?'2px solid rgba(248,113,113,.4)':'none';
+}
+
+function renderRecent(){
+  const posts=getPosts().slice().reverse().slice(0,6);
+  const c=document.getElementById('recent-posts');
+  if(!posts.length){c.innerHTML=`<div class="empty-state"><div class="big">📭</div><p>No posts yet</p></div>`;return}
+  const icons={meet:'📢',urgent:'🚨',notice:'📋'};
+  c.innerHTML=posts.map(p=>`
+    <div class="rpost">
+      <span class="rpost-icon">${icons[p.type]||'📢'}</span>
+      <div class="rpost-body"><strong>${esc(p.title)}</strong><p>${fmtD(p.date)||''} ${fmtT(p.time)||''} · ${ago(p.ts)}</p></div>
+      <button class="btn-block" onclick="delPost(${p.id})">🗑 Del</button>
+    </div>`).join('');
+}
+function delPost(id){if(!confirm('Delete?'))return;ss(K.POSTS,getPosts().filter(p=>p.id!==id));renderRecent();updateStats();toast('🗑 Deleted')}
