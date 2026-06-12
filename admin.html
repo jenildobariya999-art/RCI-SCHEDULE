@@ -331,3 +331,16 @@ function doPost(){
   updateStats();renderRecent();
  
   // ✅ FIX 4: Trigger push notification  
+for all subscribed members
+  if(Notification?.permission==='granted'){
+    const typeMap={meet:'📢 MEET UP',urgent:'🚨 URGENT',notice:'📋 NOTICE'};
+    const label=typeMap[pType]||'📢 POST';
+    const body=[fmtD(post.date),fmtT(post.time),post.place].filter(Boolean).join(' · ')||post.title;
+    new Notification('CA Study Board — '+label,{
+      body,
+      icon:'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
+      tag:'cab-post-'+post.id,
+      requireInteraction:true
+    });
+  }
+}
