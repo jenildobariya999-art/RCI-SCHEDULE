@@ -21,13 +21,13 @@
 */
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY_HERE",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyCSKZa5oKQODr44-Hk4Iw5DYCmwlK_4S3k",
+  authDomain: "ca-schedule.firebaseapp.com",
+  projectId: "ca-schedule",
+  storageBucket: "ca-schedule.firebasestorage.app",
+  messagingSenderId: "956616163613",
+  appId: "1:956616163613:web:d1d7a7a57b02a33cbc21f4",
+  measurementId: "G-BL05PMP6E4"
 };
 
 // Initialize Firebase (compat SDK loaded via CDN in each HTML page)
