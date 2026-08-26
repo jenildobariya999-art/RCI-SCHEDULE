@@ -1,422 +1,505 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,
-                   maximum-scale=1.0, user-scalable=no">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Bot Dashboard</title>
-
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #171717;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #6c5ce7, #4834d4);
-            color: white;
-            padding: 25px 18px;
-            border-radius: 0 0 25px 25px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-        }
-
-        .header p {
-            margin-top: 7px;
-            opacity: .85;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f4f9;
+            color: #1e293b;
+            padding: 16px;
+            min-height: 100vh;
         }
 
         .container {
-            padding: 18px;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
-        .loading {
-            text-align: center;
-            padding: 50px 10px;
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            padding: 20px 18px;
+            border-radius: 20px 20px 0 0;
+            margin-bottom: 0;
         }
 
-        .error {
-            display: none;
-            background: #ffe5e5;
-            color: #d63031;
-            padding: 15px;
-            border-radius: 15px;
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
         }
 
-        .content {
-            display: none;
+        .header p {
+            font-size: 14px;
+            opacity: 0.85;
+            margin-top: 4px;
         }
 
+        /* Cards */
         .card {
             background: white;
+            border-radius: 16px;
             padding: 18px;
-            border-radius: 18px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.06);
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 12px;
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #334155;
         }
 
         .row {
             display: flex;
             justify-content: space-between;
-            gap: 15px;
-            padding: 14px 0;
-            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9edf2;
         }
 
         .row:last-child {
-            border-bottom: 0;
+            border-bottom: none;
         }
 
         .label {
-            color: #777;
+            color: #64748b;
+            font-size: 14px;
         }
 
         .value {
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
             text-align: right;
             word-break: break-word;
+            max-width: 60%;
         }
 
-        .number-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .stat {
-            background: white;
-            padding: 18px;
-            border-radius: 18px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.06);
+        .badge-success {
+            background: #dcfce7;
+            color: #16a34a;
         }
 
-        .stat-title {
-            color: #777;
-            font-size: 13px;
+        .badge-pending {
+            background: #fef9c3;
+            color: #ca8a04;
         }
 
-        .stat-value {
-            font-size: 23px;
-            font-weight: bold;
-            margin-top: 7px;
+        .badge-admin {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* Loading & Error */
+        #loading {
+            text-align: center;
+            padding: 40px 10px;
+            color: #64748b;
+        }
+
+        #error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+        }
+
+        .channel-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f4f9;
+        }
+
+        .channel-item:last-child {
+            border-bottom: none;
+        }
+
+        .channel-name {
+            font-weight: 500;
+        }
+
+        .channel-price {
+            float: right;
+            color: #16a34a;
+        }
+
+        .empty {
+            color: #94a3b8;
+            font-size: 14px;
+            text-align: center;
+            padding: 12px 0;
         }
     </style>
 </head>
-
 <body>
-
-<div class="header">
-    <h1 id="botName">Bot Dashboard</h1>
-    <p id="botSubtitle">Loading bot data...</p>
-</div>
 
 <div class="container">
 
-    <div id="loading" class="loading">
-        ⏳ Fetching bot data...
+    <!-- Header -->
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 id="botTitle">🤖 Bot</h1>
+                <p id="subtitle">Loading data...</p>
+            </div>
+            <button class="refresh-btn" id="refreshBtn">⟳</button>
+        </div>
     </div>
 
-    <div id="error" class="error"></div>
+    <!-- Error -->
+    <div id="error"></div>
 
-    <div id="content" class="content">
+    <!-- Loading -->
+    <div id="loading">
+        <div style="font-size: 32px; margin-bottom: 10px;">⏳</div>
+        <div>Loading your data...</div>
+    </div>
 
-        <div class="number-grid">
+    <!-- Content (hidden until data arrives) -->
+    <div id="content" class="hidden">
 
-            <div class="stat">
-                <div class="stat-title">👥 Users</div>
-                <div class="stat-value" id="users">0</div>
+        <!-- User Info -->
+        <div class="card">
+            <div class="card-title">👤 User</div>
+            <div class="row">
+                <span class="label">Name</span>
+                <span class="value" id="userName">-</span>
             </div>
-
-            <div class="stat">
-                <div class="stat-title">💰 Balance</div>
-                <div class="stat-value" id="balance">0</div>
+            <div class="row">
+                <span class="label">ID</span>
+                <span class="value" id="userId">-</span>
             </div>
-
-            <div class="stat">
-                <div class="stat-title">👨‍💼 Admins</div>
-                <div class="stat-value" id="admins">0</div>
+            <div class="row">
+                <span class="label">Status</span>
+                <span class="value"><span id="userStatus" class="badge badge-pending">Pending</span></span>
             </div>
-
-            <div class="stat">
-                <div class="stat-title">📊 Transactions</div>
-                <div class="stat-value" id="transactions">0</div>
+            <div class="row">
+                <span class="label">Admin</span>
+                <span class="value"><span id="adminBadge" class="badge badge-pending">No</span></span>
             </div>
-
         </div>
 
-        <br>
-
+        <!-- Balance & Stats -->
         <div class="card">
-
-            <div class="title">🤖 Bot Information</div>
-
+            <div class="card-title">💰 Balance</div>
             <div class="row">
-                <span class="label">Bot Name</span>
-                <span class="value" id="bot_name">-</span>
+                <span class="label">Balance</span>
+                <span class="value" id="balance">₹0.00</span>
             </div>
-
             <div class="row">
-                <span class="label">Username</span>
-                <span class="value" id="bot_username">-</span>
+                <span class="label">Total Withdrawn</span>
+                <span class="value" id="totalWithdraw">₹0.00</span>
             </div>
-
             <div class="row">
-                <span class="label">Bot ID</span>
-                <span class="value" id="bot_id">-</span>
+                <span class="label">Referrals</span>
+                <span class="value" id="refCount">0</span>
             </div>
-
+            <div class="row">
+                <span class="label">Verified Refers</span>
+                <span class="value" id="verifiedRef">0</span>
+            </div>
+            <div class="row">
+                <span class="label">Rank</span>
+                <span class="value" id="rank">#---</span>
+            </div>
         </div>
 
+        <!-- Purchased Channels -->
         <div class="card">
-
-            <div class="title">⚙️ Settings</div>
-
-            <div class="row">
-                <span class="label">Daily Bonus</span>
-                <span class="value" id="daily_bonus">-</span>
+            <div class="card-title">📢 Purchased Channels</div>
+            <div id="channelList">
+                <div class="empty">No channels purchased yet</div>
             </div>
+        </div>
 
-            <div class="row">
-                <span class="label">Referral Bonus</span>
-                <span class="value" id="refer_bonus">-</span>
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-title">📈 Recent Activity</div>
+            <div id="activityList">
+                <div class="empty">No recent activity</div>
             </div>
-
-            <div class="row">
-                <span class="label">Minimum Withdrawal</span>
-                <span class="value" id="min_withdraw">-</span>
-            </div>
-
         </div>
 
     </div>
+
 </div>
 
-
 <script>
+    // ============================================================
+    // TELEGRAM MINI APP INIT
+    // ============================================================
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
 
-const tg = window.Telegram.WebApp;
+    // ============================================================
+    // DOM ELEMENTS
+    // ============================================================
+    const $ = id => document.getElementById(id);
+    const loading = $('loading');
+    const content = $('content');
+    const errorDiv = $('error');
+    const refreshBtn = $('refreshBtn');
 
-tg.ready();
-tg.expand();
+    // ============================================================
+    // STATE
+    // ============================================================
+    let webhookUrl = null;
+    let timeoutId = null;
 
+    // ============================================================
+    // UTILITY
+    // ============================================================
+    function formatCurrency(num) {
+        if (num === undefined || num === null) return '₹0.00';
+        return '₹' + Number(num).toFixed(2);
+    }
 
-// ======================================
-// TBC BACKEND
-// ======================================
-//
-// IMPORTANT:
-//
-// This must be a REAL HTTP endpoint.
-//
-// "/mini_app_data" is NOT a TBC command URL.
-//
-// Your TBC command must expose an HTTP/API
-// endpoint that this page can access.
-//
-// ======================================
+    function showError(msg) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = '⚠️ ' + msg;
+        loading.style.display = 'none';
+        content.classList.add('hidden');
+    }
 
-const API_URL = "YOUR_TBC_API_ENDPOINT";
+    function hideError() {
+        errorDiv.style.display = 'none';
+    }
 
+    function showLoading(show) {
+        loading.style.display = show ? 'block' : 'none';
+        if (show) content.classList.add('hidden');
+    }
 
-async function loadData() {
+    function showContent() {
+        loading.style.display = 'none';
+        content.classList.remove('hidden');
+        hideError();
+    }
 
-    const loading =
-        document.getElementById("loading");
+    // ============================================================
+    // UPDATE UI WITH DATA
+    // ============================================================
+    function updateUI(data) {
+        if (!data) return;
 
-    const content =
-        document.getElementById("content");
-
-    const error =
-        document.getElementById("error");
-
-    try {
-
-        /*
-         * Telegram automatically gives us
-         * the Mini App initialization data.
-         */
-
-        const initData = tg.initData;
-
-        if (!initData) {
-            throw new Error(
-                "Mini App must be opened inside Telegram."
-            );
+        // User info
+        if (data.user_id) {
+            $('userId').textContent = data.user_id;
+        }
+        if (data.balance !== undefined) {
+            $('balance').textContent = formatCurrency(data.balance);
+        }
+        if (data.totalWithdraw !== undefined) {
+            $('totalWithdraw').textContent = formatCurrency(data.totalWithdraw);
+        }
+        if (data.refCount !== undefined) {
+            $('refCount').textContent = data.refCount;
+        }
+        if (data.verifiedRef !== undefined) {
+            $('verifiedRef').textContent = data.verifiedRef;
+        }
+        if (data.rank !== undefined) {
+            $('rank').textContent = data.rank === '---' ? '#---' : '#' + data.rank;
         }
 
+        // Status
+        if (data.isVerified !== undefined) {
+            const statusEl = $('userStatus');
+            if (data.isVerified) {
+                statusEl.textContent = '✅ Verified';
+                statusEl.className = 'badge badge-success';
+            } else {
+                statusEl.textContent = '⏳ Pending';
+                statusEl.className = 'badge badge-pending';
+            }
+        }
 
-        /*
-         * Send Telegram session data
-         * to your TBC backend.
-         */
+        // Admin
+        if (data.isAdmin !== undefined) {
+            const adminEl = $('adminBadge');
+            if (data.isAdmin) {
+                adminEl.textContent = '✅ Yes';
+                adminEl.className = 'badge badge-admin';
+            } else {
+                adminEl.textContent = '❌ No';
+                adminEl.className = 'badge badge-pending';
+            }
+        }
 
-        const response = await fetch(API_URL, {
+        // Purchased channels
+        const channelList = $('channelList');
+        if (data.channels && data.channels.length > 0) {
+            channelList.innerHTML = '';
+            data.channels.forEach(ch => {
+                const div = document.createElement('div');
+                div.className = 'channel-item';
+                div.innerHTML = `<span class="channel-name">${ch.title}</span>
+                                 <span class="channel-price">₹${ch.price}</span>`;
+                channelList.appendChild(div);
+            });
+        } else {
+            channelList.innerHTML = '<div class="empty">No channels purchased yet</div>';
+        }
 
-            method: "POST",
+        // Activities
+        const activityList = $('activityList');
+        if (data.activities && data.activities.length > 0) {
+            activityList.innerHTML = '';
+            data.activities.slice(0, 5).forEach(act => {
+                const div = document.createElement('div');
+                div.className = 'row';
+                div.innerHTML = `<span class="label">${act.text}</span>
+                                 <span class="value" style="font-weight:400;color:#64748b;">${act.time}</span>`;
+                activityList.appendChild(div);
+            });
+        } else {
+            activityList.innerHTML = '<div class="empty">No recent activity</div>';
+        }
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        // Show content
+        showContent();
+    }
 
-            body: JSON.stringify({
+    // ============================================================
+    // FETCH DATA FROM WEBHOOK
+    // ============================================================
+    async function fetchWebhookData(url) {
+        if (!url) {
+            showError('No webhook URL received from bot.');
+            return;
+        }
+        showLoading(true);
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            updateUI(data);
+        } catch (e) {
+            console.error('Webhook fetch error:', e);
+            showError('Failed to fetch data: ' + e.message);
+        } finally {
+            showLoading(false);
+        }
+    }
 
-                action: "init",
-
-                init_data: initData
-
-            })
-
+    // ============================================================
+    // SEND REQUEST TO BOT (GET WEBHOOK URL)
+    // ============================================================
+    function requestWebhookUrl() {
+        hideError();
+        showLoading(true);
+        const msg = JSON.stringify({
+            action: 'init',
+            user_id: tg.initDataUnsafe?.user?.id || 'unknown'
         });
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Server returned HTTP " +
-                response.status
-            );
-
+        try {
+            tg.sendData(msg);
+            // Timeout after 10 seconds
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                showLoading(false);
+                showError('Bot did not respond. Please try again.');
+            }, 10000);
+        } catch (e) {
+            showLoading(false);
+            showError('Failed to send request: ' + e.message);
         }
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.ok) {
-
-            throw new Error(
-                data.error ||
-                "Unable to fetch bot data"
-            );
-
-        }
-
-
-        // ==================================
-        // BOT
-        // ==================================
-
-        const bot =
-            data.bot || {};
-
-        document.getElementById("botName")
-            .textContent =
-            bot.name || "Bot Dashboard";
-
-        document.getElementById("botSubtitle")
-            .textContent =
-            bot.username
-                ? "@" + bot.username
-                : "Telegram Bot";
-
-        document.getElementById("bot_name")
-            .textContent =
-            bot.name || "-";
-
-        document.getElementById("bot_username")
-            .textContent =
-            bot.username
-                ? "@" + bot.username
-                : "-";
-
-        document.getElementById("bot_id")
-            .textContent =
-            bot.id || "-";
-
-
-        // ==================================
-        // STATS
-        // ==================================
-
-        const stats =
-            data.stats || {};
-
-        document.getElementById("users")
-            .textContent =
-            stats.total_users ?? 0;
-
-        document.getElementById("balance")
-            .textContent =
-            stats.total_balance ?? 0;
-
-        document.getElementById("admins")
-            .textContent =
-            stats.total_admins ?? 0;
-
-        document.getElementById("transactions")
-            .textContent =
-            stats.total_transactions ?? 0;
-
-
-        // ==================================
-        // SETTINGS
-        // ==================================
-
-        const settings =
-            data.settings || {};
-
-        document.getElementById("daily_bonus")
-            .textContent =
-            settings.daily_bonus ?? "-";
-
-        document.getElementById("refer_bonus")
-            .textContent =
-            settings.refer_bonus ?? "-";
-
-        document.getElementById("min_withdraw")
-            .textContent =
-            settings.min_withdraw ?? "-";
-
-
-        // ==================================
-        // SHOW
-        // ==================================
-
-        loading.style.display = "none";
-
-        content.style.display = "block";
-
     }
 
-    catch (e) {
-
-        console.error(e);
-
-        loading.style.display = "none";
-
-        error.style.display = "block";
-
-        error.textContent =
-            "❌ " + e.message;
-
+    // ============================================================
+    // HANDLE BOT REPLY (via tg.onEvent('data'))
+    // ============================================================
+    function handleBotReply(reply) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        try {
+            const data = typeof reply === 'string' ? JSON.parse(reply) : reply;
+            if (data.status === 'error') {
+                showError(data.message || 'Bot returned an error.');
+                return;
+            }
+            // If we got a webhook_url, use it
+            if (data.webhook_url) {
+                webhookUrl = data.webhook_url;
+                fetchWebhookData(webhookUrl);
+            } else {
+                // If no webhook_url, maybe the bot sent data directly
+                updateUI(data);
+            }
+        } catch (e) {
+            console.error('Parse error:', e);
+            showError('Invalid response from bot.');
+        }
     }
 
-}
+    // ============================================================
+    // REGISTER EVENT LISTENERS
+    // ============================================================
+    tg.onEvent('data', handleBotReply);
 
+    refreshBtn.addEventListener('click', () => {
+        if (webhookUrl) {
+            fetchWebhookData(webhookUrl);
+        } else {
+            requestWebhookUrl();
+        }
+    });
 
-loadData();
+    // ============================================================
+    // START
+    // ============================================================
+    // Show Telegram user name if available
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+        $('userName').textContent = user.first_name || user.username || 'User';
+        // Also set bot title if we have bot info? Not yet.
+    }
 
+    // Begin: ask bot for webhook URL
+    requestWebhookUrl();
+
+    console.log('Mini App started.');
 </script>
-
 </body>
-    </html>
+</html>
