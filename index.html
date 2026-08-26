@@ -263,243 +263,46 @@
 </div>
 
 <script>
-    // ============================================================
-    // TELEGRAM MINI APP INIT
-    // ============================================================
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
 
-    // ============================================================
-    // DOM ELEMENTS
-    // ============================================================
-    const $ = id => document.getElementById(id);
-    const loading = $('loading');
-    const content = $('content');
-    const errorDiv = $('error');
-    const refreshBtn = $('refreshBtn');
+// Extract parameters passed dynamically by TBC
+const params = new URLSearchParams(window.location.search);
 
-    // ============================================================
-    // STATE
-    // ============================================================
-    let webhookUrl = null;
-    let timeoutId = null;
+const botIdFromUrl = params.get("bot_id");
+let botUsernameFromUrl = params.get("bot");
 
-    // ============================================================
-    // UTILITY
-    // ============================================================
-    function formatCurrency(num) {
-        if (num === undefined || num === null) return '₹0.00';
-        return '₹' + Number(num).toFixed(2);
+// Extract user data from Telegram SDK
+const tgData = tg.initDataUnsafe || {};
+const user = tgData.user || {};
+
+// Render Telegram User Info
+document.getElementById("userName").textContent = user.first_name || "Unknown";
+document.getElementById("userUsername").textContent = user.username ? "@" + user.username : "No username";
+document.getElementById("userId").textContent = user.id || "Unknown";
+
+// Render Bot Info dynamically from URL parameters
+if (botIdFromUrl && botUsernameFromUrl) {
+    if (botUsernameFromUrl.startsWith("@")) {
+        botUsernameFromUrl = botUsernameFromUrl.substring(1);
     }
 
-    function showError(msg) {
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = '⚠️ ' + msg;
-        loading.style.display = 'none';
-        content.classList.add('hidden');
-    }
+    document.getElementById("botId").textContent = "#" + botIdFromUrl;
+    document.getElementById("botUsername").textContent = "@" + botUsernameFromUrl;
+    document.getElementById("title").textContent = "@" + botUsernameFromUrl;
+    document.getElementById("subtitle").textContent = "Telegram Bot Dashboard";
+} else {
+    document.getElementById("botId").textContent = "Not provided";
+    document.getElementById("botUsername").textContent = "Not provided";
+    document.getElementById("subtitle").textContent = "Missing URL parameters";
+}
 
-    function hideError() {
-        errorDiv.style.display = 'none';
-    }
-
-    function showLoading(show) {
-        loading.style.display = show ? 'block' : 'none';
-        if (show) content.classList.add('hidden');
-    }
-
-    function showContent() {
-        loading.style.display = 'none';
-        content.classList.remove('hidden');
-        hideError();
-    }
-
-    // ============================================================
-    // UPDATE UI WITH DATA
-    // ============================================================
-    function updateUI(data) {
-        if (!data) return;
-
-        // User info
-        if (data.user_id) {
-            $('userId').textContent = data.user_id;
-        }
-        if (data.balance !== undefined) {
-            $('balance').textContent = formatCurrency(data.balance);
-        }
-        if (data.totalWithdraw !== undefined) {
-            $('totalWithdraw').textContent = formatCurrency(data.totalWithdraw);
-        }
-        if (data.refCount !== undefined) {
-            $('refCount').textContent = data.refCount;
-        }
-        if (data.verifiedRef !== undefined) {
-            $('verifiedRef').textContent = data.verifiedRef;
-        }
-        if (data.rank !== undefined) {
-            $('rank').textContent = data.rank === '---' ? '#---' : '#' + data.rank;
-        }
-
-        // Status
-        if (data.isVerified !== undefined) {
-            const statusEl = $('userStatus');
-            if (data.isVerified) {
-                statusEl.textContent = '✅ Verified';
-                statusEl.className = 'badge badge-success';
-            } else {
-                statusEl.textContent = '⏳ Pending';
-                statusEl.className = 'badge badge-pending';
-            }
-        }
-
-        // Admin
-        if (data.isAdmin !== undefined) {
-            const adminEl = $('adminBadge');
-            if (data.isAdmin) {
-                adminEl.textContent = '✅ Yes';
-                adminEl.className = 'badge badge-admin';
-            } else {
-                adminEl.textContent = '❌ No';
-                adminEl.className = 'badge badge-pending';
-            }
-        }
-
-        // Purchased channels
-        const channelList = $('channelList');
-        if (data.channels && data.channels.length > 0) {
-            channelList.innerHTML = '';
-            data.channels.forEach(ch => {
-                const div = document.createElement('div');
-                div.className = 'channel-item';
-                div.innerHTML = `<span class="channel-name">${ch.title}</span>
-                                 <span class="channel-price">₹${ch.price}</span>`;
-                channelList.appendChild(div);
-            });
-        } else {
-            channelList.innerHTML = '<div class="empty">No channels purchased yet</div>';
-        }
-
-        // Activities
-        const activityList = $('activityList');
-        if (data.activities && data.activities.length > 0) {
-            activityList.innerHTML = '';
-            data.activities.slice(0, 5).forEach(act => {
-                const div = document.createElement('div');
-                div.className = 'row';
-                div.innerHTML = `<span class="label">${act.text}</span>
-                                 <span class="value" style="font-weight:400;color:#64748b;">${act.time}</span>`;
-                activityList.appendChild(div);
-            });
-        } else {
-            activityList.innerHTML = '<div class="empty">No recent activity</div>';
-        }
-
-        // Show content
-        showContent();
-    }
-
-    // ============================================================
-    // FETCH DATA FROM WEBHOOK
-    // ============================================================
-    async function fetchWebhookData(url) {
-        if (!url) {
-            showError('No webhook URL received from bot.');
-            return;
-        }
-        showLoading(true);
-        try {
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            const data = await resp.json();
-            updateUI(data);
-        } catch (e) {
-            console.error('Webhook fetch error:', e);
-            showError('Failed to fetch data: ' + e.message);
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    // ============================================================
-    // SEND REQUEST TO BOT (GET WEBHOOK URL)
-    // ============================================================
-    function requestWebhookUrl() {
-        hideError();
-        showLoading(true);
-        const msg = JSON.stringify({
-            action: 'init',
-            user_id: tg.initDataUnsafe?.user?.id || 'unknown'
-        });
-        try {
-            tg.sendData(msg);
-            // Timeout after 10 seconds
-            if (timeoutId) clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                showLoading(false);
-                showError('Bot did not respond. Please try again.');
-            }, 10000);
-        } catch (e) {
-            showLoading(false);
-            showError('Failed to send request: ' + e.message);
-        }
-    }
-
-    // ============================================================
-    // HANDLE BOT REPLY (via tg.onEvent('data'))
-    // ============================================================
-    function handleBotReply(reply) {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-        }
-        try {
-            const data = typeof reply === 'string' ? JSON.parse(reply) : reply;
-            if (data.status === 'error') {
-                showError(data.message || 'Bot returned an error.');
-                return;
-            }
-            // If we got a webhook_url, use it
-            if (data.webhook_url) {
-                webhookUrl = data.webhook_url;
-                fetchWebhookData(webhookUrl);
-            } else {
-                // If no webhook_url, maybe the bot sent data directly
-                updateUI(data);
-            }
-        } catch (e) {
-            console.error('Parse error:', e);
-            showError('Invalid response from bot.');
-        }
-    }
-
-    // ============================================================
-    // REGISTER EVENT LISTENERS
-    // ============================================================
-    tg.onEvent('data', handleBotReply);
-
-    refreshBtn.addEventListener('click', () => {
-        if (webhookUrl) {
-            fetchWebhookData(webhookUrl);
-        } else {
-            requestWebhookUrl();
-        }
-    });
-
-    // ============================================================
-    // START
-    // ============================================================
-    // Show Telegram user name if available
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-        $('userName').textContent = user.first_name || user.username || 'User';
-        // Also set bot title if we have bot info? Not yet.
-    }
-
-    // Begin: ask bot for webhook URL
-    requestWebhookUrl();
-
-    console.log('Mini App started.');
+// Display content
+document.getElementById("loading").style.display = "none";
+document.getElementById("content").style.display = "block";
 </script>
+    
+        
 </body>
 </html>
