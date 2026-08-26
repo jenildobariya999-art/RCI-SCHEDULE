@@ -59,7 +59,7 @@ async function load(){
  try{
    const qs=new URLSearchParams(location.search);
    const botId=qs.get("bot_id")||qs.get("botid");
-   if(!botId)throw new Error("Missing bot_id. Open the Mini App as ?bot_id=YOUR_TBC_BOT_ID");
+   if(!botId)throw new Error("Missing bot_id. Open the Mini App as ?bot_id=4446654");
 
    let url="/api/bot?bot_id="+encodeURIComponent(botId);
    if(tg?.initData)url+="&initData="+encodeURIComponent(tg.initData);
