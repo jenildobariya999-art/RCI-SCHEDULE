@@ -1,815 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no">
-
-    <title>Bot Dashboard</title>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #111827;
-            padding-bottom: 30px;
-        }
-
-        .header {
-            padding: 25px 20px;
-            color: white;
-            background: linear-gradient(135deg, #6c5ce7, #4834d4);
-            border-radius: 0 0 28px 28px;
-        }
-
-        .header h1 {
-            font-size: 25px;
-        }
-
-        .header p {
-            margin-top: 7px;
-            opacity: .85;
-            font-size: 14px;
-        }
-
-        .container {
-            padding: 18px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px 10px;
-            font-size: 16px;
-        }
-
-        .error {
-            display: none;
-            padding: 16px;
-            background: #ffe5e5;
-            color: #c62828;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            word-break: break-word;
-        }
-
-        .section {
-            margin-bottom: 18px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 11px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .stat {
-            background: white;
-            border-radius: 18px;
-            padding: 18px;
-            box-shadow: 0 5px 18px rgba(0,0,0,.05);
-        }
-
-        .stat-icon {
-            font-size: 25px;
-        }
-
-        .stat-label {
-            color: #777;
-            font-size: 13px;
-            margin-top: 9px;
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 7px 18px;
-            box-shadow: 0 5px 18px rgba(0,0,0,.05);
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 14px 0;
-            border-bottom: 1px solid #eeeeee;
-        }
-
-        .row:last-child {
-            border-bottom: 0;
-        }
-
-        .label {
-            color: #777;
-            font-size: 14px;
-        }
-
-        .value {
-            font-weight: bold;
-            text-align: right;
-            max-width: 60%;
-            word-break: break-word;
-        }
-
-        .online {
-            color: #149447;
-            background: #dff8e8;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        .offline {
-            color: #c62828;
-            background: #ffe2e2;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        .json-box {
-            margin-top: 10px;
-            background: #111827;
-            color: #e5e7eb;
-            padding: 15px;
-            border-radius: 15px;
-            overflow-x: auto;
-            font-size: 12px;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TBC Bot Dashboard</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090a0f;color:#fff;font-family:Arial,sans-serif}
+main{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+h1{font-size:24px;margin:0}.pill{padding:7px 11px;border-radius:99px;background:#20232b;color:#aaa;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.card{background:#14161d;border:1px solid #272a34;border-radius:16px;padding:16px;margin-top:12px}
+.label{color:#969baa;font-size:12px}.num{font-size:24px;font-weight:800;margin-top:7px}
+h2{font-size:17px;margin:24px 0 8px}.row{display:flex;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid #272a34}
+.row:last-child{border:0}.k{color:#969baa}.v{text-align:right;word-break:break-word}
+.good{color:#51e890}.bad{color:#ff6470}.err{display:none;background:#35161b;color:#ff8991;padding:12px;border-radius:12px;margin:12px 0}
+button{width:100%;margin-top:15px;padding:13px;border:0;border-radius:12px;font-weight:800}
+small{color:#858b9a}
+</style>
 </head>
-
 <body>
+<main>
+<div class="top"><h1>🤖 Bot Dashboard</h1><span id="status" class="pill">Loading</span></div>
+<div id="err" class="err"></div>
 
-<div class="header">
-
-    <h1 id="botName">
-        Bot Dashboard
-    </h1>
-
-    <p id="botSubtitle">
-        Connecting to bot...
-    </p>
-
+<div class="grid">
+<div class="card"><div class="label">Bot ID</div><div id="botid" class="num">—</div></div>
+<div class="card"><div class="label">Users</div><div id="users" class="num">—</div></div>
+<div class="card"><div class="label">Bot Status</div><div id="botstatus" class="num">—</div></div>
+<div class="card"><div class="label">Data Entries</div><div id="entries" class="num">—</div></div>
 </div>
 
-
-<div class="container">
-
-    <div id="loading" class="loading">
-        ⏳ Fetching bot data...
-    </div>
-
-    <div id="error" class="error"></div>
-
-
-    <div id="dashboard" style="display:none;">
-
-
-        <!-- ===================== -->
-        <!-- STATISTICS -->
-        <!-- ===================== -->
-
-        <div class="section">
-
-            <div class="section-title">
-                📊 Statistics
-            </div>
-
-            <div class="stats">
-
-                <div class="stat">
-
-                    <div class="stat-icon">
-                        👥
-                    </div>
-
-                    <div class="stat-label">
-                        Total Users
-                    </div>
-
-                    <div class="stat-value"
-                         id="totalUsers">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <div class="stat-icon">
-                        💰
-                    </div>
-
-                    <div class="stat-label">
-                        Total Balance
-                    </div>
-
-                    <div class="stat-value"
-                         id="totalBalance">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <div class="stat-icon">
-                        👨‍💼
-                    </div>
-
-                    <div class="stat-label">
-                        Admins
-                    </div>
-
-                    <div class="stat-value"
-                         id="totalAdmins">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <div class="stat-icon">
-                        💳
-                    </div>
-
-                    <div class="stat-label">
-                        Transactions
-                    </div>
-
-                    <div class="stat-value"
-                         id="totalTransactions">
-                        0
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ===================== -->
-        <!-- BOT -->
-        <!-- ===================== -->
-
-        <div class="section">
-
-            <div class="section-title">
-                🤖 Bot Information
-            </div>
-
-            <div class="card">
-
-                <div class="row">
-                    <span class="label">
-                        Name
-                    </span>
-
-                    <span class="value"
-                          id="bot_name">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Username
-                    </span>
-
-                    <span class="value"
-                          id="bot_username">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Bot ID
-                    </span>
-
-                    <span class="value"
-                          id="bot_id">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Status
-                    </span>
-
-                    <span id="bot_status"
-                          class="online">
-                        Online
-                    </span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ===================== -->
-        <!-- USER -->
-        <!-- ===================== -->
-
-        <div class="section">
-
-            <div class="section-title">
-                👤 Current User
-            </div>
-
-            <div class="card">
-
-                <div class="row">
-                    <span class="label">
-                        Name
-                    </span>
-
-                    <span class="value"
-                          id="user_name">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Username
-                    </span>
-
-                    <span class="value"
-                          id="user_username">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Telegram ID
-                    </span>
-
-                    <span class="value"
-                          id="user_id">
-                        -
-                    </span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ===================== -->
-        <!-- SETTINGS -->
-        <!-- ===================== -->
-
-        <div class="section">
-
-            <div class="section-title">
-                ⚙️ Bot Settings
-            </div>
-
-            <div class="card">
-
-                <div class="row">
-                    <span class="label">
-                        Daily Bonus
-                    </span>
-
-                    <span class="value"
-                          id="daily_bonus">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Referral Bonus
-                    </span>
-
-                    <span class="value"
-                          id="refer_bonus">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Minimum Withdrawal
-                    </span>
-
-                    <span class="value"
-                          id="min_withdraw">
-                        -
-                    </span>
-                </div>
-
-
-                <div class="row">
-                    <span class="label">
-                        Currency
-                    </span>
-
-                    <span class="value"
-                          id="currency">
-                        ₹
-                    </span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ===================== -->
-        <!-- ALL RAW DATA -->
-        <!-- ===================== -->
-
-        <div class="section">
-
-            <div class="section-title">
-                🗃️ All Returned Data
-            </div>
-
-            <div class="json-box"
-                 id="rawData">
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
+<h2>⚙️ Bot Information</h2><div id="info" class="card">Loading...</div>
+<h2>📦 Exported TBC Data</h2><div id="data" class="card">Loading...</div>
+
+<button onclick="load()">🔄 Refresh</button>
+</main>
 
 <script>
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
 
-/* =========================================
-   TELEGRAM
-========================================= */
-
-const tg = window.Telegram.WebApp;
-
-tg.ready();
-tg.expand();
-
-
-/* =========================================
-   YOUR REAL API ENDPOINT
-========================================= */
-
-const API_URL =
-    "https://rci-schedule.vercel.app/api/mini_app_data";
-
-
-/* =========================================
-   HELPER
-========================================= */
-
-function setValue(id, value) {
-
-    const el =
-        document.getElementById(id);
-
-    if (!el) return;
-
-    if (
-        value === undefined ||
-        value === null ||
-        value === ""
-    ) {
-
-        el.textContent = "-";
-
-    } else {
-
-        el.textContent = value;
-
-    }
-
+function esc(x){return String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function primitive(v){
+ if(v===null||v===undefined)return "—";
+ if(typeof v==="object")return JSON.stringify(v);
+ return esc(v);
 }
-
-
-/* =========================================
-   FETCH
-========================================= */
-
-async function fetchBotData() {
-
-    const loading =
-        document.getElementById("loading");
-
-    const dashboard =
-        document.getElementById("dashboard");
-
-    const error =
-        document.getElementById("error");
-
-
-    try {
-
-        if (!tg.initData) {
-
-            throw new Error(
-                "Open this page from your Telegram Mini App."
-            );
-
-        }
-
-
-        /*
-         * Send ONLY Telegram initData.
-         *
-         * No bot ID.
-         * No bot username.
-         * No bot token.
-         */
-
-        const response =
-            await fetch(API_URL, {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    init_data:
-                        tg.initData,
-
-                    action:
-                        "get_all_data"
-
-                })
-
-            });
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Server returned HTTP " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.ok) {
-
-            throw new Error(
-                data.error ||
-                "TBC returned an error."
-            );
-
-        }
-
-
-        /* =================================
-           BOT
-        ================================= */
-
-        const bot =
-            data.bot || {};
-
-        setValue(
-            "botName",
-            bot.name ||
-            "Bot Dashboard"
-        );
-
-        setValue(
-            "botSubtitle",
-            bot.username
-                ? "@" + bot.username
-                : "Telegram Bot"
-        );
-
-        setValue(
-            "bot_name",
-            bot.name
-        );
-
-        setValue(
-            "bot_username",
-            bot.username
-                ? "@" + bot.username
-                : "-"
-        );
-
-        setValue(
-            "bot_id",
-            bot.id
-        );
-
-
-        /* =================================
-           STATUS
-        ================================= */
-
-        const status =
-            document.getElementById(
-                "bot_status"
-            );
-
-        if (bot.status === "offline") {
-
-            status.textContent =
-                "Offline";
-
-            status.className =
-                "offline";
-
-        } else {
-
-            status.textContent =
-                "Online";
-
-            status.className =
-                "online";
-
-        }
-
-
-        /* =================================
-           USER
-        ================================= */
-
-        const user =
-            data.user || {};
-
-        setValue(
-            "user_name",
-            user.first_name ||
-            user.name
-        );
-
-        setValue(
-            "user_username",
-            user.username
-                ? "@" + user.username
-                : "-"
-        );
-
-        setValue(
-            "user_id",
-            user.id
-        );
-
-
-        /* =================================
-           STATS
-        ================================= */
-
-        const stats =
-            data.stats || {};
-
-        setValue(
-            "totalUsers",
-            stats.total_users ?? 0
-        );
-
-        setValue(
-            "totalBalance",
-            stats.total_balance ?? 0
-        );
-
-        setValue(
-            "totalAdmins",
-            stats.total_admins ?? 0
-        );
-
-        setValue(
-            "totalTransactions",
-            stats.total_transactions ?? 0
-        );
-
-
-        /* =================================
-           SETTINGS
-        ================================= */
-
-        const settings =
-            data.settings || {};
-
-        setValue(
-            "daily_bonus",
-            settings.daily_bonus
-        );
-
-        setValue(
-            "refer_bonus",
-            settings.refer_bonus
-        );
-
-        setValue(
-            "min_withdraw",
-            settings.min_withdraw
-        );
-
-        setValue(
-            "currency",
-            settings.currency || "₹"
-        );
-
-
-        /* =================================
-           RAW DATA
-        ================================= */
-
-        document.getElementById(
-            "rawData"
-        ).textContent =
-            JSON.stringify(
-                data,
-                null,
-                2
-            );
-
-
-        /* =================================
-           SHOW
-        ================================= */
-
-        loading.style.display =
-            "none";
-
-        dashboard.style.display =
-            "block";
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        loading.style.display =
-            "none";
-
-        error.style.display =
-            "block";
-
-        error.textContent =
-            "❌ " + err.message;
-
-    }
-
+function rows(obj,limit=150){
+ if(!obj||typeof obj!=="object")return `<div>${primitive(obj)}</div>`;
+ return Object.entries(obj).slice(0,limit).map(([k,v])=>
+ `<div class="row"><span class="k">${esc(k)}</span><span class="v">${primitive(v)}</span></div>`
+ ).join("");
 }
+async function load(){
+ const status=document.getElementById("status"),err=document.getElementById("err");
+ err.style.display="none";status.textContent="Loading...";
+ try{
+   const qs=new URLSearchParams(location.search);
+   const botId=qs.get("bot_id")||qs.get("botid");
+   if(!botId)throw new Error("Missing bot_id. Open the Mini App as ?bot_id=YOUR_TBC_BOT_ID");
 
+   let url="/api/bot?bot_id="+encodeURIComponent(botId);
+   if(tg?.initData)url+="&initData="+encodeURIComponent(tg.initData);
 
-/* =========================================
-   START
-========================================= */
+   const r=await fetch(url,{headers:{Accept:"application/json"}});
+   const d=await r.json();
+   if(!r.ok||d.error)throw new Error(d.error||("HTTP "+r.status));
 
-fetchBotData();
+   document.getElementById("botid").textContent=d.bot_id||botId;
+   document.getElementById("users").textContent=
+      d.user_count!==undefined?Number(d.user_count).toLocaleString():"—";
+   document.getElementById("botstatus").innerHTML=
+      d.status?primitive(d.status):"—";
 
+   const info={};
+   for(const k of ["username","first_name","status","owner_email","account_points","bot_id"]){
+      if(d.bot_info&&d.bot_info[k]!==undefined)info[k]=d.bot_info[k];
+   }
+   document.getElementById("info").innerHTML=rows(info);
+
+   const payload=d.export_data||d;
+   document.getElementById("data").innerHTML=rows(payload);
+   document.getElementById("entries").textContent=
+      payload&&typeof payload==="object"?Object.keys(payload).length:"—";
+
+   status.textContent="● Live";
+   status.style.color="#51e890";
+ }catch(e){
+   status.textContent="Error";
+   err.style.display="block";
+   err.textContent="❌ "+e.message;
+ }
+}
+load();
+setInterval(load,30000);
 </script>
-
 </body>
 </html>
