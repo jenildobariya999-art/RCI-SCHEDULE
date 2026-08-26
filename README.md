@@ -1,107 +1,62 @@
-# 📚 CA Study Board — v6 (Firebase Edition)
+# Wallet Bot Mini App Setup Guide
 
-This version fixes the **biggest problem**: data now syncs across **everyone's phones** in real-time using a free Firebase database.
+## Files Included
+1. `index.html` - Main app interface
+2. `style.css` - App styling
+3. `app.js` - App logic
+4. `mini_app_data.py` - TBC bot TPY command
 
----
+## Setup Steps
 
-## ⚠️ IMPORTANT — One-time setup (3 minutes)
+### 1. Host the Web Files
+Upload `index.html`, `style.css`, and `app.js` to any HTTPS host:
+- **GitHub Pages** (Free)
+- **Vercel** (Free)
+- **Netlify** (Free)
+- Your own server
 
-Before uploading to GitHub, you MUST set up a free Firebase project:
+### 2. Add Command to TBC Bot
+1. Go to your TBC Dashboard2. Create a new command: `/mini_app_data`
+3. Paste the TPY code from `mini_app_data.py`
+4. Save the command
 
-### Step 1 — Create Firebase project
-1. Go to **https://console.firebase.google.com**
-2. Click **"Add project"**
-3. Give it any name (e.g. `ca-board`) → Continue → Continue → **Create project**
+### 3. Configure BotFather
+1. Open Telegram → @BotFather
+2. Send `/setmenubutton`
+3. Select your bot
+4. Enter your Mini App URL (e.g., `https://your-domain.com/index.html`)
 
-### Step 2 — Add a Web App
-1. On the project home page, click the **`</>`** (web) icon
-2. Nickname it anything (e.g. `ca-board-web`) → **Register app**
-3. You'll see a code block like this:
-```js
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "ca-board-xxxx.firebaseapp.com",
-  databaseURL: "https://ca-board-xxxx-default-rtdb.firebaseio.com",
-  projectId: "ca-board-xxxx",
-  storageBucket: "ca-board-xxxx.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
-};
-```
-4. **Copy these values**
+### 4. Test Your Mini App
+- Open your bot on Telegram
+- Click the menu button (bottom right)
+- The Mini App should load
 
-### Step 3 — Enable Realtime Database
-1. In the left sidebar, click **Build → Realtime Database**
-2. Click **Create Database**
-3. Choose any location → click **Next**
-4. Select **"Start in test mode"** → **Enable**
+## Features
 
-### Step 4 — Set permanent rules (important!)
-Test mode rules expire after 30 days. To keep it working forever:
-1. In Realtime Database, click the **Rules** tab
-2. Replace with:
-```json
-{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
+### User Features
+- ✅ View balance
+- ✅ View referral stats
+- ✅ View purchased channels
+- ✅ Recent activity log
+- ✅ Deposit/Withdraw buttons
+- ✅ Recharge button
+
+### Admin Features
+- 📊 Bot statistics
+- 📢 Broadcast
+- 📡 Channel management
+- 👮 Admin management
+- 🏆 Top balance leaderboard
+
+## Customization
+
+### Colors
+Edit in `style.css`:
+```css
+:root {
+    --bg-color: #0a0a1a;      /* Background */
+    --card-bg: #141428;       /* Card background */
+    --accent: #7c3aed;        /* Primary accent */
+    --gradient-start: #7c3aed;
+    --gradient-end: #3b82f6;
 }
-```
-3. Click **Publish**
-
-> ⚠️ This makes your database publicly readable/writable. That's fine for a small private study group, but **don't store sensitive personal data** beyond names/phone numbers.
-
-### Step 5 — Paste your config
-1. Open **`firebase-config.js`** in this folder
-2. Replace the placeholder values with YOUR config from Step 2
-3. Save
-
----
-
-## 📁 Files to upload to GitHub
-
-```
-register.html
-index.html
-chat.html
-admin.html
-firebase-config.js   ← MUST edit this with your keys first!
-```
-
----
-
-## 🔐 Admin Login
-- Go to `yoursite.com/admin.html`
-- Default password: **`admin123`**
-- Change it in **Admin → Settings → Change Password**
-
----
-
-## ✅ What's Fixed in v6
-
-1. **OTP** — Uses Fast2SMS with `no-cors` mode (SMS fires silently) + always shows OTP on screen as backup, so registration never gets stuck
-2. **Post format** — WhatsApp-style: 📢 *MEET UP* / 📅 Date / 🕐 Time / 📍 Place / — Name
-3. **Persistent login** — Uses `localStorage` (not session storage), so you stay logged in even after closing the browser/tab. Logout button still works when you want to switch accounts
-4. **Real-time sync** — Registrations, approvals, posts, and chat now sync **instantly across all devices** via Firebase
-5. **Live notifications** — When admin posts, all members with notifications enabled get a push notification immediately
-6. **Auto-redirect on approval** — The "pending" screen automatically detects when admin approves and lets the member in — no need to refresh
-
----
-
-## 👥 Member Flow
-1. Friend opens `register.html` → enters name + phone
-2. Gets OTP (SMS + shown on screen) → verifies
-3. Sees "Waiting for approval" screen (auto-updates)
-4. **You** open `admin.html` → Members tab → tap **Approve**
-5. Friend's screen automatically redirects to the board ✅
-
----
-
-## 🆓 Firebase Free Tier
-The free "Spark" plan includes:
-- 1 GB stored data
-- 10 GB/month data transfer
-- Unlimited Realtime Database connections (within usage limits)
-
-This is more than enough for a small study group (dozens of users, hundreds of posts/messages).

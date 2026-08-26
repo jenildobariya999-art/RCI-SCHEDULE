@@ -1,300 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Notice Board — CA Study Board</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#08080e;--card:#0e0e1a;--card2:#13131f;--card3:#191926;
-  --line2:#ffffff16;--line3:#ffffff22;
-  --t1:#f4f4ff;--t2:#a0a0c8;--t3:#58587a;--t4:#30304a;
-  --amber:#f59e0b;--amber2:#fbbf24;--green:#22c55e;--red:#f87171;--blue:#60a5fa;--purple:#c084fc;
-  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
-}
-html,body{min-height:100vh;font-family:var(--font);-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--t1)}
-.nav{height:56px;display:flex;align-items:center;padding:0 1rem;border-bottom:1px solid var(--line2);position:sticky;top:0;background:rgba(8,8,14,.92);backdrop-filter:blur(16px);z-index:60;gap:8px}
-.logo{font-size:16px;font-weight:800;letter-spacing:-.04em;text-decoration:none;color:var(--t1);display:flex;align-items:center;gap:7px}
-.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
-.logo span{color:var(--amber)}
-.nav-links{display:flex;gap:3px;margin-left:auto}
-.nl{font-size:13px;font-weight:600;color:var(--t3);padding:6px 11px;border-radius:8px;text-decoration:none;transition:.15s}
-.nl:hover{color:var(--t1);background:var(--card2)}.nl.on{color:var(--t1);background:var(--card3);border:1px solid var(--line2)}
-.nav-r{display:flex;align-items:center;gap:7px;margin-left:8px}
-.av{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--amber),var(--amber2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#000;flex-shrink:0}
-.logout-btn{font-size:12px;font-weight:600;color:var(--t3);background:none;border:1px solid var(--line2);padding:5px 10px;border-radius:8px;cursor:pointer;font-family:var(--font);transition:.15s}
-.logout-btn:hover{color:var(--red);border-color:rgba(248,113,113,.3)}
-.main{max-width:620px;margin:0 auto;padding:1.5rem 1rem 6rem}
-.hero{margin-bottom:1.75rem}
-.live-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:.08em;color:var(--green);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 11px;border-radius:20px;margin-bottom:.6rem}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
-.hero h1{font-size:clamp(24px,6vw,34px);font-weight:800;letter-spacing:-.04em;line-height:1.05}
-.hero h1 em{font-style:normal;color:var(--amber)}
-.hero p{font-size:13px;font-weight:500;color:var(--t3);margin-top:.4rem}
-.notif-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:13px;font-weight:500;color:var(--t3)}
-.notif-bar button{margin-left:auto;background:var(--amber);color:#000;border:none;padding:6px 14px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s}
-.notif-bar button:hover{background:var(--amber2)}
-.notif-bar.ok{border-color:rgba(34,197,94,.2);color:var(--green)}
-.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:1.25rem}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;font-family:var(--font);font-size:13px;font-weight:700;padding:7px 17px;border-radius:30px;border:1px solid var(--line2);background:var(--card2);color:var(--t3);cursor:pointer;transition:all .18s}
-.tab:hover{border-color:var(--line3);color:var(--t2)}
-.tab.on{background:var(--amber);border-color:var(--amber);color:#000;box-shadow:0 4px 14px rgba(245,158,11,.3)}
-.post{background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:1.25rem 1.25rem 1rem;margin-bottom:.75rem;position:relative;overflow:hidden;animation:slideUp .25s cubic-bezier(.22,1,.36,1);transition:border-color .2s}
-.post:hover{border-color:var(--line3)}
-@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.post::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
-.post.meet::before{background:var(--blue)}.post.urgent::before{background:var(--red)}.post.notice::before{background:var(--purple)}
-.post-emoji-title{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.02em;margin-bottom:.9rem;line-height:1.3}
-.post-lines{display:flex;flex-direction:column;gap:.55rem;margin-bottom:.9rem}
-.post-line{display:flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:500;color:var(--t2);line-height:1.4}
-.post-line .li{font-size:16px;flex-shrink:0;margin-top:1px}
-.post-line .lv{color:var(--t1);font-weight:600}
-.post-line.body-line{color:var(--t2);font-size:13px;line-height:1.6;flex-direction:column;gap:.2rem}
-.post-line.body-line .lv{color:var(--t2);font-weight:500}
-.post-divider{height:1px;background:var(--line2);margin-bottom:.7rem}
-.post-footer{display:flex;align-items:center;justify-content:space-between}
-.post-from{font-size:12px;color:var(--t4);font-weight:600;font-family:var(--mono)}
-.post-from em{color:var(--amber);font-style:normal}
-.post-age{font-size:11px;color:var(--t4);font-family:var(--mono)}
-.del-btn{font-size:12px;font-weight:600;color:var(--t4);background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;font-family:var(--font);transition:.15s;display:none}
-.del-btn:hover{color:var(--red);background:rgba(248,113,113,.08)}
-body.adm .del-btn{display:inline-flex;align-items:center;gap:3px}
-.empty{text-align:center;padding:4rem 1rem;color:var(--t4)}
-.empty .big{font-size:52px;margin-bottom:.75rem;filter:grayscale(1);opacity:.35}
-.empty p{font-size:14px;font-weight:600;color:var(--t3)}
-.hand-fab{position:fixed;bottom:1.75rem;right:1.25rem;z-index:50;width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,var(--amber),var(--amber2));border:none;font-size:22px;cursor:pointer;box-shadow:0 8px 28px rgba(245,158,11,.4);transition:all .2s;display:flex;align-items:center;justify-content:center}
-.hand-fab:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(245,158,11,.5)}
-.ov{display:none;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}
-.ov.on{display:flex}
-.modal{background:var(--card);border:1px solid var(--line2);border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:540px;animation:slideModal .28s cubic-bezier(.22,1,.36,1)}
-@media(min-width:560px){.ov{align-items:center;padding:1rem}.modal{border-radius:24px;padding:2rem}}
-@keyframes slideModal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
-.modal-handle{width:36px;height:4px;background:var(--line3);border-radius:4px;margin:0 auto 1.25rem;display:block}
-@media(min-width:560px){.modal-handle{display:none}}
-.modal h2{font-size:19px;font-weight:800;letter-spacing:-.03em;margin-bottom:1.25rem}
-.modal h2 span{color:var(--amber)}
-.lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;font-family:var(--mono)}
-.field{margin-bottom:1rem}
-textarea{width:100%;background:var(--card2);border:1.5px solid var(--line2);color:var(--t1);border-radius:12px;padding:12px 16px;font-family:var(--font);font-size:14px;font-weight:500;outline:none;resize:vertical;min-height:80px;transition:.2s}
-textarea:focus{border-color:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.1)}
-textarea::placeholder{color:var(--t4)}
-.mbtn{width:100%;background:linear-gradient(135deg,var(--amber),var(--amber2));color:#000;border:none;border-radius:12px;padding:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(245,158,11,.25)}
-.mbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,158,11,.35)}
-.gbtn{width:100%;background:transparent;color:var(--t2);border:1.5px solid var(--line2);border-radius:12px;padding:13px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;margin-top:.6rem;transition:.15s}
-.gbtn:hover{border-color:var(--line3);color:var(--t1)}
-.fb-warn{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:12px;padding:1rem;font-size:13px;color:var(--red);font-weight:600;text-align:center;margin:1rem;line-height:1.6}
-#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card3);border:1px solid var(--line3);color:var(--t1);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;pointer-events:none;opacity:0;transition:.25s;white-space:nowrap;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-#toast.on{opacity:1}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wallet Bot Dashboard</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Wallet Bot</h1>
+            <button class="refresh-btn" onclick="refreshData()">🔄</button>
+        </div>
 
-<nav class="nav">
-  <a class="logo" href="index.html"><span class="logo-dot"></span>CA <span>Board</span></a>
-  <div class="nav-links">
-    <a href="index.html" class="nl on">📋 Board</a>
-    <a href="chat.html"  class="nl">💬 Chat</a>
-  </div>
-  <div class="nav-r">
-    <div class="av" id="nav-av">?</div>
-    <span style="font-size:13px;font-weight:600;color:var(--t2)" id="nav-name"></span>
-    <button class="logout-btn" onclick="doLogout()">Logout</button>
-  </div>
-</nav>
+        <!-- User Profile Card -->
+        <div class="card user-card">
+            <div class="user-avatar" id="userAvatar">👤</div>
+            <div class="user-info">
+                <h2 id="userName">Loading...</h2>
+                <p id="userId">ID: ---</p>
+                <span class="user-status" id="userStatus">✅ Verified</span>
+            </div>
+        </div>
 
-<div class="main">
-  <div class="hero">
-    <div class="live-pill"><span class="live-dot"></span>LIVE BOARD</div>
-    <h1>Study Group<br/><em>Announcements</em></h1>
-    <p>All updates from your admin — instantly</p>
-  </div>
+        <!-- Balance Card -->
+        <div class="card balance-card">
+            <div class="balance-header">
+                <span class="balance-label">💰 Balance</span>
+                <span class="balance-currency">₹</span>
+            </div>
+            <div class="balance-amount" id="userBalance">0.00</div>
+            <div class="balance-actions">
+                <button class="action-btn small primary" onclick="requestData('deposit')">💳 Deposit</button>
+                <button class="action-btn small secondary" onclick="requestData('withdraw')">💸 Withdraw</button>
+            </div>
+        </div>
 
-  <div class="notif-bar" id="nbar">
-    🔔 Tap Enable to get notified when admin posts
-    <button onclick="enableNotif()">Enable</button>
-  </div>
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <span class="stat-label">Total Referrals</span>
+                    <span class="stat-value" id="refCount">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-content">
+                    <span class="stat-label">Verified Refers</span>
+                    <span class="stat-value" id="verifiedRef">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💎</div>
+                <div class="stat-content">
+                    <span class="stat-label">Total Withdraw</span>
+                    <span class="stat-value" id="totalWithdraw">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <span class="stat-label">Rank</span>
+                    <span class="stat-value" id="userRank">#---</span>
+                </div>
+            </div>
+        </div>
 
-  <div class="tabs">
-    <button class="tab on" onclick="setFilter('all',this)">All</button>
-    <button class="tab" onclick="setFilter('meet',this)">📍 Meet Up</button>
-    <button class="tab" onclick="setFilter('urgent',this)">🚨 Urgent</button>
-    <button class="tab" onclick="setFilter('notice',this)">📋 Notice</button>
-  </div>
+        <!-- Quick Actions -->
+        <div class="card">
+            <h3>⚡ Quick Actions</h3>
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="requestData('buy_channel')">
+                    👤 Buy Channel
+                </button>
+                <button class="action-btn secondary" onclick="requestData('orders')">
+                    📜 My Orders
+                </button>
+                <button class="action-btn success" onclick="requestData('recharge')">
+                    📳 Recharge
+                </button>
+            </div>
+        </div>
 
-  <div id="posts"></div>
-</div>
+        <!-- Channel Purchases -->
+        <div class="card">
+            <h3>📢 My Purchased Channels</h3>
+            <div id="purchasedChannels">
+                <div class="empty-state">No channels purchased yet</div>
+            </div>
+        </div>
 
-<button class="hand-fab" id="hand-fab" onclick="openHand()" title="Raise hand">✋</button>
+        <!-- Recent Activity -->
+        <div class="card">
+            <h3>📈 Recent Activity</h3>
+            <div id="activityList">
+                <div class="activity-item">
+                    <span class="activity-text">Loading activity...</span>
+                </div>
+            </div>
+        </div>
 
-<div class="ov" id="hand-ov" onclick="if(event.target===this)this.classList.remove('on')">
-  <div class="modal">
-    <span class="modal-handle"></span>
-    <h2>✋ Raise <span>Hand</span></h2>
-    <p style="font-size:13px;font-weight:500;color:var(--t3);margin-bottom:1.25rem">Send a private request to admin. Only admin sees this.</p>
-    <div class="field"><label class="lbl">Your Message (optional)</label><textarea id="hand-msg" placeholder="e.g. Need help with Chapter 5 journal entries..."></textarea></div>
-    <button class="mbtn" onclick="submitHand()">Send to Admin ✋</button>
-    <button class="gbtn" onclick="document.getElementById('hand-ov').classList.remove('on')">Cancel</button>
-  </div>
-</div>
+        <!-- Admin Panel (Hidden for non-admins) -->
+        <div class="card admin-panel" id="adminPanel" style="display:none;">
+            <h3>🛡️ Admin Panel</h3>
+            <div class="admin-actions">
+                <button class="action-btn admin" onclick="requestData('admin_stats')">📊 Stats</button>
+                <button class="action-btn admin" onclick="requestData('broadcast')">📢 Broadcast</button>
+                <button class="action-btn admin" onclick="requestData('channels')">📡 Channels</button>
+                <button class="action-btn admin" onclick="requestData('admins')">👮 Admins</button>
+                <button class="action-btn admin" onclick="requestData('top_balance')">🏆 Top Balance</button>
+            </div>
+        </div>
 
-<div id="toast"></div>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script>
-function getS(){try{return JSON.parse(localStorage.getItem('cab_s'))||null}catch{return null}}
-function clearS(){localStorage.removeItem('cab_s')}
-function isAdmin(){return getS()?.role==='admin'}
-function isMember(){return getS()?.role==='member'}
-function cPhone(){return getS()?.phone||null}
-function toast(m,dur=2800){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur)}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-let filter='all';
-let allPosts=[];
-let myName='Member';
-let lastSeenCount=null;
-
-function buildPostHTML(p){
-  const typeMap={
-    meet:  {emoji:'📢', title:'MEET UP',    color:'var(--blue)'},
-    urgent:{emoji:'🚨', title:'URGENT',     color:'var(--red)'},
-    notice:{emoji:'📋', title:'NOTICE',     color:'var(--purple)'},
-  };
-  const info=typeMap[p.type]||{emoji:'📢',title:'POST',color:'var(--amber)'};
-  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let dateStr='', timeStr='', placeStr='';
-  if(p.date){
-    const[y,mo,day]=p.date.split('-');
-    const dt=new Date(y,+mo-1,+day);
-    dateStr=`${days[dt.getDay()]}, ${parseInt(day)} ${months[+mo-1]} ${y}`;
-  }
-  if(p.time){
-    const[h,m]=p.time.split(':');
-    const hh=+h;
-    timeStr=`${hh%12||12}:${m} ${hh>=12?'PM':'AM'}`;
-  }
-  if(p.place) placeStr=esc(p.place);
-  const s=Math.floor((Date.now()-p.ts)/1000);
-  const age=s<60?'just now':s<3600?~~(s/60)+'m ago':s<86400?~~(s/3600)+'h ago':~~(s/86400)+'d ago';
-  const lines=[];
-  if(dateStr) lines.push(`<div class="post-line"><span class="li">📅</span><span class="lv">${dateStr}</span></div>`);
-  if(timeStr) lines.push(`<div class="post-line"><span class="li">🕐</span><span class="lv">${timeStr}</span></div>`);
-  if(placeStr) lines.push(`<div class="post-line"><span class="li">📍</span><span class="lv">${placeStr}</span></div>`);
-  if(p.body) lines.push(`<div class="post-line body-line"><span class="li">💬</span><span class="lv">${esc(p.body)}</span></div>`);
-  return `
-  <div class="post ${p.type}">
-    <div class="post-emoji-title">${info.emoji} <span style="color:${info.color};font-size:16px">*${info.title}*</span></div>
-    ${lines.length?`<div class="post-lines">${lines.join('')}</div>`:``}
-    <div class="post-divider"></div>
-    <div class="post-footer">
-      <span class="post-from">— <em>${esc(p.from)}</em></span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="post-age">${age}</span>
-        <button class="del-btn" onclick="delPost('${p.id}')">🗑</button>
-      </div>
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
     </div>
-  </div>`;
-}
 
-window.addEventListener('load',async ()=>{
-  if(firebaseConfig.apiKey.includes('PASTE')){
-    document.getElementById('posts').innerHTML=`<div class="fb-warn">⚠️ Firebase not configured.<br/>Edit <strong>firebase-config.js</strong> with your project keys, then re-upload.</div>`;
-    return;
-  }
-  if(!isAdmin()&&!isMember()){location.href='register.html';return}
-  if(isMember()){
-    const snap=await db.ref('users/'+cPhone()).once('value');
-    const u=snap.val();
-    if(!u||u.blocked){clearS();location.href='register.html';return}
-    if(!u.approved){clearS();location.href='register.html';return}
-    myName=u.name;
-  } else {
-    myName=(await db.ref('settings/adminName').once('value')).val()||'Admin';
-  }
-  if(isAdmin())document.body.classList.add('adm');
-  document.getElementById('nav-av').textContent=myName[0].toUpperCase();
-  document.getElementById('nav-name').textContent=myName;
-  if(isAdmin())document.getElementById('hand-fab').style.display='none';
-
-  if(Notification?.permission==='granted'){
-    document.getElementById('nbar').className='notif-bar ok';
-    document.getElementById('nbar').innerHTML=`<span class="live-dot" style="display:inline-block;margin-right:6px"></span>Notifications are ON`;
-  }
-
-  // ── LIVE LISTENER for posts ──
-  db.ref('posts').on('value', snap=>{
-    const val=snap.val()||{};
-    allPosts=Object.keys(val).map(k=>({id:k,...val[k]})).sort((a,b)=>a.ts-b.ts);
-
-    // Notify on new post (skip first load)
-    if(lastSeenCount!==null && allPosts.length>lastSeenCount && !isAdmin()){
-      const newest=allPosts[allPosts.length-1];
-      if(Notification?.permission==='granted'){
-        const typeMap={meet:'📢 MEET UP',urgent:'🚨 URGENT',notice:'📋 NOTICE'};
-        new Notification('CA Study Board — '+(typeMap[newest.type]||'New Post'),{
-          body:newest.title+'\n— '+newest.from,
-          icon:'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
-          tag:'cab-post-'+newest.id,
-          requireInteraction:true
-        });
-      }
-    }
-    lastSeenCount=allPosts.length;
-    renderPosts();
-  });
-});
-
-function setFilter(f,el){filter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderPosts()}
-
-function renderPosts(){
-  let posts=allPosts.slice().reverse();
-  if(filter!=='all')posts=posts.filter(p=>p.type===filter);
-  const c=document.getElementById('posts');
-  if(!posts.length){c.innerHTML=`<div class="empty"><div class="big">📭</div><p>No announcements yet</p></div>`;return}
-  c.innerHTML=posts.map(buildPostHTML).join('');
-}
-
-function delPost(id){
-  if(!confirm('Delete this post?'))return;
-  db.ref('posts/'+id).remove();
-  toast('🗑 Deleted');
-}
-
-async function enableNotif(){
-  if(!('Notification' in window)){toast('❌ Browser does not support notifications');return}
-  const p=await Notification.requestPermission();
-  if(p==='granted'){
-    document.getElementById('nbar').className='notif-bar ok';
-    document.getElementById('nbar').innerHTML=`<span class="live-dot" style="display:inline-block;margin-right:6px"></span>Notifications are ON`;
-    toast('🔔 Notifications enabled!');
-    new Notification('✅ CA Study Board',{body:'You will now get notified for every new post!',icon:'https://cdn-icons-png.flaticon.com/512/1160/1160358.png'});
-  } else {
-    toast('❌ Denied — please allow in browser settings');
-  }
-}
-
-function openHand(){document.getElementById('hand-msg').value='';document.getElementById('hand-ov').classList.add('on')}
-async function submitHand(){
-  const note=document.getElementById('hand-msg').value.trim();
-  const phone=cPhone();
-  // check existing unresolved
-  const snap=await db.ref('hands').orderByChild('phone').equalTo(phone).once('value');
-  const val=snap.val()||{};
-  const hasPending=Object.values(val).some(h=>!h.resolved);
-  if(hasPending){toast('⚠️ Already have a pending request');document.getElementById('hand-ov').classList.remove('on');return}
-  const ref=db.ref('hands').push();
-  await ref.set({phone,name:myName,note,resolved:false,ts:Date.now()});
-  document.getElementById('hand-ov').classList.remove('on');
-  toast('✋ Request sent to admin!');
-}
-function doLogout(){clearS();location.href='register.html'}
-</script>
+    <script src="app.js"></script>
 </body>
 </html>
