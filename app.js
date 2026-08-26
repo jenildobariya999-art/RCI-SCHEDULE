@@ -8,7 +8,8 @@ const state = {
     user: null,
     isAdmin: false,
     data: null,
-    isLoading: false
+    isLoading: false,
+    timeoutId: null
 };
 
 // DOM Elements
@@ -34,7 +35,6 @@ function initApp() {
         state.user = user;
         elements.userName.textContent = user.first_name || 'User';
         elements.userId.textContent = `ID: ${user.id}`;
-        
         const avatar = document.querySelector('.user-avatar');
         avatar.textContent = user.first_name?.charAt(0) || '👤';
     } else {
@@ -42,7 +42,7 @@ function initApp() {
         elements.userId.textContent = 'ID: 123456789';
     }
 
-    // Check if user is admin (will be determined from bot response)
+    // Send initial request
     requestData('init');
 }
 
@@ -58,8 +58,15 @@ function sendToBot(action, data = {}) {
     try {
         tg.sendData(message);
         showLoading(true);
+        // Set timeout to hide loading if no response after 10 seconds
+        if (state.timeoutId) clearTimeout(state.timeoutId);
+        state.timeoutId = setTimeout(() => {
+            showLoading(false);
+            showToast('⏳ Bot not responding. Please try again.', 'error');
+        }, 10000);
     } catch (error) {
         console.error('Error sending data:', error);
+        showLoading(false);
         showToast('Error sending request', 'error');
     }
 }
@@ -87,13 +94,10 @@ function refreshData() {
 function updateUI(data) {
     if (!data) return;
 
-    // Update balance
     if (data.balance !== undefined) {
         elements.userBalance.textContent = formatCurrency(data.balance);
         animateValue(elements.userBalance);
     }
-
-    // Update referral stats
     if (data.refCount !== undefined) {
         elements.refCount.textContent = data.refCount;
     }
@@ -106,30 +110,20 @@ function updateUI(data) {
     if (data.rank !== undefined) {
         elements.userRank.textContent = `#${data.rank}`;
     }
-
-    // Update user status
     if (data.isVerified !== undefined) {
         elements.userStatus.textContent = data.isVerified ? '✅ Verified' : '⏳ Pending';
         elements.userStatus.style.color = data.isVerified ? 'var(--success)' : 'var(--warning)';
     }
-
-    // Check if user is admin
     if (data.isAdmin !== undefined) {
         state.isAdmin = data.isAdmin;
         elements.adminPanel.style.display = data.isAdmin ? 'block' : 'none';
     }
-
-    // Update purchased channels
     if (data.channels && data.channels.length > 0) {
         renderChannels(data.channels);
     }
-
-    // Update activities
     if (data.activities && data.activities.length > 0) {
         renderActivities(data.activities);
     }
-
-    // Show welcome message if available
     if (data.message) {
         showToast(data.message, 'success');
     }
@@ -139,7 +133,6 @@ function updateUI(data) {
 function renderChannels(channels) {
     const container = elements.purchasedChannels;
     container.innerHTML = '';
-    
     channels.forEach(channel => {
         const item = document.createElement('div');
         item.className = 'purchased-channel';
@@ -156,12 +149,10 @@ function renderChannels(channels) {
 function renderActivities(activities) {
     const list = elements.activityList;
     list.innerHTML = '';
-    
     if (activities.length === 0) {
         list.innerHTML = '<div class="activity-item"><span class="activity-text">No recent activity</span></div>';
         return;
     }
-    
     activities.slice(0, 5).forEach(activity => {
         const item = document.createElement('div');
         item.className = 'activity-item';
@@ -173,29 +164,27 @@ function renderActivities(activities) {
     });
 }
 
-// Show Loading Overlay
+// Show/Hide Loading
 function showLoading(show) {
     state.isLoading = show;
     elements.loadingOverlay.classList.toggle('active', show);
 }
 
-// Show Toast Message
+// Toast Messages
 function showToast(message, type = 'info') {
     const existing = document.querySelector('.toast');
     if (existing) existing.remove();
-    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
-    
     setTimeout(() => {
         toast.style.animation = 'slideDown 0.3s ease';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
-// Utility Functions
+// Utility
 function formatCurrency(num) {
     if (num === undefined || num === null) return '0.00';
     return Number(num).toFixed(2);
@@ -211,21 +200,22 @@ function animateValue(element) {
 
 // Handle Bot Response
 function handleBotResponse(response) {
+    // Clear timeout since we got a response
+    if (state.timeoutId) {
+        clearTimeout(state.timeoutId);
+        state.timeoutId = null;
+    }
+    showLoading(false);
+    
     try {
         const data = typeof response === 'string' ? JSON.parse(response) : response;
-        
-        showLoading(false);
-        
         if (data.error) {
             showToast('Error: ' + data.error, 'error');
             return;
         }
-        
         if (data.status === 'success') {
             updateUI(data);
-            if (data.message) {
-                showToast(data.message, 'success');
-            }
+            if (data.message) showToast(data.message, 'success');
         } else if (data.status === 'error') {
             showToast(data.message || 'An error occurred', 'error');
         } else {
@@ -233,7 +223,6 @@ function handleBotResponse(response) {
         }
     } catch (error) {
         console.error('Error handling response:', error);
-        showLoading(false);
         showToast('Error processing data', 'error');
     }
 }
@@ -248,7 +237,7 @@ tg.onEvent('data', (data) => {
     handleBotResponse(data);
 });
 
-// Initialize the app
+// Initialize
 document.addEventListener('DOMContentLoaded', initApp);
 
 // Export for debugging
