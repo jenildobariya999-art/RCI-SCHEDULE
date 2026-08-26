@@ -2,127 +2,558 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wallet Bot Dashboard</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Bot Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #171717;
+            padding-bottom: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #4834d4);
+            color: white;
+            padding: 25px 18px;
+            border-radius: 0 0 25px 25px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 7px;
+        }
+
+        .header p {
+            opacity: .85;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 18px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 10px;
+            color: #777;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.06);
+        }
+
+        .card .icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .card .title {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .card .value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .section {
+            margin-top: 18px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .info {
+            background: white;
+            border-radius: 18px;
+            padding: 5px 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.05);
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            gap: 15px;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .data {
+            font-weight: bold;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .online {
+            background: #dff8e8;
+            color: #159447;
+        }
+
+        .offline {
+            background: #ffe1e1;
+            color: #d63031;
+        }
+
+        .error {
+            background: #ffe8e8;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .refresh {
+            width: 100%;
+            border: none;
+            background: #6c5ce7;
+            color: white;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 18px;
+            cursor: pointer;
+        }
+
+        .refresh:active {
+            transform: scale(.98);
+        }
+
+        @media (max-width: 360px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
+
+    <div class="header">
+        <h1 id="botName">Bot Dashboard</h1>
+        <p id="welcome">Loading bot data...</p>
+    </div>
+
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>💰 Wallet Bot</h1>
-            <button class="refresh-btn" onclick="refreshData()">🔄</button>
+
+        <div id="loading" class="loading">
+            ⏳ Loading bot data...
         </div>
 
-        <!-- User Profile Card -->
-        <div class="card user-card">
-            <div class="user-avatar" id="userAvatar">👤</div>
-            <div class="user-info">
-                <h2 id="userName">Loading...</h2>
-                <p id="userId">ID: ---</p>
-                <span class="user-status" id="userStatus">✅ Verified</span>
-            </div>
-        </div>
+        <div id="error" class="error"></div>
 
-        <!-- Balance Card -->
-        <div class="card balance-card">
-            <div class="balance-header">
-                <span class="balance-label">💰 Balance</span>
-                <span class="balance-currency">₹</span>
-            </div>
-            <div class="balance-amount" id="userBalance">0.00</div>
-            <div class="balance-actions">
-                <button class="action-btn small primary" onclick="requestData('deposit')">💳 Deposit</button>
-                <button class="action-btn small secondary" onclick="requestData('withdraw')">💸 Withdraw</button>
-            </div>
-        </div>
+        <div id="dashboard" style="display:none;">
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-content">
-                    <span class="stat-label">Total Referrals</span>
-                    <span class="stat-value" id="refCount">0</span>
+            <div class="grid">
+
+                <div class="card">
+                    <div class="icon">👥</div>
+                    <div class="title">Total Users</div>
+                    <div class="value" id="totalUsers">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="icon">💰</div>
+                    <div class="title">Total Balance</div>
+                    <div class="value" id="totalBalance">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="icon">👨‍💼</div>
+                    <div class="title">Admins</div>
+                    <div class="value" id="totalAdmins">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="icon">📊</div>
+                    <div class="title">Transactions</div>
+                    <div class="value" id="totalTransactions">0</div>
+                </div>
+
+            </div>
+
+            <div class="section">
+                <div class="section-title">🤖 Bot Information</div>
+
+                <div class="info">
+
+                    <div class="row">
+                        <span class="label">Bot Name</span>
+                        <span class="data" id="botNameInfo">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Username</span>
+                        <span class="data" id="botUsername">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Bot ID</span>
+                        <span class="data" id="botId">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Status</span>
+                        <span id="botStatus" class="status online">
+                            Online
+                        </span>
+                    </div>
+
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-content">
-                    <span class="stat-label">Verified Refers</span>
-                    <span class="stat-value" id="verifiedRef">0</span>
+
+            <div class="section">
+                <div class="section-title">⚙️ Bot Settings</div>
+
+                <div class="info">
+
+                    <div class="row">
+                        <span class="label">Daily Bonus</span>
+                        <span class="data" id="dailyBonus">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Referral Bonus</span>
+                        <span class="data" id="referBonus">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Minimum Withdrawal</span>
+                        <span class="data" id="minWithdraw">-</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Currency</span>
+                        <span class="data" id="currency">-</span>
+                    </div>
+
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">💎</div>
-                <div class="stat-content">
-                    <span class="stat-label">Total Withdraw</span>
-                    <span class="stat-value" id="totalWithdraw">0</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-content">
-                    <span class="stat-label">Rank</span>
-                    <span class="stat-value" id="userRank">#---</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div class="card">
-            <h3>⚡ Quick Actions</h3>
-            <div class="quick-actions">
-                <button class="action-btn primary" onclick="requestData('buy_channel')">
-                    👤 Buy Channel
-                </button>
-                <button class="action-btn secondary" onclick="requestData('orders')">
-                    📜 My Orders
-                </button>
-                <button class="action-btn success" onclick="requestData('recharge')">
-                    📳 Recharge
-                </button>
-            </div>
-        </div>
+            <button class="refresh" onclick="loadBotData()">
+                🔄 Refresh Data
+            </button>
 
-        <!-- Channel Purchases -->
-        <div class="card">
-            <h3>📢 My Purchased Channels</h3>
-            <div id="purchasedChannels">
-                <div class="empty-state">No channels purchased yet</div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="card">
-            <h3>📈 Recent Activity</h3>
-            <div id="activityList">
-                <div class="activity-item">
-                    <span class="activity-text">Loading activity...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel (Hidden for non-admins) -->
-        <div class="card admin-panel" id="adminPanel" style="display:none;">
-            <h3>🛡️ Admin Panel</h3>
-            <div class="admin-actions">
-                <button class="action-btn admin" onclick="requestData('admin_stats')">📊 Stats</button>
-                <button class="action-btn admin" onclick="requestData('broadcast')">📢 Broadcast</button>
-                <button class="action-btn admin" onclick="requestData('channels')">📡 Channels</button>
-                <button class="action-btn admin" onclick="requestData('admins')">👮 Admins</button>
-                <button class="action-btn admin" onclick="requestData('top_balance')">🏆 Top Balance</button>
-            </div>
-        </div>
-
-        <!-- Loading Overlay -->
-        <div class="loading-overlay" id="loadingOverlay">
-            <div class="spinner"></div>
-            <p>Loading...</p>
         </div>
     </div>
 
-    <script src="app.js"></script>
+
+<script>
+
+    /*
+     * Your TBC command endpoint.
+     *
+     * Example:
+     * https://your-domain.com/mini_app_data
+     *
+     * IMPORTANT:
+     * Replace this with your actual endpoint.
+     */
+    const API_URL = "/mini_app_data";
+
+
+    // Get Telegram Mini App information
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+        tg.ready();
+        tg.expand();
+    }
+
+
+    function setText(id, value) {
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent =
+                value !== undefined &&
+                value !== null &&
+                value !== ""
+                    ? value
+                    : "-";
+        }
+    }
+
+
+    async function loadBotData() {
+
+        const loading = document.getElementById("loading");
+        const dashboard = document.getElementById("dashboard");
+        const error = document.getElementById("error");
+
+        loading.style.display = "block";
+        dashboard.style.display = "none";
+        error.style.display = "none";
+
+        try {
+
+            /*
+             * Telegram user information
+             */
+            let telegramUser = null;
+
+            if (
+                tg &&
+                tg.initDataUnsafe &&
+                tg.initDataUnsafe.user
+            ) {
+                telegramUser = tg.initDataUnsafe.user;
+            }
+
+
+            /*
+             * Data sent to TBC
+             */
+            const requestData = {
+                action: "init",
+
+                user_id: telegramUser
+                    ? telegramUser.id
+                    : null,
+
+                username: telegramUser
+                    ? telegramUser.username
+                    : null,
+
+                first_name: telegramUser
+                    ? telegramUser.first_name
+                    : null,
+
+                init_data: tg
+                    ? tg.initData
+                    : ""
+            };
+
+
+            /*
+             * Send request to TBC
+             */
+            const response = await fetch(API_URL, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(requestData)
+            });
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "Server returned HTTP " + response.status
+                );
+            }
+
+
+            const data = await response.json();
+
+
+            /*
+             * Check API response
+             */
+            if (!data.ok) {
+                throw new Error(
+                    data.error || "Unable to load bot data"
+                );
+            }
+
+
+            /*
+             * Bot information
+             */
+            const bot = data.bot || {};
+
+            setText(
+                "botName",
+                bot.name || "Bot Dashboard"
+            );
+
+            setText(
+                "botNameInfo",
+                bot.name
+            );
+
+            setText(
+                "botUsername",
+                bot.username
+                    ? "@" + bot.username
+                    : "-"
+            );
+
+            setText(
+                "botId",
+                bot.id
+            );
+
+
+            /*
+             * Statistics
+             */
+            const stats = data.stats || {};
+
+            setText(
+                "totalUsers",
+                stats.total_users ?? 0
+            );
+
+            setText(
+                "totalBalance",
+                stats.total_balance ?? 0
+            );
+
+            setText(
+                "totalAdmins",
+                stats.total_admins ?? 0
+            );
+
+            setText(
+                "totalTransactions",
+                stats.total_transactions ?? 0
+            );
+
+
+            /*
+             * Settings
+             */
+            const settings = data.settings || {};
+
+            setText(
+                "dailyBonus",
+                settings.daily_bonus
+            );
+
+            setText(
+                "referBonus",
+                settings.refer_bonus
+            );
+
+            setText(
+                "minWithdraw",
+                settings.min_withdraw
+            );
+
+            setText(
+                "currency",
+                settings.currency || "₹"
+            );
+
+
+            /*
+             * Bot status
+             */
+            const status = document.getElementById("botStatus");
+
+            if (bot.status === "offline") {
+
+                status.textContent = "Offline";
+
+                status.className =
+                    "status offline";
+
+            } else {
+
+                status.textContent = "Online";
+
+                status.className =
+                    "status online";
+            }
+
+
+            /*
+             * Welcome message
+             */
+            if (telegramUser) {
+
+                setText(
+                    "welcome",
+                    "Welcome, " +
+                    (
+                        telegramUser.first_name ||
+                        telegramUser.username ||
+                        "User"
+                    )
+                );
+
+            } else {
+
+                setText(
+                    "welcome",
+                    "Bot information dashboard"
+                );
+            }
+
+
+            loading.style.display = "none";
+            dashboard.style.display = "block";
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            loading.style.display = "none";
+
+            error.style.display = "block";
+
+            error.textContent =
+                "❌ " + err.message;
+        }
+    }
+
+
+    /*
+     * Load automatically
+     */
+    loadBotData();
+
+</script>
+
+<!-- Telegram Mini App SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </body>
 </html>
