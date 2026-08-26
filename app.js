@@ -8,8 +8,8 @@ const state = {
     user: null,
     isAdmin: false,
     data: null,
-    isLoading: false,
-    timeoutId: null
+    webhookUrl: null,
+    isLoading: false
 };
 
 // DOM Elements
@@ -42,11 +42,11 @@ function initApp() {
         elements.userId.textContent = 'ID: 123456789';
     }
 
-    // Send initial request
+    // Send init request to get webhook URL
     requestData('init');
 }
 
-// Send Data to Bot
+// Send Data to Bot (for actions that need Telegram-side processing)
 function sendToBot(action, data = {}) {
     const message = JSON.stringify({
         action: action,
@@ -58,7 +58,7 @@ function sendToBot(action, data = {}) {
     try {
         tg.sendData(message);
         showLoading(true);
-        // Set timeout to hide loading if no response after 10 seconds
+        // Timeout after 10s
         if (state.timeoutId) clearTimeout(state.timeoutId);
         state.timeoutId = setTimeout(() => {
             showLoading(false);
@@ -71,7 +71,7 @@ function sendToBot(action, data = {}) {
     }
 }
 
-// Request Data from Bot
+// Request Data from Bot (sendData)
 function requestData(action) {
     const data = {
         action: action,
@@ -80,9 +80,32 @@ function requestData(action) {
     sendToBot(action, data);
 }
 
-// Refresh Data
+// Fetch data from webhook URL
+async function fetchWebhookData(url) {
+    if (!url) {
+        showToast('No webhook URL available', 'error');
+        return;
+    }
+    showLoading(true);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        showLoading(false);
+        updateUI(data);
+    } catch (error) {
+        console.error('Webhook fetch error:', error);
+        showLoading(false);
+        showToast('Failed to fetch data from webhook', 'error');
+    }
+}
+
+// Refresh data (uses webhook if available)
 function refreshData() {
-    requestData('refresh');
+    if (state.webhookUrl) {
+        fetchWebhookData(state.webhookUrl);
+    } else {
+        requestData('refresh');
+    }
     const btn = document.querySelector('.refresh-btn');
     btn.style.transform = 'rotate(360deg)';
     setTimeout(() => {
@@ -120,6 +143,8 @@ function updateUI(data) {
     }
     if (data.channels && data.channels.length > 0) {
         renderChannels(data.channels);
+    } else if (data.channels) {
+        document.getElementById('purchasedChannels').innerHTML = '<div class="empty-state">No channels purchased yet</div>';
     }
     if (data.activities && data.activities.length > 0) {
         renderActivities(data.activities);
@@ -127,11 +152,18 @@ function updateUI(data) {
     if (data.message) {
         showToast(data.message, 'success');
     }
+
+    // Store webhook URL if provided
+    if (data.webhook_url) {
+        state.webhookUrl = data.webhook_url;
+        // After getting webhook URL, fetch data from it
+        fetchWebhookData(data.webhook_url);
+    }
 }
 
 // Render Purchased Channels
 function renderChannels(channels) {
-    const container = elements.purchasedChannels;
+    const container = document.getElementById('purchasedChannels');
     container.innerHTML = '';
     channels.forEach(channel => {
         const item = document.createElement('div');
@@ -147,7 +179,7 @@ function renderChannels(channels) {
 
 // Render Activities
 function renderActivities(activities) {
-    const list = elements.activityList;
+    const list = document.getElementById('activityList');
     list.innerHTML = '';
     if (activities.length === 0) {
         list.innerHTML = '<div class="activity-item"><span class="activity-text">No recent activity</span></div>';
@@ -167,7 +199,7 @@ function renderActivities(activities) {
 // Show/Hide Loading
 function showLoading(show) {
     state.isLoading = show;
-    elements.loadingOverlay.classList.toggle('active', show);
+    document.getElementById('loadingOverlay').classList.toggle('active', show);
 }
 
 // Toast Messages
@@ -198,9 +230,8 @@ function animateValue(element) {
     }, 200);
 }
 
-// Handle Bot Response
+// Handle Bot Response (from sendData)
 function handleBotResponse(response) {
-    // Clear timeout since we got a response
     if (state.timeoutId) {
         clearTimeout(state.timeoutId);
         state.timeoutId = null;
@@ -213,14 +244,14 @@ function handleBotResponse(response) {
             showToast('Error: ' + data.error, 'error');
             return;
         }
-        if (data.status === 'success') {
-            updateUI(data);
-            if (data.message) showToast(data.message, 'success');
-        } else if (data.status === 'error') {
-            showToast(data.message || 'An error occurred', 'error');
-        } else {
-            updateUI(data);
+        // If we got webhook_url, store it and fetch from it
+        if (data.webhook_url) {
+            state.webhookUrl = data.webhook_url;
+            // Fetch data from webhook immediately
+            fetchWebhookData(data.webhook_url);
         }
+        // Also update UI with any data already in the response
+        updateUI(data);
     } catch (error) {
         console.error('Error handling response:', error);
         showToast('Error processing data', 'error');
@@ -232,7 +263,7 @@ tg.onEvent('mainButtonClicked', () => {
     requestData('main');
 });
 
-// Listen for data from the bot
+// Listen for data from the bot (sendData reply)
 tg.onEvent('data', (data) => {
     handleBotResponse(data);
 });
