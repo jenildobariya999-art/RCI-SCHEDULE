@@ -2,16 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport"
-          content="width=device-width,
-                   initial-scale=1.0,
-                   maximum-scale=1.0,
-                   user-scalable=no">
+          content="width=device-width, initial-scale=1.0,
+                   maximum-scale=1.0, user-scalable=no">
 
     <title>Bot Dashboard</title>
 
-    <!-- Telegram Mini App SDK MUST load first -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -41,19 +37,41 @@
         .header p {
             margin-top: 7px;
             opacity: .85;
-            font-size: 14px;
         }
 
         .container {
             padding: 18px;
         }
 
-        .bot-card {
+        .loading {
+            text-align: center;
+            padding: 50px 10px;
+        }
+
+        .error {
+            display: none;
+            background: #ffe5e5;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .card {
             background: white;
             padding: 18px;
             border-radius: 18px;
             margin-bottom: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,.06);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
         }
 
         .row {
@@ -78,39 +96,28 @@
             word-break: break-word;
         }
 
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            background: #dff8e8;
-            color: #159447;
-            font-size: 12px;
+        .number-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        .loading {
-            text-align: center;
-            padding: 50px 10px;
-        }
-
-        .error {
-            display: none;
-            background: #ffe5e5;
-            color: #d63031;
-            padding: 15px;
-            border-radius: 15px;
-        }
-
-        .user {
+        .stat {
             background: white;
             padding: 18px;
             border-radius: 18px;
-            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.06);
         }
 
-        .title {
-            font-size: 18px;
+        .stat-title {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .stat-value {
+            font-size: 23px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-top: 7px;
         }
     </style>
 </head>
@@ -118,62 +125,89 @@
 <body>
 
 <div class="header">
-    <h1 id="title">Bot Dashboard</h1>
-    <p id="subtitle">Detecting bot...</p>
+    <h1 id="botName">Bot Dashboard</h1>
+    <p id="botSubtitle">Loading bot data...</p>
 </div>
 
 <div class="container">
 
     <div id="loading" class="loading">
-        ⏳ Loading...
+        ⏳ Fetching bot data...
     </div>
 
     <div id="error" class="error"></div>
 
-    <div id="content" style="display:none;">
+    <div id="content" class="content">
 
-        <div class="user">
-            <div class="title">👤 Telegram User</div>
+        <div class="number-grid">
 
-            <div class="row">
-                <span class="label">Name</span>
-                <span class="value" id="userName">-</span>
+            <div class="stat">
+                <div class="stat-title">👥 Users</div>
+                <div class="stat-value" id="users">0</div>
             </div>
 
-            <div class="row">
-                <span class="label">Username</span>
-                <span class="value" id="userUsername">-</span>
+            <div class="stat">
+                <div class="stat-title">💰 Balance</div>
+                <div class="stat-value" id="balance">0</div>
             </div>
 
-            <div class="row">
-                <span class="label">User ID</span>
-                <span class="value" id="userId">-</span>
+            <div class="stat">
+                <div class="stat-title">👨‍💼 Admins</div>
+                <div class="stat-value" id="admins">0</div>
             </div>
+
+            <div class="stat">
+                <div class="stat-title">📊 Transactions</div>
+                <div class="stat-value" id="transactions">0</div>
+            </div>
+
         </div>
 
-        <div class="bot-card">
+        <br>
+
+        <div class="card">
 
             <div class="title">🤖 Bot Information</div>
 
             <div class="row">
-                <span class="label">Bot Username</span>
-                <span class="value" id="botUsername">-</span>
+                <span class="label">Bot Name</span>
+                <span class="value" id="bot_name">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Username</span>
+                <span class="value" id="bot_username">-</span>
             </div>
 
             <div class="row">
                 <span class="label">Bot ID</span>
-                <span class="value" id="botId">-</span>
+                <span class="value" id="bot_id">-</span>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">⚙️ Settings</div>
+
+            <div class="row">
+                <span class="label">Daily Bonus</span>
+                <span class="value" id="daily_bonus">-</span>
             </div>
 
             <div class="row">
-                <span class="label">Status</span>
-                <span class="status">Online</span>
+                <span class="label">Referral Bonus</span>
+                <span class="value" id="refer_bonus">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Minimum Withdrawal</span>
+                <span class="value" id="min_withdraw">-</span>
             </div>
 
         </div>
 
     </div>
-
 </div>
 
 
@@ -185,111 +219,204 @@ tg.ready();
 tg.expand();
 
 
-// ================================
-// GET TELEGRAM MINI APP DATA
-// ================================
+// ======================================
+// TBC BACKEND
+// ======================================
+//
+// IMPORTANT:
+//
+// This must be a REAL HTTP endpoint.
+//
+// "/mini_app_data" is NOT a TBC command URL.
+//
+// Your TBC command must expose an HTTP/API
+// endpoint that this page can access.
+//
+// ======================================
 
-const initData = tg.initData;
-const tgData = tg.initDataUnsafe || {};
-
-const user = tgData.user || {};
-
-
-// ================================
-// SHOW USER DATA
-// ================================
-
-document.getElementById("userName").textContent =
-    user.first_name ||
-    "Unknown";
-
-document.getElementById("userUsername").textContent =
-    user.username
-        ? "@" + user.username
-        : "No username";
-
-document.getElementById("userId").textContent =
-    user.id ||
-    "Unknown";
+const API_URL = "YOUR_TBC_API_ENDPOINT";
 
 
-// ================================
-// TRY TO DETECT BOT
-// ================================
+async function loadData() {
 
-/*
- Telegram WebApp normally does NOT expose
- the bot ID directly.
+    const loading =
+        document.getElementById("loading");
 
- If your Mini App URL contains:
+    const content =
+        document.getElementById("content");
 
- https://example.com/?bot=MyBot
+    const error =
+        document.getElementById("error");
 
- it will automatically read it.
-*/
+    try {
 
-const params =
-    new URLSearchParams(window.location.search);
+        /*
+         * Telegram automatically gives us
+         * the Mini App initialization data.
+         */
 
-let botUsername =
-    params.get("bot") ||
-    params.get("bot_username") ||
-    "";
+        const initData = tg.initData;
+
+        if (!initData) {
+            throw new Error(
+                "Mini App must be opened inside Telegram."
+            );
+        }
 
 
-// ================================
-// BOT USERNAME
-// ================================
+        /*
+         * Send Telegram session data
+         * to your TBC backend.
+         */
 
-if (botUsername) {
+        const response = await fetch(API_URL, {
 
-    if (botUsername.startsWith("@")) {
-        botUsername =
-            botUsername.substring(1);
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                action: "init",
+
+                init_data: initData
+
+            })
+
+        });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server returned HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to fetch bot data"
+            );
+
+        }
+
+
+        // ==================================
+        // BOT
+        // ==================================
+
+        const bot =
+            data.bot || {};
+
+        document.getElementById("botName")
+            .textContent =
+            bot.name || "Bot Dashboard";
+
+        document.getElementById("botSubtitle")
+            .textContent =
+            bot.username
+                ? "@" + bot.username
+                : "Telegram Bot";
+
+        document.getElementById("bot_name")
+            .textContent =
+            bot.name || "-";
+
+        document.getElementById("bot_username")
+            .textContent =
+            bot.username
+                ? "@" + bot.username
+                : "-";
+
+        document.getElementById("bot_id")
+            .textContent =
+            bot.id || "-";
+
+
+        // ==================================
+        // STATS
+        // ==================================
+
+        const stats =
+            data.stats || {};
+
+        document.getElementById("users")
+            .textContent =
+            stats.total_users ?? 0;
+
+        document.getElementById("balance")
+            .textContent =
+            stats.total_balance ?? 0;
+
+        document.getElementById("admins")
+            .textContent =
+            stats.total_admins ?? 0;
+
+        document.getElementById("transactions")
+            .textContent =
+            stats.total_transactions ?? 0;
+
+
+        // ==================================
+        // SETTINGS
+        // ==================================
+
+        const settings =
+            data.settings || {};
+
+        document.getElementById("daily_bonus")
+            .textContent =
+            settings.daily_bonus ?? "-";
+
+        document.getElementById("refer_bonus")
+            .textContent =
+            settings.refer_bonus ?? "-";
+
+        document.getElementById("min_withdraw")
+            .textContent =
+            settings.min_withdraw ?? "-";
+
+
+        // ==================================
+        // SHOW
+        // ==================================
+
+        loading.style.display = "none";
+
+        content.style.display = "block";
+
     }
 
-    document.getElementById("botUsername")
-        .textContent =
-        "@" + botUsername;
+    catch (e) {
 
-    document.getElementById("title")
-        .textContent =
-        "@" + botUsername;
+        console.error(e);
 
-    document.getElementById("subtitle")
-        .textContent =
-        "Telegram Bot Dashboard";
+        loading.style.display = "none";
 
-} else {
+        error.style.display = "block";
 
-    document.getElementById("subtitle")
-        .textContent =
-        "Bot username was not provided";
+        error.textContent =
+            "❌ " + e.message;
+
+    }
 
 }
 
 
-// ================================
-// SHOW PAGE
-// ================================
-
-document.getElementById("loading")
-    .style.display = "none";
-
-document.getElementById("content")
-    .style.display = "block";
-
-
-// ================================
-// DEBUG
-// ================================
-
-console.log("Telegram WebApp:", tg);
-console.log("Init Data:", initData);
-console.log("Telegram User:", user);
-console.log("Bot Username:", botUsername);
+loadData();
 
 </script>
 
 </body>
-</html>
+    </html>
