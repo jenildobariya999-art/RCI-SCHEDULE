@@ -1,100 +1,396 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TBC Bot Dashboard</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Wallet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#090a0f;color:#fff;font-family:Arial,sans-serif}
-main{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-h1{font-size:24px;margin:0}.pill{padding:7px 11px;border-radius:99px;background:#20232b;color:#aaa;font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.card{background:#14161d;border:1px solid #272a34;border-radius:16px;padding:16px;margin-top:12px}
-.label{color:#969baa;font-size:12px}.num{font-size:24px;font-weight:800;margin-top:7px}
-h2{font-size:17px;margin:24px 0 8px}.row{display:flex;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid #272a34}
-.row:last-child{border:0}.k{color:#969baa}.v{text-align:right;word-break:break-word}
-.good{color:#51e890}.bad{color:#ff6470}.err{display:none;background:#35161b;color:#ff8991;padding:12px;border-radius:12px;margin:12px 0}
-button{width:100%;margin-top:15px;padding:13px;border:0;border-radius:12px;font-weight:800}
-small{color:#858b9a}
+  :root{
+    --ink:#0A1612;
+    --paper:#F0F4EC;
+    --paper-2:#E7EEE1;
+    --jade:#12B76A;
+    --jade-deep:#0C8A50;
+    --gold:#E8A93C;
+    --ruby:#E85D4D;
+    --ink-soft:#4B5A54;
+    --line: rgba(10,22,18,0.14);
+    --bg: var(--paper);
+    --card: #ffffff;
+    --text: var(--ink);
+    --text-soft: var(--ink-soft);
+    --radius: 20px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding: 18px 16px 40px;
+    transition: background .3s ease, color .3s ease;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .display{font-family:'Fraunces', serif;}
+
+  header.app-head{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:18px;
+  }
+  .badge{
+    width:36px; height:36px; border-radius:10px;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:17px;
+    flex-shrink:0;
+  }
+  .app-head .titles{line-height:1.15;}
+  .app-head .titles .name{font-weight:700; font-size:15px;}
+  .app-head .titles .sub{font-size:11.5px; color:var(--text-soft); letter-spacing:.02em;}
+
+  .ticket{
+    position:relative;
+    background:var(--card);
+    border-radius: var(--radius);
+    padding: 26px 22px 22px;
+    box-shadow: 0 1px 2px rgba(10,22,18,.04), 0 12px 28px -14px rgba(10,22,18,.28);
+    overflow:visible;
+    margin-bottom:16px;
+  }
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute;
+    width:22px; height:22px;
+    background: var(--bg);
+    border-radius:50%;
+    top: 50%; transform: translateY(-50%);
+  }
+  .ticket::before{ left:-11px; }
+  .ticket::after{ right:-11px; }
+  .perf{
+    position:absolute; left:14px; right:14px; top:50%;
+    transform:translateY(-50%);
+    border-top: 2px dashed var(--line);
+    z-index:0;
+  }
+  .ticket-top{ position:relative; z-index:1; padding-bottom:18px; }
+  .ticket-bottom{ position:relative; z-index:1; padding-top:18px; }
+
+  .eyebrow{
+    font-size:11px; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--text-soft); font-weight:600; margin-bottom:6px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .stamp{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:.08em; font-weight:600;
+    padding:3px 8px; border-radius:20px;
+    border:1.5px solid currentColor;
+    transform: rotate(-4deg);
+    display:inline-block;
+  }
+  .stamp.linked{ color:var(--jade-deep); }
+  .stamp.unlinked{ color:var(--ruby); }
+
+  .balance-row{
+    display:flex; align-items:baseline; gap:6px;
+    font-family:'Fraunces',serif; font-weight:700;
+  }
+  .balance-row .cur{ font-size:26px; color:var(--text-soft); font-weight:600; }
+  .balance-row .amt{ font-size:52px; letter-spacing:-.01em; line-height:1; }
+
+  .actions-row{
+    display:flex; gap:10px; margin-top:18px;
+  }
+  .pill{
+    flex:1;
+    border:none; border-radius:14px;
+    padding:13px 10px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    cursor:pointer;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .pill:active{ transform: scale(.97); }
+  .pill.primary{ background:var(--jade); color:#fff; }
+  .pill.secondary{ background:var(--paper-2); color:var(--ink); }
+  .pill:disabled{ opacity:.55; cursor:default; }
+
+  .ledger-line{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:13.5px; padding:9px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .ledger-line:last-of-type{ border-bottom:none; }
+  .ledger-line .k{ color:var(--text-soft); }
+  .ledger-line .v{ font-family:'IBM Plex Mono',monospace; font-weight:600; }
+
+  .link-chip{
+    display:flex; align-items:center; gap:8px;
+    background:var(--paper-2); border-radius:12px;
+    padding:11px 12px; margin-top:12px;
+  }
+  .link-chip .url{
+    flex:1; font-family:'IBM Plex Mono',monospace; font-size:12px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    color:var(--text-soft);
+  }
+  .icon-btn{
+    background:none; border:none; cursor:pointer;
+    color:var(--ink); opacity:.7; padding:2px;
+    display:flex; align-items:center;
+  }
+  .icon-btn:active{ opacity:1; }
+
+  .card{
+    background:var(--card); border-radius:var(--radius);
+    padding:18px 18px 16px; margin-bottom:16px;
+    box-shadow: 0 1px 2px rgba(10,22,18,.04), 0 12px 28px -14px rgba(10,22,18,.28);
+  }
+  .card h3{
+    margin:0 0 10px; font-size:12px; text-transform:uppercase;
+    letter-spacing:.1em; color:var(--text-soft); font-weight:600;
+  }
+
+  .share-btn{
+    width:100%; margin-top:12px;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:14px; padding:14px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer;
+  }
+  .share-btn:active{ transform: scale(.98); }
+
+  .toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%, 12px);
+    background:var(--ink); color:var(--paper);
+    padding:11px 18px; border-radius:30px; font-size:13px; font-weight:500;
+    opacity:0; pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index:50; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+
+  .empty{
+    text-align:center; padding: 60px 20px;
+  }
+  .empty .display{ font-size:22px; margin-bottom:8px; }
+  .empty p{ color:var(--text-soft); font-size:13.5px; line-height:1.5; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
 </style>
 </head>
 <body>
-<main>
-<div class="top"><h1>🤖 Bot Dashboard</h1><span id="status" class="pill">Loading</span></div>
-<div id="err" class="err"></div>
 
-<div class="grid">
-<div class="card"><div class="label">Bot ID</div><div id="botid" class="num">—</div></div>
-<div class="card"><div class="label">Users</div><div id="users" class="num">—</div></div>
-<div class="card"><div class="label">Bot Status</div><div id="botstatus" class="num">—</div></div>
-<div class="card"><div class="label">Data Entries</div><div id="entries" class="num">—</div></div>
+<div id="app">
+  <header class="app-head">
+    <div class="badge">₹</div>
+    <div class="titles">
+      <div class="name" id="botName">Wallet</div>
+      <div class="sub">Refer · Earn · Withdraw</div>
+    </div>
+  </header>
+
+  <div id="content">
+    <div class="ticket">
+      <div class="perf"></div>
+      <div class="ticket-top">
+        <div class="eyebrow">
+          <span>Your balance</span>
+          <span id="walletStamp" class="stamp unlinked">NOT LINKED</span>
+        </div>
+        <div class="balance-row">
+          <span class="cur">₹</span>
+          <span class="amt mono" id="balanceAmt">0.00</span>
+        </div>
+      </div>
+      <div class="ticket-bottom">
+        <div class="actions-row">
+          <button class="pill primary" id="bonusBtn">🎁 Daily Bonus</button>
+          <button class="pill secondary" id="withdrawBtn">💸 Withdraw</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Referral ledger</h3>
+      <div class="ledger-line"><span class="k">Started from your link</span><span class="v" id="refStarted">0</span></div>
+      <div class="ledger-line"><span class="k">Verified &amp; credited</span><span class="v" id="refVerified">0</span></div>
+      <div class="ledger-line"><span class="k">Per referral</span><span class="v" id="perRefer">—</span></div>
+      <div class="ledger-line"><span class="k">Min. to withdraw</span><span class="v" id="minWithdraw">—</span></div>
+
+      <div class="link-chip">
+        <span class="url mono" id="refLink">—</span>
+        <button class="icon-btn" id="copyBtn" title="Copy link" aria-label="Copy referral link">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+      </div>
+
+      <button class="share-btn" id="shareBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4 20-7z"></path></svg>
+        Share &amp; earn
+      </button>
+    </div>
+  </div>
 </div>
 
-<h2>⚙️ Bot Information</h2><div id="info" class="card">Loading...</div>
-<h2>📦 Exported TBC Data</h2><div id="data" class="card">Loading...</div>
-
-<button onclick="load()">🔄 Refresh</button>
-</main>
+<div class="toast" id="toast"></div>
 
 <script>
-const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();}
+(function(){
+  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    try {
+      const tp = tg.themeParams || {};
+      const root = document.documentElement.style;
+      if (tp.bg_color) root.setProperty('--bg', tp.bg_color);
+      if (tp.secondary_bg_color) root.setProperty('--paper-2', tp.secondary_bg_color);
+      tg.setHeaderColor && tg.setHeaderColor(tp.bg_color ? 'bg_color' : 'secondary_bg_color');
+    } catch(e) {}
+  }
 
-function esc(x){return String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-function primitive(v){
- if(v===null||v===undefined)return "—";
- if(typeof v==="object")return JSON.stringify(v);
- return esc(v);
-}
-function rows(obj,limit=150){
- if(!obj||typeof obj!=="object")return `<div>${primitive(obj)}</div>`;
- return Object.entries(obj).slice(0,limit).map(([k,v])=>
- `<div class="row"><span class="k">${esc(k)}</span><span class="v">${primitive(v)}</span></div>`
- ).join("");
-}
-async function load(){
- const status=document.getElementById("status"),err=document.getElementById("err");
- err.style.display="none";status.textContent="Loading...";
- try{
-   const qs=new URLSearchParams(location.search);
-   const botId=qs.get("bot_id")||qs.get("botid");
-   if(!botId)throw new Error("Missing bot_id. Open the Mini App as ?bot_id=4446654");
+  const params = new URLSearchParams(location.search);
+  const apiUrl = params.get('api');
 
-   let url="/api/bot?bot_id="+encodeURIComponent(botId);
-   if(tg?.initData)url+="&initData="+encodeURIComponent(tg.initData);
+  const $ = (id) => document.getElementById(id);
+  const toast = (msg) => {
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>el.classList.remove('show'), 2200);
+  };
 
-   const r=await fetch(url,{headers:{Accept:"application/json"}});
-   const d=await r.json();
-   if(!r.ok||d.error)throw new Error(d.error||("HTTP "+r.status));
+  function countUp(el, to){
+    const from = 0, dur = 700, start = performance.now();
+    function step(now){
+      const p = Math.min(1, (now-start)/dur);
+      const eased = 1 - Math.pow(1-p, 3);
+      el.textContent = (from + (to-from)*eased).toFixed(2);
+      if (p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
-   document.getElementById("botid").textContent=d.bot_id||botId;
-   document.getElementById("users").textContent=
-      d.user_count!==undefined?Number(d.user_count).toLocaleString():"—";
-   document.getElementById("botstatus").innerHTML=
-      d.status?primitive(d.status):"—";
+  async function callApi(action, extra){
+    if (!apiUrl) throw new Error('no-api');
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ action }, extra || {}))
+    });
+    const data = await res.json();
+    if (data && data.ok === false) throw new Error(data.error || 'error');
+    return data;
+  }
 
-   const info={};
-   for(const k of ["username","first_name","status","owner_email","account_points","bot_id"]){
-      if(d.bot_info&&d.bot_info[k]!==undefined)info[k]=d.bot_info[k];
-   }
-   document.getElementById("info").innerHTML=rows(info);
+  function renderEmpty(){
+    $('content').innerHTML = `
+      <div class="empty">
+        <div class="display">Open this from your bot</div>
+        <p>This app reads your live balance and referral data from Telegram.<br>Tap the "Open App" button inside your bot chat to load it.</p>
+      </div>`;
+  }
 
-   const payload=d.export_data||d;
-   document.getElementById("data").innerHTML=rows(payload);
-   document.getElementById("entries").textContent=
-      payload&&typeof payload==="object"?Object.keys(payload).length:"—";
+  function renderDashboard(d){
+    $('botName').textContent = d.bot_name || d.bot_username || 'Wallet';
+    countUp($('balanceAmt'), Number(d.balance || 0));
+    $('refStarted').textContent = d.started_referrals ?? 0;
+    $('refVerified').textContent = d.verified_referrals ?? 0;
+    $('perRefer').textContent = d.per_refer ? ('₹' + d.per_refer) : '—';
+    $('minWithdraw').textContent = d.min_withdraw ? ('₹' + d.min_withdraw) : '—';
+    $('refLink').textContent = d.referral_link || '—';
 
-   status.textContent="● Live";
-   status.style.color="#51e890";
- }catch(e){
-   status.textContent="Error";
-   err.style.display="block";
-   err.textContent="❌ "+e.message;
- }
-}
-load();
-setInterval(load,30000);
+    const stamp = $('walletStamp');
+    const isLinked = d.wallet && d.wallet !== 'Not Linked';
+    if (isLinked) {
+      stamp.textContent = 'LINKED';
+      stamp.className = 'stamp linked';
+    } else {
+      stamp.textContent = 'NOT LINKED';
+      stamp.className = 'stamp unlinked';
+    }
+
+    window._refLink = d.referral_link || '';
+    window._botUsername = d.bot_username || '';
+  }
+
+  async function loadDashboard(){
+    try{
+      const d = await callApi('dashboard');
+      renderDashboard(d);
+    } catch(e){
+      if (e.message === 'no-api') { renderEmpty(); return; }
+      toast("Couldn't load your data — try again");
+    }
+  }
+
+  $('bonusBtn') && $('bonusBtn').addEventListener('click', async () => {
+    const btn = $('bonusBtn');
+    btn.disabled = true;
+    try{
+      const d = await callApi('bonus');
+      toast(d.message || 'Check your Telegram chat 🎁');
+      loadDashboard();
+      tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
+    } catch(e){
+      toast('Something went wrong — try again');
+    } finally {
+      setTimeout(()=>btn.disabled=false, 1200);
+    }
+  });
+
+  $('withdrawBtn') && $('withdrawBtn').addEventListener('click', async () => {
+    try{
+      await callApi('withdraw');
+      toast('Opened in your Telegram chat');
+      tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light');
+      setTimeout(()=>{ tg ? tg.close() : null; }, 900);
+    } catch(e){
+      toast('Something went wrong — try again');
+    }
+  });
+
+  $('copyBtn').addEventListener('click', () => {
+    const link = window._refLink;
+    if (!link) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(()=>toast('Link copied')).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy(){
+      const ta = document.createElement('textarea');
+      ta.value = link; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      toast('Link copied');
+    }
+  });
+
+  $('shareBtn').addEventListener('click', () => {
+    const link = window._refLink;
+    if (!link) return;
+    const text = 'Join me and start earning 💸';
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(shareUrl);
+    } else {
+      window.open(shareUrl, '_blank');
+    }
+  });
+
+  loadDashboard();
+})();
 </script>
 </body>
 </html>
