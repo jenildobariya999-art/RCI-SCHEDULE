@@ -284,10 +284,10 @@
 
   async function callApi(action, extra){
     if (!apiUrl) throw new Error('no-api');
-    const res = await fetch(apiUrl, {
+    const res = await fetch('/api/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({ action }, extra || {}))
+      body: JSON.stringify(Object.assign({ api: apiUrl, action }, extra || {}))
     });
     const data = await res.json();
     if (data && data.ok === false) throw new Error(data.error || 'error');
@@ -331,7 +331,7 @@
       renderDashboard(d);
     } catch(e){
       if (e.message === 'no-api') { renderEmpty(); return; }
-      toast("Couldn't load your data — try again");
+      toast("Couldn't load: " + e.message);
     }
   }
 
