@@ -1,4 +1,14 @@
-import bots from './bots.json' assert { type: 'json' };
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+let bots = {};
+try {
+  bots = JSON.parse(readFileSync(join(__dirname, 'bots.json'), 'utf8'));
+} catch (e) {
+  bots = {};
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,6 +27,11 @@ export default async function handler(req, res) {
 
   try {
     const { api, botid, action, ...rest } = req.body || {};
+
+    if (Object.keys(bots).length === 0 && botid) {
+      res.status(500).json({ ok: false, error: 'Bot registry (bots.json) failed to load on the server — check the Vercel function logs.' });
+      return;
+    }
 
     let targetUrl = null;
 
