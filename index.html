@@ -567,7 +567,7 @@
     const initData = (tg && tg.initData) ? tg.initData : '';
     const res = await fetch('/api/proxy', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Object.assign({ api: apiUrl, action, init_data: initData }, extra || {}))
     });
     const data = await res.json();
@@ -678,7 +678,7 @@
       $('fundPct').textContent = pct.toFixed(0) + '% left';
       $('fundLive').textContent = '₹' + Number(d.live_fund||0).toFixed(2);
       $('fundTotal').textContent = '₹' + Number(d.total_fund).toFixed(2);
-     else {
+    } else {
       $('fundCard').style.display = 'none';
     }
 
