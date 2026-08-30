@@ -38,6 +38,7 @@
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
 
+
   header.app-head{ display:flex; align-items:center; gap:11px; margin-bottom:18px; }
   .avatar{
     width:42px; height:42px; border-radius:12px;
@@ -302,11 +303,26 @@
         </div>
       </div>
 
+      <div class="card" id="fundCard" style="display:none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <h3 style="margin:0;">Bot Fund</h3>
+          <span class="status-pill" style="margin:0;" id="fundPct">0% left</span>
+        </div>
+        <div style="height:8px; background:var(--bg2); border-radius:8px; overflow:hidden; margin-bottom:12px;">
+          <div id="fundBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); transition:width .5s ease;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+          <div><div style="color:var(--text-soft);">Available</div><div class="mono" style="font-weight:700; margin-top:2px;" id="fundLive">₹0</div></div>
+          <div style="text-align:right;"><div style="color:var(--text-soft);">Total</div><div class="mono" style="font-weight:700; margin-top:2px;" id="fundTotal">₹0</div></div>
+        </div>
+      </div>
+
       <div class="card">
         <h3 style="margin-bottom:10px;">Overview</h3>
         <div class="ledger-line"><span class="k">Started from your link</span><span class="v" id="refStarted">0</span></div>
         <div class="ledger-line"><span class="k">Verified &amp; credited</span><span class="v" id="refVerified">0</span></div>
         <div class="ledger-line"><span class="k">Min. / Max. withdraw</span><span class="v" id="withdrawRange">—</span></div>
+        <div class="ledger-line"><span class="k">Withdrawal tax</span><span class="v" id="taxLine">—</span></div>
       </div>
 
       <button class="btn ghost" id="bonusBtn">🎁 Claim Daily Bonus</button>
@@ -384,9 +400,28 @@
         </div>
         <div class="field-row">
           <div class="field"><label>Min withdraw (₹)</label><input id="adminMinWithdraw" type="number" /></div>
-          <div class="field"><label>Min refers to withdraw</label><input id="adminMinRef" type="number" /></div>
+          <div class="field"><label>Max withdraw (₹)</label><input id="adminMaxWithdraw" type="number" /></div>
         </div>
+        <div class="field-row">
+          <div class="field"><label>Min refers to withdraw</label><input id="adminMinRef" type="number" /></div>
+          <div class="field"><label>Withdrawal tax (%)</label><input id="adminTaxPercent" type="number" /></div>
+        </div>
+        <div class="field"><label>Daily bonus amount (₹)</label><input id="adminDailyBonus" type="number" /></div>
         <button class="btn neon" id="adminSaveBtn" style="margin-top:16px;">Save settings</button>
+      </div>
+
+      <div class="card">
+        <h3>Bot fund display</h3>
+        <p style="font-size:12px; color:var(--text-soft); margin:0 0 4px;">Shown to users on the Home tab as a "funds available" indicator.</p>
+        <div class="field-row">
+          <div class="field"><label>Live fund (₹)</label><input id="adminLiveFund" type="number" /></div>
+          <div class="field"><label>Total fund (₹)</label><input id="adminTotalFund" type="number" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:10px;">Payment gateways</h3>
+        <div id="gatewayToggleList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
 
       <div class="card">
@@ -407,6 +442,8 @@
       <div class="card">
         <h3>Full admin tools</h3>
         <div class="admin-link-row" data-target="stats"><div><div class="t">📊 Bot stats</div><div class="s">Users, balances, withdrawals</div></div><span class="chev">›</span></div>
+        <div class="admin-link-row" data-target="channels"><div><div class="t">📡 Force-join channels</div><div class="s">Manage required channels</div></div><span class="chev">›</span></div>
+        <div class="admin-link-row" data-target="gateway_keys"><div><div class="t">🔑 Gateway API keys</div><div class="s">Configure credentials per gateway</div></div><span class="chev">›</span></div>
         <div class="admin-link-row" data-target="broadcast"><div><div class="t">📢 Broadcast</div><div class="s">Message all your users</div></div><span class="chev">›</span></div>
         <div class="admin-link-row" data-target="full"><div><div class="t">⚙️ Full admin panel</div><div class="s">Everything else</div></div><span class="chev">›</span></div>
       </div>
@@ -440,9 +477,21 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-head"><span class="t">Withdraw</span><button class="sheet-close" data-close="withdrawSheet">✕</button></div>
-    <p class="hint">Enter an amount — you'll pick your payout gateway in Telegram to finish securely.</p>
-    <div class="field"><label>Amount (₹)</label><input id="withdrawAmtInput" type="number" /></div>
-    <button class="btn neon" id="withdrawConfirmBtn" style="margin-top:16px;">Continue</button>
+
+    <div id="withdrawStep1">
+      <p class="hint">Enter how much you'd like to withdraw.</p>
+      <div class="field"><label>Amount (₹)</label><input id="withdrawAmtInput" type="number" /></div>
+      <button class="btn neon" id="withdrawQuoteBtn" style="margin-top:16px;">Continue</button>
+    </div>
+
+    <div id="withdrawStep2" style="display:none;">
+      <div class="ledger-line"><span class="k">Amount</span><span class="v mono" id="wdAmount">₹0</span></div>
+      <div class="ledger-line"><span class="k">Tax (<span id="wdTaxPct">0</span>%)</span><span class="v mono" id="wdTaxAmt">-₹0</span></div>
+      <div class="ledger-line" style="border-top:1px solid var(--border); padding-top:12px;"><span class="k" style="color:var(--text); font-weight:700;">You'll receive</span><span class="v mono" style="color:var(--neon); font-size:15px;" id="wdNetAmt">₹0</span></div>
+      <p class="hint" style="margin-top:14px;">Choose a gateway to complete this withdrawal:</p>
+      <div id="wdGatewayList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+      <button class="btn ghost" id="withdrawBackBtn" style="margin-top:16px;">← Change amount</button>
+    </div>
   </div>
 </div>
 
@@ -453,6 +502,7 @@
     <div class="sheet-head"><span class="t">Link Wallet</span><button class="sheet-close" data-close="walletSheet">✕</button></div>
     <p class="hint">Enter your 10-digit wallet number.</p>
     <div class="field"><label>Wallet number</label><input id="walletInput" type="tel" maxlength="10" /></div>
+    <div id="walletJoinList"></div>
     <button class="btn neon" id="walletConfirmBtn" style="margin-top:16px;">Save wallet</button>
   </div>
 </div>
@@ -464,6 +514,7 @@
     <div class="sheet-head"><span class="t">Link UPI</span><button class="sheet-close" data-close="upiSheet">✕</button></div>
     <p class="hint">Enter your UPI ID.</p>
     <div class="field"><label>UPI ID</label><input id="upiInput" type="text" placeholder="name@bank" /></div>
+    <div id="upiJoinList"></div>
     <button class="btn neon" id="upiConfirmBtn" style="margin-top:16px;">Save UPI</button>
   </div>
 </div>
@@ -504,8 +555,13 @@
       body: JSON.stringify(Object.assign({ api: apiUrl, action }, extra || {}))
     });
     const data = await res.json();
-    if (data && data.ok === false) throw new Error(data.error || 'error');
-    return (data && data.result !== undefined) ? data.result : data;
+    const inner = (data && data.result !== undefined) ? data.result : data;
+    if (inner && inner.ok === false) {
+      const err = new Error(inner.error || 'error');
+      err.extra = inner;
+      throw err;
+    }
+    return inner;
   }
 
   function escapeHtml(s){
@@ -531,8 +587,18 @@
     $('refStarted').textContent = d.started_referrals ?? 0;
     $('refVerified').textContent = d.verified_referrals ?? 0;
     $('withdrawRange').textContent = (d.min_withdraw ? ('₹'+d.min_withdraw) : '—') + ' / ' + (d.max_withdraw ? ('₹'+d.max_withdraw) : '—');
+    $('taxLine').textContent = (d.tax_percent ? (d.tax_percent + '%') : 'None');
     $('walletVal').textContent = d.wallet || 'Not Linked';
     $('upiVal').textContent = d.upi || 'Not Linked';
+
+    if (d.total_fund && Number(d.total_fund) > 0) {
+      $('fundCard').style.display = 'block';
+      const pct = Math.max(0, Math.min(100, (Number(d.live_fund||0) / Number(d.total_fund)) * 100));
+      $('fundBar').style.width = pct.toFixed(0) + '%';
+      $('fundPct').textContent = pct.toFixed(0) + '% left';
+      $('fundLive').textContent = '₹' + Number(d.live_fund||0).toFixed(2);
+      $('fundTotal').textContent = '₹' + Number(d.total_fund).toFixed(2);
+    }
 
     $('perReferAmt').textContent = d.per_refer || 0;
     $('earnRefLink').textContent = d.referral_link || '—';
@@ -596,45 +662,85 @@
   document.querySelectorAll('.sheet-close').forEach(b => b.addEventListener('click', () => closeSheet(b.getAttribute('data-close'))));
   document.querySelectorAll('.sheet-overlay').forEach(ov => ov.addEventListener('click', (e) => { if (e.target === ov) ov.classList.remove('show'); }));
 
-  // Withdraw
-  $('withdrawBtn').addEventListener('click', () => { $('withdrawAmtInput').value=''; openSheet('withdrawSheet'); });
-  $('withdrawConfirmBtn').addEventListener('click', async () => {
+  // Withdraw (2-step: amount -> tax breakdown + gateway pick, all in-app)
+  $('withdrawBtn').addEventListener('click', () => {
+    $('withdrawAmtInput').value='';
+    $('withdrawStep1').style.display = 'block';
+    $('withdrawStep2').style.display = 'none';
+    openSheet('withdrawSheet');
+  });
+  $('withdrawQuoteBtn').addEventListener('click', async () => {
     const amt = $('withdrawAmtInput').value.trim();
     if (!amt || Number(amt) <= 0) { toast('Enter a valid amount', true); return; }
-    const btn = $('withdrawConfirmBtn'); btn.disabled = true;
+    const btn = $('withdrawQuoteBtn'); btn.disabled = true;
     try{
-      const d = await callApi('withdraw_init', { amount: amt });
-      toast(d.message || 'Check your Telegram chat to finish');
-      closeSheet('withdrawSheet');
-      tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
-      setTimeout(()=>{ tg ? tg.close() : null; }, 1000);
-    } catch(e){ toast(e.message || 'Could not start withdrawal', true); }
+      const d = await callApi('withdraw_quote', { amount: amt });
+      $('wdAmount').textContent = '₹' + d.amount;
+      $('wdTaxPct').textContent = d.tax_percent;
+      $('wdTaxAmt').textContent = '-₹' + d.tax_amount;
+      $('wdNetAmt').textContent = '₹' + d.net_amount;
+      const list = $('wdGatewayList');
+      list.innerHTML = (d.gateways||[]).map(g => `<button class="btn ghost" style="flex:0 0 auto; padding:10px 16px;" data-gw="${g.key}">${escapeHtml(g.name)}</button>`).join('');
+      list.querySelectorAll('button').forEach(gwBtn => {
+        gwBtn.addEventListener('click', async () => {
+          gwBtn.disabled = true;
+          try{
+            const r = await callApi('withdraw_execute', { amount: d.amount, gateway: gwBtn.getAttribute('data-gw') });
+            toast(r.message || 'Withdrawal submitted');
+            closeSheet('withdrawSheet');
+            tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
+            loadDashboard();
+          } catch(e){ toast(e.message || 'Could not process withdrawal', true); gwBtn.disabled = false; }
+        });
+      });
+      $('withdrawStep1').style.display = 'none';
+      $('withdrawStep2').style.display = 'block';
+    } catch(e){ toast(e.message || 'Could not quote withdrawal', true); }
     finally { btn.disabled = false; }
   });
+  $('withdrawBackBtn').addEventListener('click', () => {
+    $('withdrawStep1').style.display = 'block';
+    $('withdrawStep2').style.display = 'none';
+  });
+
+  function renderJoinLinks(containerId, channels){
+    const el = $(containerId);
+    if (!channels || !channels.length){ el.innerHTML = ''; return; }
+    el.innerHTML = '<p class="hint" style="margin-top:10px;">Join these channels first:</p>' +
+      channels.map(c => `<a href="${escapeHtml(c.url)}" target="_blank" class="btn ghost" style="text-decoration:none; margin-top:8px;">Join ${escapeHtml(c.name)}</a>`).join('');
+  }
 
   // Wallet
-  $('changeWalletBtn').addEventListener('click', () => { $('walletInput').value=''; openSheet('walletSheet'); });
+  $('changeWalletBtn').addEventListener('click', () => { $('walletInput').value=''; $('walletJoinList').innerHTML=''; openSheet('walletSheet'); });
   $('walletConfirmBtn').addEventListener('click', async () => {
     const w = $('walletInput').value.trim();
     const btn = $('walletConfirmBtn'); btn.disabled = true;
     try{
       const d = await callApi('link_wallet', { wallet: w });
-      if (d.chat_fallback){ toast(d.message); closeSheet('walletSheet'); setTimeout(()=>{ tg?tg.close():null; },1000); }
-      else { toast(d.message || 'Wallet linked'); closeSheet('walletSheet'); loadDashboard(); }
-    } catch(e){ toast(e.message || 'Could not link wallet', true); }
+      toast(d.message || 'Wallet linked');
+      closeSheet('walletSheet');
+      loadDashboard();
+    } catch(e){
+      toast(e.message || 'Could not link wallet', true);
+      if (e.extra && e.extra.channels) renderJoinLinks('walletJoinList', e.extra.channels);
+    }
     finally { btn.disabled = false; }
   });
 
   // UPI
-  $('changeUpiBtn').addEventListener('click', () => { $('upiInput').value=''; openSheet('upiSheet'); });
+  $('changeUpiBtn').addEventListener('click', () => { $('upiInput').value=''; $('upiJoinList').innerHTML=''; openSheet('upiSheet'); });
   $('upiConfirmBtn').addEventListener('click', async () => {
     const v = $('upiInput').value.trim();
     const btn = $('upiConfirmBtn'); btn.disabled = true;
     try{
       const d = await callApi('link_upi', { upi: v });
-      if (d.chat_fallback){ toast(d.message); closeSheet('upiSheet'); setTimeout(()=>{ tg?tg.close():null; },1000); }
-      else { toast(d.message || 'UPI linked'); closeSheet('upiSheet'); loadDashboard(); }
-    } catch(e){ toast(e.message || 'Could not link UPI', true); }
+      toast(d.message || 'UPI linked');
+      closeSheet('upiSheet');
+      loadDashboard();
+    } catch(e){
+      toast(e.message || 'Could not link UPI', true);
+      if (e.extra && e.extra.channels) renderJoinLinks('upiJoinList', e.extra.channels);
+    }
     finally { btn.disabled = false; }
   });
 
@@ -729,10 +835,36 @@
       const d = await callApi('admin_settings');
       $('adminPerRefer').value = d.per_refer ?? '';
       $('adminMinWithdraw').value = d.min_withdraw ?? '';
+      $('adminMaxWithdraw').value = d.max_withdraw ?? '';
       $('adminMinRef').value = d.min_ref ?? '';
+      $('adminTaxPercent').value = d.tax_percent ?? '';
+      $('adminDailyBonus').value = d.daily_bonus ?? '';
+      $('adminLiveFund').value = d.live_fund ?? '';
+      $('adminTotalFund').value = d.total_fund ?? '';
       renderGiftCodes(d.gift_codes);
       adminLoaded = true;
     } catch(e){ toast('Could not load admin settings', true); }
+    loadGatewayToggles();
+  }
+
+  async function loadGatewayToggles(){
+    try{
+      const d = await callApi('admin_gateways');
+      const list = $('gatewayToggleList');
+      list.innerHTML = (d.gateways||[]).map(g => `
+        <button class="gift-toggle ${g.active?'active':'inactive'}" data-key="${g.key}" style="flex:0 0 auto; padding:9px 14px;">${escapeHtml(g.name)}</button>
+      `).join('');
+      list.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try{
+            const r = await callApi('admin_toggle_gateway', { key: btn.getAttribute('data-key') });
+            btn.className = 'gift-toggle ' + (r.active ? 'active' : 'inactive');
+          } catch(e){ toast(e.message || 'Could not toggle gateway', true); }
+          finally { btn.disabled = false; }
+        });
+      });
+    } catch(e){ /* silent */ }
   }
 
   $('adminSaveBtn').addEventListener('click', async () => {
@@ -741,7 +873,12 @@
       await callApi('admin_save_settings', {
         per_refer: $('adminPerRefer').value.trim(),
         min_withdraw: $('adminMinWithdraw').value.trim(),
-        min_ref: $('adminMinRef').value.trim()
+        max_withdraw: $('adminMaxWithdraw').value.trim(),
+        min_ref: $('adminMinRef').value.trim(),
+        tax_percent: $('adminTaxPercent').value.trim(),
+        daily_bonus: $('adminDailyBonus').value.trim(),
+        live_fund: $('adminLiveFund').value.trim(),
+        total_fund: $('adminTotalFund').value.trim()
       });
       toast('Settings saved');
       loadDashboard();
