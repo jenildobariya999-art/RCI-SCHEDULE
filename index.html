@@ -549,7 +549,7 @@
     el.textContent = msg;
     el.className = 'toast show' + (isErr ? ' err' : '');
     clearTimeout(toast._t);
-    toast._t = setTimeout(()=>el.classList.remove('show'), 2800);
+    toast._t = setTimeout(()=>el.classList.remove('show'), 5000);
   };
 
   function countUp(el, to){
@@ -709,7 +709,7 @@
       renderDashboard(d);
     } catch(e){
       if (e.message === 'no-api') { renderEmpty(); return; }
-      toast("Couldn't load your data — try again", true);
+      toast(e.message ? ("Couldn't load: " + e.message) : "Couldn't load your data — try again", true);
     }
   }
 
