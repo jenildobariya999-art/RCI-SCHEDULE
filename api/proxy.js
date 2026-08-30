@@ -29,15 +29,23 @@ export default async function handler(req, res) {
 
     const text = await upstream.text();
     let data;
+
     try {
       data = JSON.parse(text);
     } catch (e) {
-      res.status(502).json({ ok: false, error: 'upstream returned non-JSON', raw: text.slice(0, 300) });
+      res.status(502).json({
+        ok: false,
+        error: 'upstream returned non-JSON',
+        raw: text.slice(0, 300)
+      });
       return;
     }
 
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).json({ ok: false, error: String(err && err.message ? err.message : err) });
+    res.status(500).json({
+      ok: false,
+      error: String(err && err.message ? err.message : err)
+    });
   }
 }
