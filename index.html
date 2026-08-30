@@ -692,6 +692,17 @@
 
     isAdmin = !!d.is_admin;
     $('adminTabBtn').style.display = isAdmin ? 'flex' : 'none';
+
+    if (d.debug_auth) {
+      let dbg = document.getElementById('authDebug');
+      if (!dbg) {
+        dbg = document.createElement('div');
+        dbg.id = 'authDebug';
+        dbg.style.cssText = 'margin-top:12px; padding:10px; background:#1a0e0e; border:1px solid #ff5a5a44; border-radius:10px; font-family:monospace; font-size:10px; color:#ff9a9a; word-break:break-all; line-height:1.5;';
+        document.getElementById('view-home').appendChild(dbg);
+      }
+      dbg.textContent = JSON.stringify(d.debug_auth, null, 2);
+    }
   }
 
   async function loadDashboard(){
