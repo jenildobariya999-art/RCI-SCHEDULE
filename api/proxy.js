@@ -1,16 +1,7 @@
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const fs = require('fs');
+const path = require('path');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-let bots = {};
-try {
-  bots = JSON.parse(readFileSync(join(__dirname, 'bots.json'), 'utf8'));
-} catch (e) {
-  bots = {};
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,23 +17,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { api, botid, action, ...rest } = req.body || {};
-
-    if (Object.keys(bots).length === 0 && botid) {
-      res.status(500).json({ ok: false, error: 'Bot registry (bots.json) failed to load on the server — check the Vercel function logs.' });
-      return;
+    let bots = {};
+    let botsLoadError = null;
+    try {
+      const raw = fs.readFileSync(path.join(__dirname, 'bots.json'), 'utf8');
+      bots = JSON.parse(raw);
+    } catch (e) {
+      botsLoadError = String(e && e.message ? e.message : e);
     }
+
+    const { api, botid, action, ...rest } = req.body || {};
 
     let targetUrl = null;
 
     if (botid) {
+      if (botsLoadError) {
+        res.status(500).json({ ok: false, error: 'Bot registry failed to load: ' + botsLoadError });
+        return;
+      }
       targetUrl = bots[String(botid)];
       if (!targetUrl) {
         res.status(404).json({ ok: false, error: `Unknown botid "${botid}" — this bot hasn't been registered yet.` });
         return;
       }
     } else if (api && typeof api === 'string' && api.startsWith('https://')) {
-      // Legacy path: a raw webhook URL passed directly (e.g. older per-user "Open App" links)
+      // Legacy path: a raw webhook URL passed directly
       targetUrl = api;
     } else {
       res.status(400).json({ ok: false, error: 'missing botid or api url' });
@@ -68,4 +67,4 @@ export default async function handler(req, res) {
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err && err.message ? err.message : err) });
   }
-}
+};
