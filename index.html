@@ -107,13 +107,14 @@
   .ledger-line .v{ font-family:'IBM Plex Mono',monospace; font-weight:700; }
 
   .toast{
-    position:fixed; left:16px; right:16px; bottom:96px;
+    position:fixed; left:16px; right:16px; top:20px;
     background:var(--bg2); border:1px solid var(--border); color:var(--text);
     padding:13px 16px; border-radius:16px; font-size:13px; font-weight:600;
-    opacity:0; pointer-events:none; transform:translateY(12px);
+    opacity:0; pointer-events:none; transform:translateY(-12px);
     transition: opacity .2s ease, transform .2s ease;
-    z-index:50; text-align:left; line-height:1.5;
+    z-index:80; text-align:left; line-height:1.5;
     max-height:40vh; overflow-y:auto; word-break:break-word; white-space:pre-wrap;
+    box-shadow: 0 12px 28px -10px rgba(0,0,0,.6);
   }
   .toast.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
   .toast.err{ border-color: rgba(255,90,90,.5); color:#ffb3b3; cursor:pointer; }
@@ -468,6 +469,10 @@
         <h3>Broadcast</h3>
         <p style="font-size:12px; color:var(--text-soft); margin:0 0 4px;">Sends a text message to every user of this bot.</p>
         <textarea id="broadcastText" rows="4" style="width:100%; margin-top:8px; border:1.5px solid var(--border); background:var(--bg2); border-radius:12px; padding:12px; font-family:'Inter',sans-serif; font-size:13.5px; color:var(--text); resize:vertical;" placeholder="Write your announcement here…"></textarea>
+        <div class="field-row" style="margin-top:12px;">
+          <div class="field" style="margin-top:0;"><label>Button text (optional)</label><input id="broadcastBtnText" type="text" placeholder="Open App" /></div>
+          <div class="field" style="margin-top:0;"><label>Button URL</label><input id="broadcastBtnUrl" type="text" placeholder="https://…" /></div>
+        </div>
         <button class="btn neon" id="broadcastSendBtn" style="margin-top:12px;">📢 Send to all users</button>
       </div>
 
@@ -1006,13 +1011,19 @@
 
   $('broadcastSendBtn').addEventListener('click', async () => {
     const text = $('broadcastText').value.trim();
+    const btnText = $('broadcastBtnText').value.trim();
+    const btnUrl = $('broadcastBtnUrl').value.trim();
     if (!text) { toast('Write a message first', true); return; }
+    if (btnText && !btnUrl) { toast('Add a URL for the button, or clear the button text', true); return; }
+    if (btnUrl && !btnText) { toast('Add button text, or clear the URL', true); return; }
     const btn = $('broadcastSendBtn');
     btn.disabled = true;
     try{
-      const d = await callApi('admin_broadcast', { text });
+      const d = await callApi('admin_broadcast', { text, btn_text: btnText, btn_url: btnUrl });
       toast(d.message || 'Broadcast started');
       $('broadcastText').value = '';
+      $('broadcastBtnText').value = '';
+      $('broadcastBtnUrl').value = '';
     } catch(e){
       toast(e.message || 'Could not send broadcast', true);
     } finally { btn.disabled = false; }
