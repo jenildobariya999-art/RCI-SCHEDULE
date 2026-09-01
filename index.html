@@ -107,15 +107,17 @@
   .ledger-line .v{ font-family:'IBM Plex Mono',monospace; font-weight:700; }
 
   .toast{
-    position:fixed; left:50%; bottom:96px; transform:translate(-50%, 12px);
+    position:fixed; left:16px; right:16px; bottom:96px;
     background:var(--bg2); border:1px solid var(--border); color:var(--text);
-    padding:11px 18px; border-radius:30px; font-size:13px; font-weight:600;
-    opacity:0; pointer-events:none;
+    padding:13px 16px; border-radius:16px; font-size:13px; font-weight:600;
+    opacity:0; pointer-events:none; transform:translateY(12px);
     transition: opacity .2s ease, transform .2s ease;
-    z-index:50; max-width:88vw; text-align:center;
+    z-index:50; text-align:left; line-height:1.5;
+    max-height:40vh; overflow-y:auto; word-break:break-word; white-space:pre-wrap;
   }
-  .toast.show{ opacity:1; transform:translate(-50%, 0); }
-  .toast.err{ border-color: rgba(255,90,90,.5); color:#ffb3b3; }
+  .toast.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .toast.err{ border-color: rgba(255,90,90,.5); color:#ffb3b3; cursor:pointer; }
+  .toast.err::after{ content:"Tap to dismiss"; display:block; margin-top:6px; font-size:10.5px; font-weight:600; opacity:.6; }
 
   .empty{ text-align:center; padding:50px 16px; }
   .empty .t{ font-size:18px; font-weight:800; margin-bottom:8px; }
@@ -228,6 +230,9 @@
   .admin-link-row .t{ font-weight:700; font-size:13.5px; }
   .admin-link-row .s{ font-size:11.5px; color:var(--text-soft); margin-top:1px; }
   .admin-link-row span.chev{ color:var(--text-soft); font-size:18px; }
+  .stat-tile{ background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px; }
+  .stat-tile .n{ font-size:19px; font-weight:900; }
+  .stat-tile .l{ font-size:10.5px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.04em; margin-top:3px; font-weight:700; }
 
   .gift-row{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -453,10 +458,22 @@
       </div>
 
       <div class="card">
+        <h3 style="margin-bottom:10px;">Bot stats</h3>
+        <div id="statsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <p style="grid-column:1/3; color:var(--text-soft); font-size:12.5px;">Loading…</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Broadcast</h3>
+        <p style="font-size:12px; color:var(--text-soft); margin:0 0 4px;">Sends a text message to every user of this bot.</p>
+        <textarea id="broadcastText" rows="4" style="width:100%; margin-top:8px; border:1.5px solid var(--border); background:var(--bg2); border-radius:12px; padding:12px; font-family:'Inter',sans-serif; font-size:13.5px; color:var(--text); resize:vertical;" placeholder="Write your announcement here…"></textarea>
+        <button class="btn neon" id="broadcastSendBtn" style="margin-top:12px;">📢 Send to all users</button>
+      </div>
+
+      <div class="card">
         <h3>Full admin tools</h3>
-        <div class="admin-link-row" data-target="stats"><div><div class="t">📊 Bot stats</div><div class="s">Users, balances, withdrawals</div></div><span class="chev">›</span></div>
-        <div class="admin-link-row" data-target="broadcast"><div><div class="t">📢 Broadcast</div><div class="s">Message all your users</div></div><span class="chev">›</span></div>
-        <div class="admin-link-row" data-target="full"><div><div class="t">⚙️ Full admin panel</div><div class="s">Everything else</div></div><span class="chev">›</span></div>
+        <div class="admin-link-row" data-target="full"><div><div class="t">⚙️ Full admin panel</div><div class="s">Gift codes, tasks, bans, and more</div></div><span class="chev">›</span></div>
       </div>
     </div>
 
@@ -549,7 +566,12 @@
     el.textContent = msg;
     el.className = 'toast show' + (isErr ? ' err' : '');
     clearTimeout(toast._t);
-    toast._t = setTimeout(()=>el.classList.remove('show'), 5000);
+    if (isErr) {
+      el.onclick = () => el.classList.remove('show');
+    } else {
+      el.onclick = null;
+      toast._t = setTimeout(()=>el.classList.remove('show'), 3200);
+    }
   };
 
   function countUp(el, to){
@@ -572,10 +594,15 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
     });
-    const data = await res.json();
+    let data;
+    try{
+      data = await res.json();
+    } catch(parseErr){
+      throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`);
+    }
     const inner = (data && data.result !== undefined) ? data.result : data;
     if (inner && inner.ok === false) {
-      const err = new Error(inner.error || 'error');
+      const err = new Error(inner.error || 'Something went wrong');
       err.extra = inner;
       throw err;
     }
@@ -958,9 +985,38 @@
       $('adminTotalFund').value = d.total_fund ?? '';
       renderGiftCodes(d.gift_codes);
       adminLoaded = true;
-    } catch(e){ toast('Could not load admin settings', true); }
+    } catch(e){ toast(e.message || 'Could not load admin settings', true); }
     loadGatewayToggles();
+    loadStats();
   }
+
+  async function loadStats(){
+    try{
+      const s = await callApi('admin_stats');
+      $('statsGrid').innerHTML = `
+        <div class="stat-tile"><div class="n">${s.total_members}</div><div class="l">Members</div></div>
+        <div class="stat-tile"><div class="n">${s.total_verified}</div><div class="l">Verified</div></div>
+        <div class="stat-tile"><div class="n mono">₹${s.total_payouts_success}</div><div class="l">Total payouts</div></div>
+        <div class="stat-tile"><div class="n">${s.total_bonus_claimers}</div><div class="l">Bonus claimers</div></div>
+      `;
+    } catch(e){
+      $('statsGrid').innerHTML = `<p style="grid-column:1/3; color:var(--danger); font-size:12.5px;">Couldn't load stats: ${escapeHtml(e.message || 'error')}</p>`;
+    }
+  }
+
+  $('broadcastSendBtn').addEventListener('click', async () => {
+    const text = $('broadcastText').value.trim();
+    if (!text) { toast('Write a message first', true); return; }
+    const btn = $('broadcastSendBtn');
+    btn.disabled = true;
+    try{
+      const d = await callApi('admin_broadcast', { text });
+      toast(d.message || 'Broadcast started');
+      $('broadcastText').value = '';
+    } catch(e){
+      toast(e.message || 'Could not send broadcast', true);
+    } finally { btn.disabled = false; }
+  });
 
   async function loadGatewayToggles(){
     try{
@@ -981,7 +1037,7 @@
           finally { btn.disabled = false; }
         });
       });
-    } catch(e){ /* silent */ }
+    } catch(e){ toast(e.message || 'Could not load gateways', true); }
   }
 
   $('adminSaveBtn').addEventListener('click', async () => {
