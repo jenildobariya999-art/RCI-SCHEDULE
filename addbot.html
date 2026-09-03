@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg0:#060b07; --bg1:#0d1811; --bg2:#142519; --border:rgba(255,255,255,.08);
+    --neon:#17e88f; --neon-deep:#0cae6a; --danger:#ff5a5a; --text:#eef7f0; --text-soft:#7f9587;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background: radial-gradient(ellipse 120% 60% at 50% -10%, rgba(23,232,143,.10), transparent 60%), var(--bg0);
+    color:var(--text); font-family:'Inter',system-ui,sans-serif; padding:24px 16px 60px; max-width:560px; margin:0 auto;
+  }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 4px; }
+  p.sub{ color:var(--text-soft); font-size:12.5px; margin:0 0 24px; line-height:1.6; }
+  .card{ background:linear-gradient(180deg,var(--bg1),var(--bg0)); border:1px solid var(--border); border-radius:18px; padding:20px; margin-bottom:16px; }
+  .card h3{ margin:0 0 12px; font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:700; }
+  .field{ margin-bottom:14px; }
+  .field label{ font-size:11px; color:var(--text-soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .field input, .field textarea{
+    width:100%; margin-top:6px; border:1.5px solid var(--border); background:var(--bg2);
+    border-radius:12px; padding:12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:var(--text);
+  }
+  .field textarea{ resize:vertical; }
+  .row{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .row input[type=checkbox]{ width:18px; height:18px; }
+  .btn{
+    width:100%; border:none; border-radius:14px; padding:14px; font-weight:800; font-size:14px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn.neon{ background:linear-gradient(135deg,var(--neon),var(--neon-deep)); color:#04150c; }
+  .btn.ghost{ background:var(--bg2); color:var(--text); border:1px solid var(--border); }
+  .out{ font-size:11.5px; line-height:1.6; white-space:pre-wrap; word-break:break-all; max-height:280px; overflow-y:auto; }
+  .msg{ font-size:12.5px; padding:10px 12px; border-radius:10px; margin-bottom:14px; }
+  .msg.ok{ background:rgba(23,232,143,.1); border:1px solid rgba(23,232,143,.3); color:var(--neon); }
+  .msg.err{ background:rgba(255,90,90,.1); border:1px solid rgba(255,90,90,.3); color:#ffb3b3; }
+  .hint{ font-size:11.5px; color:var(--text-soft); margin:8px 0 0; line-height:1.5; }
+</style>
+</head>
+<body>
+  <h1>➕ Add a bot</h1>
+  <p class="sub">Fills in a new entry and gives you a complete, ready-to-paste <span class="mono">bots.json</span>. This page can't save automatically — copy or download the result and replace the deployed file.</p>
+
+  <div class="card">
+    <h3>New bot</h3>
+    <div class="field">
+      <label>Bot ID</label>
+      <input id="botId" type="text" placeholder="e.g. 84802029" />
+    </div>
+    <div class="field">
+      <label>Webhook (from the bot's /SetAppURL reply)</label>
+      <textarea id="webhook" rows="3" placeholder="https://api.telebotcreator.com/new-webhook?data=..."></textarea>
+    </div>
+    <div class="row">
+      <input type="checkbox" id="restrictToggle" />
+      <label for="restrictToggle" style="font-size:13px; font-weight:600;">Restrict to specific Telegram user IDs</label>
+    </div>
+    <div class="field" id="allowedField" style="display:none;">
+      <label>Allowed user IDs (comma-separated)</label>
+      <input id="allowedUsers" type="text" placeholder="6925391837, 123456789" />
+    </div>
+    <div class="field">
+      <label>Your Vercel app URL (for the preview link below)</label>
+      <input id="vercelUrl" type="text" placeholder="https://rci-schedule.vercel.app/index.html" />
+    </div>
+    <button class="btn neon" id="genBtn">Generate updated bots.json</button>
+    <div id="msgBox"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h3>Menu Button link</h3>
+    <div class="mono out" id="menuLink" style="margin-bottom:16px; color:var(--neon);"></div>
+
+    <h3>Updated bots.json</h3>
+    <div class="mono out" id="jsonOut"></div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="btn ghost" id="copyBtn" style="flex:1;">📋 Copy</button>
+      <button class="btn ghost" id="downloadBtn" style="flex:1;">⬇️ Download</button>
+    </div>
+    <p class="hint">Replace <span class="mono">api/bots.json</span> in your Vercel project with this content and redeploy.</p>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  let currentBots = {};
+
+  $('restrictToggle').addEventListener('change', () => {
+    $('allowedField').style.display = $('restrictToggle').checked ? 'block' : 'none';
+  });
+
+  function showMsg(text, isErr){
+    $('msgBox').innerHTML = `<div class="msg ${isErr?'err':'ok'}">${text}</div>`;
+  }
+
+  async function loadCurrentBots(){
+    try{
+      const res = await fetch('/api/get-bots');
+      const data = await res.json();
+      currentBots = data.bots || {};
+    } catch(e){
+      currentBots = {};
+    }
+  }
+
+  $('genBtn').addEventListener('click', async () => {
+    const id = $('botId').value.trim();
+    const webhook = $('webhook').value.trim();
+    const restrict = $('restrictToggle').checked;
+    const allowedRaw = $('allowedUsers').value.trim();
+    const vercelUrl = $('vercelUrl').value.trim();
+
+    if (!id || !/^\d+$/.test(id)) { showMsg('Enter a valid numeric Bot ID', true); return; }
+    if (!webhook.startsWith('https://')) { showMsg('Paste a valid webhook URL (starts with https://)', true); return; }
+    if (restrict && !allowedRaw) { showMsg('Enter at least one allowed user ID, or turn off restriction', true); return; }
+
+    $('genBtn').disabled = true;
+    $('genBtn').textContent = 'Loading current bots…';
+    await loadCurrentBots();
+    $('genBtn').disabled = false;
+    $('genBtn').textContent = 'Generate updated bots.json';
+
+    const entry = { webhook, allowed_users: null };
+    if (restrict) {
+      entry.allowed_users = allowedRaw.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    const updated = Object.assign({}, currentBots, { [id]: entry });
+    const jsonStr = JSON.stringify(updated, null, 2);
+
+    $('jsonOut').textContent = jsonStr;
+    $('menuLink').textContent = vercelUrl
+      ? `${vercelUrl}?botid=${id}`
+      : `<your-vercel-url>/index.html?botid=${id}`;
+    $('resultCard').style.display = 'block';
+    $('resultCard').scrollIntoView({ behavior: 'smooth' });
+
+    showMsg(`Bot ${id} added${Object.keys(currentBots).includes(id) ? ' (replaced existing entry)' : ''}. ${Object.keys(updated).length} bot(s) total.`, false);
+  });
+
+  $('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText($('jsonOut').textContent).then(() => {
+      $('copyBtn').textContent = '✅ Copied';
+      setTimeout(() => $('copyBtn').textContent = '📋 Copy', 1500);
+    });
+  });
+
+  $('downloadBtn').addEventListener('click', () => {
+    const blob = new Blob([$('jsonOut').textContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'bots.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  loadCurrentBots();
+</script>
+</body>
+</html>

@@ -331,6 +331,9 @@
       <div class="name" id="botName">Wallet</div>
       <div class="status-pill"><span class="dot"></span>System Live</div>
     </div>
+    <button id="headerRefreshBtn" style="background:var(--bg2); border:1px solid var(--border); width:36px; height:36px; border-radius:11px; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+    </button>
   </header>
 
   <div id="content">
@@ -360,6 +363,16 @@
             </div>
           </div>
           <button class="change-btn" id="changeUpiBtn">Change</button>
+        </div>
+
+        <div class="link-row">
+          <div class="li" style="min-width:0; overflow:hidden; flex:1;">
+            <div style="min-width:0; overflow:hidden;">
+              <div class="lbl">Your referral link</div>
+              <div class="val" id="homeRefLink" style="min-width:0;">—</div>
+            </div>
+          </div>
+          <button class="icon-copy change-btn" id="homeCopyBtn">Copy</button>
         </div>
       </div>
 
@@ -804,6 +817,7 @@
 
     $('perReferAmt').textContent = d.per_refer || 0;
     $('earnRefLink').textContent = d.referral_link || '—';
+    $('homeRefLink').textContent = d.referral_link || '—';
     $('earnRefCount').textContent = d.verified_referrals ?? 0;
     const perReferNum = parseFloat(String(d.per_refer || '0').split('-')[0]) || 0;
     $('earnIncome').textContent = '₹' + (perReferNum * (d.verified_referrals || 0)).toFixed(2);
@@ -928,6 +942,7 @@
   }
 
   $('earnCopyBtn').addEventListener('click', () => copyText(window._refLink));
+  $('homeCopyBtn').addEventListener('click', () => copyText(window._refLink));
   $('earnShareBtn').addEventListener('click', () => {
     const link = window._refLink;
     if (!link) return;
@@ -1292,7 +1307,7 @@
     document.addEventListener('touchend', () => {
       if (triggered) {
         tick();
-        loadDashboard().finally(() => {
+        loadDashboard().then(() => toast('● Refreshed!')).finally(() => {
           setTimeout(()=>indicator.classList.remove('show'), 400);
         });
       }
@@ -1302,6 +1317,16 @@
 
   showSkeleton();
   loadDashboard();
+
+  $('headerRefreshBtn').addEventListener('click', () => {
+    tick();
+    const svg = document.querySelector('#headerRefreshBtn svg');
+    svg.style.transition = 'transform .6s ease';
+    svg.style.transform = 'rotate(360deg)';
+    loadDashboard().then(() => toast('● Refreshed!')).finally(() => {
+      setTimeout(()=>{ svg.style.transition='none'; svg.style.transform='rotate(0deg)'; }, 650);
+    });
+  });
 })();
 </script>
 </body>
