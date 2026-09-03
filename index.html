@@ -680,6 +680,32 @@
     el.onclick = () => el.classList.remove('show');
   }
 
+  // Telegram's own fix for "bot can't message you yet": requestWriteAccess()
+  // grants permission inline, without leaving the app. Falls back to manually
+  // opening the bot's chat only if that API isn't available or is declined.
+  function handleNeedsBotStart(err, retryFn){
+    const botUsername = err.extra.bot_username;
+    if (tg && typeof tg.requestWriteAccess === 'function') {
+      toast('One quick permission needed…');
+      tg.requestWriteAccess((granted) => {
+        if (granted) {
+          toast('Access granted — retrying…');
+          retryFn();
+        } else {
+          actionToast(err.message, 'Open Bot Chat', () => {
+            const url = 'https://t.me/' + botUsername;
+            if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+          });
+        }
+      });
+    } else {
+      actionToast(err.message, 'Open Bot Chat', () => {
+        const url = 'https://t.me/' + botUsername;
+        if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+      });
+    }
+  }
+
   function countUp(el, to){
     const from = 0, dur = 700, start = performance.now();
     function step(now){
@@ -976,7 +1002,7 @@
       const list = $('wdGatewayList');
       list.innerHTML = (d.gateways||[]).map(g => `<button class="btn ghost" style="flex:0 0 auto; padding:10px 16px;" data-gw="${g.key}">${escapeHtml(g.name)}</button>`).join('');
       list.querySelectorAll('button').forEach(gwBtn => {
-        gwBtn.addEventListener('click', async () => {
+        const doWithdraw = async () => {
           gwBtn.disabled = true;
           try{
             const r = await callApi('withdraw_execute', { amount: d.amount, gateway: gwBtn.getAttribute('data-gw') });
@@ -987,16 +1013,15 @@
             loadDashboard();
           } catch(e){
             if (e.extra && e.extra.needs_bot_start && e.extra.bot_username) {
-              actionToast(e.message, 'Open Bot Chat', () => {
-                const url = 'https://t.me/' + e.extra.bot_username;
-                if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
-              });
+              handleNeedsBotStart(e, doWithdraw);
             } else {
               toast(e.message || 'Could not process withdrawal', true);
             }
+          } finally {
             gwBtn.disabled = false;
           }
-        });
+        };
+        gwBtn.addEventListener('click', doWithdraw);
       });
       $('withdrawStep1').style.display = 'none';
       $('withdrawStep2').style.display = 'block';
