@@ -624,7 +624,6 @@
       <p class="hint" style="margin-top:14px;">Choose a gateway to complete this withdrawal:</p>
       <div id="wdGatewayList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
       <button class="btn ghost" id="withdrawBackBtn" style="margin-top:16px;">← Change amount</button>
-      <button class="btn ghost" id="checkStatusBtn" style="margin-top:10px;">🔍 Check Payment Status</button>
     </div>
   </div>
 </div>
@@ -642,16 +641,8 @@
     <div class="ledger-line"><span class="k">Gateway</span><span class="v mono" id="rcGateway">—</span></div>
     <div class="ledger-line"><span class="k">Status</span><span class="v mono" id="rcStatus">—</span></div>
     <div class="ledger-line"><span class="k">Message</span><span class="v mono" id="rcMessage" style="text-align:right; max-width:60%;">—</span></div>
+    <div id="rcNotifyRow" style="margin-top:10px; font-size:11px; color:var(--text-soft); display:none;"></div>
     <button class="btn neon" id="receiptCloseBtn" style="margin-top:16px;">Done</button>
-  </div>
-</div>
-
-<!-- PAYMENT STATUS SHEET -->
-<div class="sheet-overlay" id="statusSheet">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><span class="t">Payment Status</span><button class="sheet-close" data-close="statusSheet">✕</button></div>
-    <div id="statusList"><p class="hint">Loading…</p></div>
   </div>
 </div>
 
@@ -1030,36 +1021,22 @@
     $('rcGateway').textContent = info.gateway || '—';
     $('rcStatus').textContent = info.status || '—';
     $('rcMessage').textContent = info.message || '—';
+
+    const notifyRow = $('rcNotifyRow');
+    if (info.channelNotify || info.userNotify) {
+      const bits = [];
+      if (info.channelNotify) bits.push(info.channelNotify.ok ? '✅ Payout channel notified' : '⚠️ Channel not notified (' + (info.channelNotify.reason || 'unknown') + ')');
+      if (info.userNotify) bits.push(info.userNotify.ok ? '✅ Chat message sent' : '⚠️ Chat message not sent (' + (info.userNotify.reason || 'unknown') + ')');
+      notifyRow.innerHTML = bits.join('<br>');
+      notifyRow.style.display = 'block';
+    } else {
+      notifyRow.style.display = 'none';
+    }
     openSheet('receiptSheet');
   }
 
   $('receiptCloseBtn').addEventListener('click', () => closeSheet('receiptSheet'));
 
-  $('checkStatusBtn').addEventListener('click', async () => {
-    openSheet('statusSheet');
-    $('statusList').innerHTML = '<p class="hint">Loading…</p>';
-    try{
-      const d = await callApi('check_payment_status');
-      const rows = d.withdrawals || [];
-      if (!rows.length){
-        $('statusList').innerHTML = '<p class="hint">No withdrawal history yet.</p>';
-        return;
-      }
-      $('statusList').innerHTML = rows.map(w => `
-        <div class="activity-row">
-          <div class="activity-icon ${w.status==='success'?'pos':'neg'}">💸</div>
-          <div class="activity-body">
-            <div class="activity-note">${escapeHtml(w.gateway || '')} — ${escapeHtml(w.status || 'unknown')}</div>
-            <div class="activity-date">${escapeHtml(w.note || '')}</div>
-            <div class="activity-date">${escapeHtml(w.date || '')} ${escapeHtml(w.time || '')}</div>
-          </div>
-          <div class="activity-amt neg">-₹${Math.abs(Number(w.amount)||0).toFixed(2)}</div>
-        </div>
-      `).join('');
-    } catch(e){
-      $('statusList').innerHTML = `<p class="hint" style="color:var(--danger);">Couldn't load: ${escapeHtml(e.message||'error')}</p>`;
-    }
-  });
   document.querySelectorAll('.sheet-close').forEach(b => b.addEventListener('click', () => closeSheet(b.getAttribute('data-close'))));
   document.querySelectorAll('.sheet-overlay').forEach(ov => ov.addEventListener('click', (e) => { if (e.target === ov) ov.classList.remove('show'); }));
 
