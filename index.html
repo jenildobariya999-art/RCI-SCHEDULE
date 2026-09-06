@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-ancestors https://telegram.org https://web.telegram.org" />
+<meta name="referrer" content="no-referrer" />
+<meta http-equiv="Cache-Control" content="no-store" />
 <title>Wallet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,315 +13,385 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
-    --bg0:#060b07;
-    --bg1:#0d1811;
-    --bg2:#142519;
-    --border: rgba(255,255,255,.08);
+    --bg0:#050906;
+    --bg1:#0c1510;
+    --bg2:#122019;
+    --bg3:#182c21;
+    --border:rgba(255,255,255,.075);
+    --border-strong:rgba(255,255,255,.14);
     --neon:#17e88f;
-    --neon-deep:#0cae6a;
+    --neon-deep:#0aa563;
+    --neon-soft:rgba(23,232,143,.12);
     --gold:#ffcf4d;
-    --danger:#ff5a5a;
-    --text:#eef7f0;
-    --text-soft:#7f9587;
+    --sky:#5fd8ff;
+    --violet:#c78bff;
+    --danger:#ff6060;
+    --danger-soft:rgba(255,96,96,.12);
+    --text:#eff7f1;
+    --text-mid:#a9bdb0;
+    --text-soft:#75897c;
     --radius:20px;
+    --radius-sm:13px;
+    --shadow-card:0 1px 0 rgba(255,255,255,.03) inset, 0 18px 40px -28px rgba(0,0,0,.9);
+    --shadow-float:0 20px 40px -18px rgba(0,0,0,.75);
+    --sat:env(safe-area-inset-top,0px);
+    --sab:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0; padding:0;}
   body{
     background:
-      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(23,232,143,.10), transparent 60%),
+      radial-gradient(ellipse 130% 55% at 50% -8%, rgba(23,232,143,.13), transparent 62%),
+      radial-gradient(ellipse 90% 40% at 90% 8%, rgba(95,216,255,.05), transparent 60%),
       var(--bg0);
+    background-attachment: fixed;
     color:var(--text);
-    font-family:'Inter',system-ui,sans-serif;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
     min-height:100vh;
-    padding: 18px 16px 96px;
+    padding: calc(16px + var(--sat)) 16px calc(112px + var(--sab));
+    overflow-x:hidden;
   }
-  .mono{font-family:'IBM Plex Mono', monospace;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+  button, input, textarea{ font-family:inherit; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible{
+    outline:2px solid var(--neon); outline-offset:2px;
+  }
+  ::selection{ background:var(--neon-soft); }
 
-
+  /* ---------- header ---------- */
   header.app-head{ display:flex; align-items:center; gap:11px; margin-bottom:18px; }
   .avatar{
-    width:42px; height:42px; border-radius:12px;
-    background: linear-gradient(135deg, var(--neon), var(--neon-deep));
+    width:44px; height:44px; border-radius:14px;
+    background:linear-gradient(140deg, var(--neon), var(--neon-deep));
     display:flex; align-items:center; justify-content:center;
-    font-weight:900; font-size:18px; color:#04150c; flex-shrink:0;
+    font-weight:900; font-size:19px; color:#04150c; flex-shrink:0;
+    box-shadow:0 8px 22px -12px var(--neon);
   }
-  .app-head .titles{ line-height:1.2; flex:1; }
-  .app-head .titles .name{ font-weight:800; font-size:15.5px; letter-spacing:.01em; }
+  .app-head .titles{ line-height:1.25; flex:1; min-width:0; }
+  .app-head .titles .name{
+    font-weight:800; font-size:16px; letter-spacing:-.01em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
   .status-pill{
     display:inline-flex; align-items:center; gap:6px;
-    font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--neon); margin-top:2px;
+    font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--neon); margin-top:3px;
   }
-  .status-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--neon); box-shadow:0 0 8px var(--neon); }
+  .status-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--neon); box-shadow:0 0 9px var(--neon); animation:pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.35} }
+  .head-btn{
+    background:var(--bg2); border:1px solid var(--border); width:38px; height:38px;
+    border-radius:12px; color:var(--text-mid); display:flex; align-items:center;
+    justify-content:center; cursor:pointer; flex-shrink:0; transition:background .15s ease, color .15s ease;
+  }
+  .head-btn:active{ background:var(--bg3); color:var(--text); }
+  .head-btn svg{ width:17px; height:17px; }
 
+  /* ---------- cards ---------- */
   .card{
-    background: linear-gradient(180deg, var(--bg1), var(--bg0));
+    background:linear-gradient(180deg, var(--bg1), rgba(8,14,10,.85));
     border:1px solid var(--border);
-    border-radius: var(--radius);
-    padding:20px; margin-bottom:16px;
+    border-radius:var(--radius);
+    padding:20px; margin-bottom:14px;
+    box-shadow:var(--shadow-card);
   }
+  .card.tight{ padding:16px; }
   .card h3{
-    margin:0 0 4px; font-size:11.5px; text-transform:uppercase;
-    letter-spacing:.12em; color:var(--text-soft); font-weight:700;
+    margin:0 0 4px; font-size:11px; text-transform:uppercase;
+    letter-spacing:.13em; color:var(--text-soft); font-weight:800;
+  }
+  .card-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+  .link-btn{
+    background:none; border:none; color:var(--neon); font-size:11.5px; font-weight:800;
+    cursor:pointer; padding:4px 2px; letter-spacing:.02em;
   }
 
-  /* Home balance card */
-  .bal-label{ text-align:center; font-size:11.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-soft); font-weight:700; }
-  .bal-row{ display:flex; align-items:baseline; justify-content:center; gap:6px; margin:10px 0 20px; }
-  .bal-row .cur{ font-size:24px; color:var(--neon); font-weight:800; }
-  .bal-row .amt{ font-size:44px; font-weight:900; letter-spacing:-.02em; }
+  /* ---------- balance ---------- */
+  .bal-label{ text-align:center; font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--text-soft); font-weight:800; }
+  .bal-row{ display:flex; align-items:baseline; justify-content:center; gap:5px; margin:10px 0 6px; }
+  .bal-row .cur{ font-size:23px; color:var(--neon); font-weight:800; }
+  .bal-row .amt{ font-size:46px; font-weight:900; letter-spacing:-.035em; line-height:1.05; }
+  .bal-sub{ text-align:center; font-size:11.5px; color:var(--text-soft); margin-bottom:18px; }
 
   .btn{
     width:100%; border:none; border-radius:14px; padding:15px;
-    font-family:'Inter',sans-serif; font-weight:800; font-size:14.5px;
+    font-weight:800; font-size:14.5px; letter-spacing:-.01em;
     display:flex; align-items:center; justify-content:center; gap:8px;
-    cursor:pointer; transition: transform .12s ease, opacity .12s ease;
+    cursor:pointer; transition:transform .12s ease, opacity .15s ease, filter .15s ease;
   }
-  .btn:active{ transform: scale(.97); }
-  .btn.neon{ background: linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#04150c; }
-  .btn.ghost{ background: var(--bg2); color:var(--text); border:1px solid var(--border); }
-  .btn.dark{ background:#000; color:var(--text); border:1px solid var(--border); }
-  .btn:disabled{ opacity:.5; cursor:default; }
+  .btn:active{ transform:scale(.975); }
+  .btn.neon{ background:linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#04150c; box-shadow:0 12px 26px -16px var(--neon); }
+  .btn.ghost{ background:var(--bg2); color:var(--text); border:1px solid var(--border); }
+  .btn.danger{ background:var(--danger-soft); color:#ffb0b0; border:1px solid rgba(255,96,96,.32); }
+  .btn.sm{ padding:11px 14px; font-size:13px; border-radius:12px; }
+  .btn:disabled{ opacity:.45; cursor:default; transform:none; }
+  .btn-row{ display:flex; gap:10px; }
+  .btn-row .btn{ flex:1; }
 
   .link-row{
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--bg2); border:1px solid var(--border); border-radius:14px;
-    padding:12px 14px; margin-top:12px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:12px 14px; margin-top:10px;
   }
-  .link-row .li{ display:flex; align-items:center; gap:10px; min-width:0; }
-  .link-row .lbl{ font-size:10.5px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.06em; font-weight:700; }
-  .link-row .val{ font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:600; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .link-row .li{ display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+  .link-row .lbl{ font-size:10px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.08em; font-weight:800; }
+  .link-row .val{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .link-row .val.muted{ color:var(--text-soft); }
   .change-btn{
-    background:var(--bg1); border:1px solid var(--border); color:var(--text);
-    border-radius:10px; padding:8px 12px; font-size:11.5px; font-weight:700;
+    background:var(--bg1); border:1px solid var(--border); color:var(--text-mid);
+    border-radius:10px; padding:8px 12px; font-size:11.5px; font-weight:800;
     cursor:pointer; flex-shrink:0;
   }
+  .change-btn:active{ background:var(--bg3); color:var(--text); }
 
   .ledger-line{
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:13.5px; padding:10px 0; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    font-size:13.5px; padding:11px 0; border-bottom:1px solid var(--border);
   }
   .ledger-line:last-of-type{ border-bottom:none; }
   .ledger-line .k{ color:var(--text-soft); }
-  .ledger-line .v{ font-family:'IBM Plex Mono',monospace; font-weight:700; }
+  .ledger-line .v{ font-family:'IBM Plex Mono',monospace; font-weight:700; text-align:right; }
 
+  /* ---------- toast ---------- */
   .toast{
-    position:fixed; left:16px; right:16px; top:20px;
-    background:var(--bg2); border:1px solid var(--border); color:var(--text);
-    padding:13px 16px; border-radius:16px; font-size:13px; font-weight:600;
-    opacity:0; pointer-events:none; transform:translateY(-12px);
-    transition: opacity .2s ease, transform .2s ease;
-    z-index:80; text-align:left; line-height:1.5;
-    max-height:40vh; overflow-y:auto; word-break:break-word; white-space:pre-wrap;
-    box-shadow: 0 12px 28px -10px rgba(0,0,0,.6);
+    position:fixed; left:14px; right:14px; top:calc(12px + var(--sat));
+    background:rgba(18,32,25,.97); border:1px solid var(--border-strong); color:var(--text);
+    padding:13px 15px; border-radius:16px; font-size:13px; font-weight:600;
+    opacity:0; pointer-events:none; transform:translateY(-14px) scale(.98);
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:90; line-height:1.5; max-height:46vh; overflow-y:auto; word-break:break-word;
+    box-shadow:var(--shadow-float); backdrop-filter:blur(10px);
   }
-  .toast.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
-  .toast.err{ border-color: rgba(255,90,90,.5); color:#ffb3b3; cursor:pointer; }
-  .toast.err::after{ content:"Tap to dismiss"; display:block; margin-top:6px; font-size:10.5px; font-weight:600; opacity:.6; }
+  .toast.show{ opacity:1; transform:none; pointer-events:auto; }
+  .toast.ok{ border-color:rgba(23,232,143,.4); }
+  .toast.err{ border-color:rgba(255,96,96,.45); color:#ffbdbd; cursor:pointer; }
+  .toast .dismiss{ display:block; margin-top:6px; font-size:10px; font-weight:700; opacity:.55; }
 
-  .empty{ text-align:center; padding:50px 16px; }
-  .empty .t{ font-size:18px; font-weight:800; margin-bottom:8px; }
-  .empty p{ color:var(--text-soft); font-size:13.5px; line-height:1.5; }
+  .empty{ text-align:center; padding:44px 16px; }
+  .empty .ic{
+    width:56px; height:56px; margin:0 auto 14px; border-radius:17px;
+    background:var(--bg2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .empty .t{ font-size:16px; font-weight:800; margin-bottom:6px; }
+  .empty p{ color:var(--text-soft); font-size:13px; line-height:1.6; margin:0; }
 
-  .view{ display:none; }
+  .view{ display:none; animation:fade .22s ease; }
   .view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
 
+  /* ---------- tabbar ---------- */
   .tabbar{
-    position:fixed; left:16px; right:16px; bottom:16px;
-    background:var(--bg1); border:1px solid var(--border); border-radius:20px;
-    display:flex; padding:6px;
-    box-shadow: 0 16px 32px -12px rgba(0,0,0,.7);
-    z-index:40;
+    position:fixed; left:12px; right:12px; bottom:calc(12px + var(--sab));
+    background:rgba(12,21,16,.94); border:1px solid var(--border-strong); border-radius:22px;
+    display:flex; padding:6px; box-shadow:var(--shadow-float); z-index:40;
+    backdrop-filter:blur(14px);
   }
   .tab{
     flex:1; background:none; border:none; cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:3px;
-    padding:9px 4px 8px; border-radius:14px;
-    color: var(--text-soft);
-    font-size:10.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:9px 2px 8px; border-radius:16px;
+    color:var(--text-soft); font-size:10px; font-weight:800; letter-spacing:.01em;
+    transition:color .15s ease, background .15s ease;
   }
   .tab svg{ width:19px; height:19px; }
-  .tab.active{ color:var(--neon); background: rgba(23,232,143,.08); }
+  .tab.active{ color:var(--neon); background:var(--neon-soft); }
 
-  /* Earn view */
-  .earn-hero{ text-align:center; padding: 6px 0 4px; }
-  .earn-hero .icon{
-    width:70px; height:70px; margin:0 auto 16px; border-radius:50%;
-    background: rgba(23,232,143,.08); border:1.5px solid rgba(23,232,143,.35);
+  /* ---------- earn ---------- */
+  .hero{ text-align:center; }
+  .hero .icon{
+    width:66px; height:66px; margin:0 auto 14px; border-radius:20px;
+    background:var(--neon-soft); border:1.5px solid rgba(23,232,143,.3);
     display:flex; align-items:center; justify-content:center;
   }
-  .earn-hero .amt{ font-size:40px; font-weight:900; }
-  .earn-hero .pill{
-    display:inline-flex; align-items:center; gap:6px; margin-top:12px;
+  .hero .pill{
+    display:inline-flex; align-items:center; gap:6px; margin-top:8px;
     background:var(--bg2); border:1px solid var(--border); border-radius:20px;
-    padding:7px 14px; font-size:11px; font-weight:700; color:var(--text-soft);
+    padding:6px 13px; font-size:10.5px; font-weight:800; color:var(--text-mid);
+    text-transform:uppercase; letter-spacing:.08em;
   }
   .stat-boxes{ display:flex; gap:10px; margin-top:14px; }
-  .stat-box{
-    flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:14px;
-    padding:14px; text-align:center;
-  }
-  .stat-box .n{ font-size:20px; font-weight:900; }
-  .stat-box .l{ font-size:10.5px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; font-weight:700; }
+  .stat-box{ flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px; text-align:center; }
+  .stat-box .n{ font-size:20px; font-weight:900; letter-spacing:-.02em; }
+  .stat-box .l{ font-size:10px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.07em; margin-top:3px; font-weight:800; }
 
-  /* Gift view */
-  .code-input{
-    width:100%; border:1.5px solid var(--border); background:var(--bg2);
-    border-radius:14px; padding:15px; font-family:'IBM Plex Mono',monospace;
-    font-size:15px; text-transform:uppercase; letter-spacing:.06em;
-    color:var(--text); margin-top:10px;
-  }
-  .code-input::placeholder{ color:var(--text-soft); text-transform:none; letter-spacing:normal; }
-  .code-input:focus{ outline:none; border-color:var(--neon); }
-  .steps{ margin-top:6px; }
-  .step-row{ display:flex; gap:12px; padding:10px 0; }
-  .step-num{
-    width:22px; height:22px; border-radius:7px; background: rgba(23,232,143,.15); color:var(--neon);
-    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0;
-  }
-  .step-row p{ margin:0; font-size:12.5px; color:var(--text-soft); line-height:1.5; }
+  .bar{ height:8px; background:var(--bg2); border-radius:8px; overflow:hidden; }
+  .bar > i{ display:block; height:100%; width:0%; border-radius:8px; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); transition:width .6s cubic-bezier(.3,.8,.3,1); }
 
-  /* Rank view */
-  .lb-title{ text-align:center; margin-bottom:4px; }
-  .lb-title .h{ font-size:24px; font-weight:900; font-style:italic; }
-  .lb-title .h .g{ color:var(--neon); }
-  .lb-title .s{ font-size:11px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin-top:2px; }
-  .podium{ display:flex; align-items:flex-end; gap:8px; margin:22px 0 8px; }
-  .podium .p{ flex:1; text-align:center; }
-  .podium .circ{
-    width:52px; height:52px; border-radius:14px; margin:0 auto 8px;
-    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:19px; color:#04150c;
-  }
-  .podium .p2 .circ{ background: linear-gradient(135deg,#5fd8ff,#2aa8e0); }
-  .podium .p1 .circ{ width:64px; height:64px; background: linear-gradient(135deg,var(--neon),var(--neon-deep)); box-shadow:0 0 20px rgba(23,232,143,.4); }
-  .podium .p3 .circ{ background: linear-gradient(135deg,#e08bff,#a24fd6); }
-  .podium .rank-tag{ font-size:10px; font-weight:800; color:var(--bg0); background:var(--text-soft); border-radius:6px; padding:1px 6px; display:inline-block; margin-bottom:6px; }
-  .podium .box{ background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 6px; }
-  .podium .id{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-soft); margin-bottom:6px; word-break:break-all; }
-  .podium .cnt{ font-size:19px; font-weight:900; }
-  .podium .cnt-l{ font-size:9px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.05em; }
-
-  .lb-row{
-    display:flex; align-items:center; gap:12px; padding:12px 14px;
-    background:var(--bg2); border:1px solid var(--border); border-radius:14px; margin-top:10px;
-  }
-  .lb-row.you{ border-color: rgba(23,232,143,.5); }
-  .lb-rank{ font-size:12px; font-weight:800; color:var(--text-soft); width:24px; }
-  .lb-id{ flex:1; font-family:'IBM Plex Mono',monospace; font-size:13px; }
-  .lb-count{ font-weight:800; font-size:14px; }
-  .lb-count-l{ font-size:9px; color:var(--text-soft); text-transform:uppercase; }
-
-  /* Admin */
+  /* ---------- inputs ---------- */
   .field{ margin-top:14px; }
-  .field label{ font-size:11px; color:var(--text-soft); font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
-  .field input{
+  .field label{ font-size:10.5px; color:var(--text-soft); font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+  .field input, .field textarea, .code-input{
     width:100%; margin-top:6px; border:1.5px solid var(--border); background:var(--bg2);
-    border-radius:12px; padding:12px; font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--text);
+    border-radius:12px; padding:13px; font-size:14.5px; color:var(--text);
+    font-family:'IBM Plex Mono',monospace;
   }
-  .field input:focus{ outline:none; border-color:var(--neon); }
+  .field textarea{ font-family:'Inter',sans-serif; font-size:13.5px; resize:vertical; }
+  .field input:focus, .field textarea:focus, .code-input:focus{ outline:none; border-color:var(--neon); background:var(--bg3); }
+  .field .err-txt{ color:#ffa8a8; font-size:11.5px; font-weight:600; margin-top:6px; display:none; }
+  .field.invalid input, .field.invalid textarea{ border-color:var(--danger); }
+  .field.invalid .err-txt{ display:block; }
   .field-row{ display:flex; gap:10px; }
   .field-row .field{ flex:1; }
+  .code-input{
+    text-transform:uppercase; letter-spacing:.1em; font-size:16px; text-align:center; padding:15px;
+  }
+  .code-input::placeholder{ color:var(--text-soft); text-transform:none; letter-spacing:normal; }
+  .hint{ font-size:12.5px; color:var(--text-soft); margin:0 0 4px; line-height:1.6; }
 
-  .admin-link-row{
+  .steps{ margin-top:4px; }
+  .step-row{ display:flex; gap:12px; padding:9px 0; }
+  .step-num{
+    width:22px; height:22px; border-radius:7px; background:var(--neon-soft); color:var(--neon);
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex-shrink:0;
+  }
+  .step-row p{ margin:0; font-size:12.5px; color:var(--text-soft); line-height:1.55; }
+
+  /* ---------- history ---------- */
+  .chips{ display:flex; gap:7px; overflow-x:auto; padding:2px 0 4px; margin-bottom:2px; scrollbar-width:none; }
+  .chips::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex:0 0 auto; background:var(--bg2); border:1px solid var(--border); color:var(--text-mid);
+    border-radius:999px; padding:8px 14px; font-size:12px; font-weight:800; cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip.active{ background:var(--neon-soft); border-color:rgba(23,232,143,.4); color:var(--neon); }
+  .flow-boxes{ display:flex; gap:10px; margin-bottom:14px; }
+  .flow-box{ flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px 14px; }
+  .flow-box .l{ font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-soft); font-weight:800; }
+  .flow-box .n{ font-size:18px; font-weight:900; margin-top:4px; letter-spacing:-.02em; }
+  .flow-box .n.pos{ color:var(--neon); }
+  .flow-box .n.neg{ color:var(--danger); }
+
+  .day-head{
     display:flex; align-items:center; justify-content:space-between;
+    font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--text-soft); padding:16px 2px 8px;
+  }
+  .day-head .sum{ font-family:'IBM Plex Mono',monospace; letter-spacing:0; }
+  .act-list{ display:flex; flex-direction:column; gap:8px; }
+  .activity-row{
+    display:flex; align-items:center; gap:12px; padding:12px 13px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  }
+  .activity-icon{
+    width:36px; height:36px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    background:var(--bg3);
+  }
+  .activity-icon.pos{ background:var(--neon-soft); }
+  .activity-icon.neg{ background:var(--danger-soft); }
+  .activity-body{ flex:1; min-width:0; }
+  .activity-note{ font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .activity-meta{ font-size:10.5px; color:var(--text-soft); margin-top:3px; display:flex; gap:7px; align-items:center; }
+  .activity-tag{ background:var(--bg3); border-radius:5px; padding:1px 6px; font-weight:700; text-transform:capitalize; }
+  .activity-amt{ font-family:'IBM Plex Mono',monospace; font-weight:800; font-size:13.5px; flex-shrink:0; }
+  .activity-amt.pos{ color:var(--neon); }
+  .activity-amt.neg{ color:var(--danger); }
+
+  /* ---------- rank ---------- */
+  .lb-title{ text-align:center; margin-bottom:2px; }
+  .lb-title .h{ font-size:23px; font-weight:900; font-style:italic; letter-spacing:-.02em; }
+  .lb-title .h .g{ color:var(--neon); }
+  .lb-title .s{ font-size:10.5px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.14em; font-weight:800; margin-top:3px; }
+  .podium{ display:flex; align-items:flex-end; gap:8px; margin:22px 0 6px; }
+  .podium .p{ flex:1; text-align:center; }
+  .podium .circ{
+    width:50px; height:50px; border-radius:16px; margin:0 auto 8px;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; color:#04150c;
+  }
+  .podium .p2 .circ{ background:linear-gradient(135deg,var(--sky),#2aa8e0); }
+  .podium .p1 .circ{ width:62px; height:62px; background:linear-gradient(135deg,var(--neon),var(--neon-deep)); box-shadow:0 0 24px -4px rgba(23,232,143,.55); }
+  .podium .p3 .circ{ background:linear-gradient(135deg,var(--violet),#a24fd6); }
+  .podium .rank-tag{ font-size:9.5px; font-weight:900; color:var(--bg0); background:var(--text-soft); border-radius:6px; padding:1px 7px; display:inline-block; margin-bottom:6px; }
+  .podium .box{ background:var(--bg2); border:1px solid var(--border); border-radius:13px; padding:11px 6px; }
+  .podium .id{ font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-soft); margin-bottom:5px; word-break:break-all; }
+  .podium .cnt{ font-size:18px; font-weight:900; }
+  .podium .cnt-l{ font-size:9px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.06em; }
+  .lb-row{
+    display:flex; align-items:center; gap:12px; padding:12px 14px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); margin-top:9px;
+  }
+  .lb-row.you{ border-color:rgba(23,232,143,.45); background:linear-gradient(90deg, var(--neon-soft), var(--bg2)); }
+  .lb-rank{ font-size:12px; font-weight:900; color:var(--text-soft); width:26px; }
+  .lb-id{ flex:1; font-family:'IBM Plex Mono',monospace; font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .lb-count{ font-weight:900; font-size:14px; }
+  .lb-count-l{ font-size:9px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.06em; }
+
+  /* ---------- admin ---------- */
+  .admin-link-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
     padding:13px 2px; border-bottom:1px solid var(--border); cursor:pointer;
   }
   .admin-link-row:last-child{ border-bottom:none; }
   .admin-link-row .t{ font-weight:700; font-size:13.5px; }
-  .admin-link-row .s{ font-size:11.5px; color:var(--text-soft); margin-top:1px; }
-  .admin-link-row span.chev{ color:var(--text-soft); font-size:18px; }
-  .stat-tile{ background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px; }
-  .stat-tile .n{ font-size:19px; font-weight:900; }
-  .stat-tile .l{ font-size:10.5px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.04em; margin-top:3px; font-weight:700; }
-
-  .activity-row{
-    display:flex; align-items:center; gap:10px; padding:10px 0;
-    border-bottom:1px solid var(--border);
+  .admin-link-row .s{ font-size:11.5px; color:var(--text-soft); margin-top:2px; }
+  .admin-link-row .chev{ color:var(--text-soft); font-size:18px; }
+  .stat-tile{ background:var(--bg2); border:1px solid var(--border); border-radius:13px; padding:12px; }
+  .stat-tile .n{ font-size:18px; font-weight:900; letter-spacing:-.02em; }
+  .stat-tile .l{ font-size:10px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; font-weight:800; }
+  .toggle-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 0; border-bottom:1px solid var(--border);
   }
-  .activity-row:last-child{ border-bottom:none; }
-  .activity-icon{
-    width:32px; height:32px; border-radius:10px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:15px;
-    background:var(--bg2);
-  }
-  .activity-icon.pos{ background:rgba(23,232,143,.12); }
-  .activity-icon.neg{ background:rgba(255,90,90,.12); }
-  .activity-body{ flex:1; min-width:0; }
-  .activity-note{ font-size:12.5px; font-weight:600; }
-  .activity-date{ font-size:10.5px; color:var(--text-soft); margin-top:1px; }
-  .activity-amt{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; }
-  .activity-amt.pos{ color:var(--neon); }
-  .activity-amt.neg{ color:var(--danger); }
+  .toggle-row:last-child{ border-bottom:none; }
+  .toggle-row .t{ font-weight:700; font-size:13.5px; }
+  .toggle-row .s{ font-size:11.5px; color:var(--text-soft); margin-top:2px; }
+  .pill-toggle{ font-size:10.5px; font-weight:900; padding:7px 13px; border-radius:9px; border:none; cursor:pointer; letter-spacing:.06em; }
+  .pill-toggle.on{ background:var(--neon-soft); color:var(--neon); }
+  .pill-toggle.off{ background:var(--danger-soft); color:#ffa8a8; }
+  .gift-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); }
+  .gift-row:last-child{ border-bottom:none; }
+  .gift-row .code{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:800; letter-spacing:.05em; }
+  .gift-row .meta{ font-size:10.5px; color:var(--text-soft); margin-top:3px; }
+  .danger-zone{ border-color:rgba(255,96,96,.28); }
+  .danger-zone h3{ color:#ffa8a8; }
 
+  /* ---------- skeleton ---------- */
   .skel{
-    background: linear-gradient(90deg, var(--bg2) 25%, var(--border) 37%, var(--bg2) 63%);
-    background-size: 400% 100%;
-    animation: skel-shimmer 1.4s ease infinite;
+    background:linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 37%, var(--bg2) 63%);
+    background-size:400% 100%; animation:shimmer 1.4s ease infinite;
     border-radius:8px; color:transparent !important;
   }
-  @keyframes skel-shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+  @keyframes shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+  .skel-row{ height:60px; border-radius:var(--radius-sm); margin-bottom:8px; background:linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 37%, var(--bg2) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
 
   .pull-indicator{
-    position:fixed; top:0; left:0; right:0; display:flex; justify-content:center;
-    padding-top:10px; z-index:45; pointer-events:none; opacity:0; transition:opacity .15s ease;
+    position:fixed; top:calc(8px + var(--sat)); left:0; right:0; display:flex; justify-content:center;
+    z-index:45; pointer-events:none; opacity:0; transition:opacity .15s ease;
   }
   .pull-indicator.show{ opacity:1; }
-  .pull-indicator .spin{
-    width:22px; height:22px; border-radius:50%;
-    border:2.5px solid var(--border); border-top-color:var(--neon);
-    animation: spin .7s linear infinite;
-  }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .spin{ width:22px; height:22px; border-radius:50%; border:2.5px solid var(--border-strong); border-top-color:var(--neon); animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
 
-  .gift-row{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:11px 0; border-bottom:1px solid var(--border);
-  }
-  .gift-row:last-child{ border-bottom:none; }
-  .gift-row .code{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:700; }
-  .gift-row .meta{ font-size:10.5px; color:var(--text-soft); margin-top:2px; }
-  .gift-toggle{
-    font-size:10.5px; font-weight:700; padding:6px 10px; border-radius:8px; border:none; cursor:pointer;
-  }
-  .gift-toggle.active{ background: rgba(23,232,143,.15); color:var(--neon); }
-  .gift-toggle.inactive{ background: rgba(255,90,90,.15); color:var(--danger); }
-
-  /* Bottom sheet modal */
-  .sheet-overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,.6);
-    z-index:60; display:none; align-items:flex-end;
-  }
+  /* ---------- sheets ---------- */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:60; display:none; align-items:flex-end; backdrop-filter:blur(3px); }
   .sheet-overlay.show{ display:flex; }
   .sheet{
-    width:100%; background:var(--bg1); border:1px solid var(--border); border-bottom:none;
-    border-radius:24px 24px 0 0; padding:14px 20px 28px;
-    max-height:85vh; overflow-y:auto;
+    width:100%; background:var(--bg1); border-top:1px solid var(--border-strong);
+    border-radius:26px 26px 0 0; padding:14px 20px calc(26px + var(--sab));
+    max-height:88vh; overflow-y:auto; animation:rise .26s cubic-bezier(.2,.8,.25,1);
   }
-  .sheet-handle{ width:36px; height:4px; background:var(--border); border-radius:3px; margin:0 auto 16px; }
-  .sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .sheet-head .t{ font-size:19px; font-weight:800; }
-  .sheet-close{ background:var(--bg2); border:none; color:var(--text); width:30px; height:30px; border-radius:9px; cursor:pointer; font-size:16px; }
-  .sheet p.hint{ font-size:12.5px; color:var(--text-soft); margin:0 0 4px; line-height:1.5; }
+  @keyframes rise{ from{ transform:translateY(14%) } to{ transform:none } }
+  .sheet-handle{ width:38px; height:4px; background:var(--border-strong); border-radius:3px; margin:0 auto 14px; }
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .sheet-head .t{ font-size:18px; font-weight:900; letter-spacing:-.02em; }
+  .sheet-close{ background:var(--bg2); border:none; color:var(--text-mid); width:32px; height:32px; border-radius:10px; cursor:pointer; font-size:15px; }
 
-  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
 </style>
 </head>
 <body>
 
 <div class="pull-indicator" id="pullIndicator"><div class="spin"></div></div>
 
-<div id="gateScreen" style="display:none; position:fixed; inset:0; z-index:70; background:var(--bg0); padding:60px 24px; overflow-y:auto;">
-  <div style="max-width:360px; margin:0 auto; text-align:center;">
-    <div style="width:64px; height:64px; margin:0 auto 20px; border-radius:18px; background:rgba(23,232,143,.1); border:1.5px solid rgba(23,232,143,.35); display:flex; align-items:center; justify-content:center; font-size:28px;">🔒</div>
-    <div style="font-size:20px; font-weight:900; margin-bottom:8px;">One quick step</div>
-    <p style="color:var(--text-soft); font-size:13px; line-height:1.6; margin-bottom:22px;">Complete the steps below to unlock your wallet.</p>
-    <div id="gateJoinList" style="margin-bottom:14px;"></div>
-    <div id="gateVerifyBox" style="display:none; margin-bottom:14px;">
-      <button class="btn neon" id="gateVerifyBtn" style="width:100%;">🔐 Complete Verification</button>
-    </div>
-    <button class="btn ghost" id="gateRefreshBtn" style="width:100%; margin-top:6px;">↻ I've done this — Continue</button>
-  </div>
+<!-- GATE / BLOCKED SCREEN -->
+<div id="gateScreen" style="display:none; position:fixed; inset:0; z-index:70; background:var(--bg0); padding:calc(56px + var(--sat)) 24px 40px; overflow-y:auto;">
+  <div id="gateInner" style="max-width:360px; margin:0 auto; text-align:center;"></div>
 </div>
 
 <div id="app">
@@ -329,10 +399,13 @@
     <div class="avatar">₹</div>
     <div class="titles">
       <div class="name" id="botName">Wallet</div>
-      <div class="status-pill"><span class="dot"></span>System Live</div>
+      <div class="status-pill"><span class="dot"></span><span id="authLabel">Secure session</span></div>
     </div>
-    <button id="headerRefreshBtn" style="background:var(--bg2); border:1px solid var(--border); width:36px; height:36px; border-radius:11px; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+    <button class="head-btn" id="adminGearBtn" style="display:none;" aria-label="Admin panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+    <button class="head-btn" id="headerRefreshBtn" aria-label="Refresh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
     </button>
   </header>
 
@@ -343,130 +416,153 @@
       <div class="card">
         <div class="bal-label">Available Balance</div>
         <div class="bal-row"><span class="cur">₹</span><span class="amt mono" id="balanceAmt">0.00</span></div>
-        <button class="btn neon" id="withdrawBtn">Withdraw Now ↗</button>
+        <div class="bal-sub" id="balSub">Ready to withdraw</div>
+        <div class="btn-row">
+          <button class="btn neon" id="withdrawBtn">Withdraw ↗</button>
+          <button class="btn ghost" id="bonusBtn">⭐ Daily bonus</button>
+        </div>
 
         <div class="link-row">
-          <div class="li">
-            <div>
-              <div class="lbl">Linked Wallet</div>
-              <div class="val" id="walletVal">Not Linked</div>
-            </div>
-          </div>
+          <div class="li"><div style="min-width:0;">
+            <div class="lbl">Linked wallet</div>
+            <div class="val muted" id="walletVal">Not linked</div>
+          </div></div>
           <button class="change-btn" id="changeWalletBtn">Change</button>
         </div>
 
         <div class="link-row">
-          <div class="li">
-            <div>
-              <div class="lbl">Linked UPI</div>
-              <div class="val" id="upiVal">Not Linked</div>
-            </div>
-          </div>
+          <div class="li"><div style="min-width:0;">
+            <div class="lbl">Linked UPI</div>
+            <div class="val muted" id="upiVal">Not linked</div>
+          </div></div>
           <button class="change-btn" id="changeUpiBtn">Change</button>
         </div>
 
         <div class="link-row">
-          <div class="li" style="min-width:0; overflow:hidden; flex:1;">
-            <div style="min-width:0; overflow:hidden;">
-              <div class="lbl">Your referral link</div>
-              <div class="val" id="homeRefLink" style="min-width:0;">—</div>
-            </div>
-          </div>
-          <button class="icon-copy change-btn" id="homeCopyBtn">Copy</button>
+          <div class="li"><div style="min-width:0; overflow:hidden;">
+            <div class="lbl">Your referral link</div>
+            <div class="val" id="homeRefLink">—</div>
+          </div></div>
+          <button class="change-btn" id="homeCopyBtn">Copy</button>
         </div>
       </div>
 
       <div class="card" id="fundCard" style="display:none;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-          <h3 style="margin:0;">Bot Fund</h3>
+        <div class="card-head">
+          <h3 style="margin:0;">Bot fund</h3>
           <span class="status-pill" style="margin:0;" id="fundPct">0% left</span>
         </div>
-        <div style="height:8px; background:var(--bg2); border-radius:8px; overflow:hidden; margin-bottom:12px;">
-          <div id="fundBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); transition:width .5s ease;"></div>
-        </div>
+        <div class="bar" style="margin-bottom:12px;"><i id="fundBar"></i></div>
         <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <div><div style="color:var(--text-soft);">Available</div><div class="mono" style="font-weight:700; margin-top:2px;" id="fundLive">₹0</div></div>
-          <div style="text-align:right;"><div style="color:var(--text-soft);">Total</div><div class="mono" style="font-weight:700; margin-top:2px;" id="fundTotal">₹0</div></div>
+          <div><div style="color:var(--text-soft);">Available</div><div class="mono" style="font-weight:800; margin-top:3px;" id="fundLive">₹0</div></div>
+          <div style="text-align:right;"><div style="color:var(--text-soft);">Total</div><div class="mono" style="font-weight:800; margin-top:3px;" id="fundTotal">₹0</div></div>
         </div>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:10px;">Overview</h3>
+        <h3 style="margin-bottom:8px;">Overview</h3>
         <div class="ledger-line"><span class="k">Started from your link</span><span class="v" id="refStarted">0</span></div>
         <div class="ledger-line"><span class="k">Verified &amp; credited</span><span class="v" id="refVerified">0</span></div>
-        <div class="ledger-line"><span class="k">Min. / Max. withdraw</span><span class="v" id="withdrawRange">—</span></div>
+        <div class="ledger-line"><span class="k">Min / Max withdraw</span><span class="v" id="withdrawRange">—</span></div>
         <div class="ledger-line"><span class="k">Withdrawal tax</span><span class="v" id="taxLine">—</span></div>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:10px;">Recent activity</h3>
-        <div id="activityList"><p style="color:var(--text-soft); font-size:12.5px;">Loading…</p></div>
+        <div class="card-head">
+          <h3 style="margin:0;">Recent activity</h3>
+          <button class="link-btn" id="seeAllActivity">See all →</button>
+        </div>
+        <div id="homeActivity"><div class="skel-row"></div><div class="skel-row"></div></div>
       </div>
-
     </div>
 
     <!-- EARN -->
     <div class="view" id="view-earn">
-      <div class="card" id="tierCard">
+      <div class="card tight">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div id="tierEmoji" style="font-size:32px; line-height:1;">🥉</div>
-          <div style="flex:1;">
+          <div id="tierEmoji" style="font-size:30px; line-height:1;">🥉</div>
+          <div style="flex:1; min-width:0;">
             <div style="font-weight:800; font-size:15px;" id="tierName">Bronze</div>
-            <div style="font-size:11.5px; color:var(--text-soft);" id="tierNext">Refer more to level up</div>
+            <div style="font-size:11.5px; color:var(--text-soft); margin-top:2px;" id="tierNext">Refer more to level up</div>
           </div>
         </div>
-        <div style="height:7px; background:var(--bg2); border-radius:8px; overflow:hidden; margin-top:12px;">
-          <div id="tierBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); transition:width .6s ease;"></div>
+        <div class="bar" style="margin-top:12px; height:7px;"><i id="tierBar"></i></div>
+      </div>
+
+      <div class="card hero">
+        <div class="icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#17e88f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div class="bal-row" style="margin:0;"><span class="cur">₹</span><span class="amt mono" id="perReferAmt" style="font-size:38px;">0</span></div>
+        <div class="pill">Per valid invite</div>
+
+        <div class="link-row">
+          <div class="li"><div style="min-width:0; overflow:hidden;">
+            <div class="lbl">Your referral link</div>
+            <div class="val" id="earnRefLink">—</div>
+          </div></div>
+          <button class="change-btn" id="earnCopyBtn">Copy</button>
+        </div>
+
+        <div style="margin-top:12px;"><button class="btn neon" id="earnShareBtn">📤 Share on Telegram</button></div>
+
+        <div class="stat-boxes">
+          <div class="stat-box"><div class="n" id="earnRefCount">0</div><div class="l">Invites</div></div>
+          <div class="stat-box"><div class="n mono" id="earnIncome">₹0</div><div class="l">Est. income</div></div>
         </div>
       </div>
 
-      <div class="card earn-hero">
-        <div class="icon">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#17e88f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-        <div class="bal-row" style="margin:0;"><span class="cur">₹</span><span class="amt" id="perReferAmt">0</span></div>
-        <div class="pill">● Per valid invite</div>
-
-        <div class="link-row">
-          <div class="li" style="min-width:0; overflow:hidden; flex:1;">
-            <div style="min-width:0; overflow:hidden;">
-              <div class="lbl">Your referral link</div>
-              <div class="val" id="earnRefLink" style="min-width:0;">—</div>
-            </div>
-          </div>
-          <button class="icon-copy change-btn" id="earnCopyBtn">Copy</button>
-        </div>
-
-        <div style="margin-top:14px;">
-          <button class="btn neon" id="earnShareBtn">📤 Share on Telegram</button>
-        </div>
-
-        <div class="stat-boxes">
-          <div class="stat-box"><div class="n" id="earnRefCount">0</div><div class="l">Refers</div></div>
-          <div class="stat-box"><div class="n mono" id="earnIncome">₹0</div><div class="l">Est. Income</div></div>
+      <div class="card">
+        <h3 style="margin-bottom:6px;">How referrals pay</h3>
+        <div class="steps">
+          <div class="step-row"><div class="step-num">1</div><p>Share your link — it is tied to your account only.</p></div>
+          <div class="step-row"><div class="step-num">2</div><p>Your friend starts the bot and completes verification.</p></div>
+          <div class="step-row"><div class="step-num">3</div><p>Once verified, your reward is credited automatically.</p></div>
         </div>
       </div>
     </div>
 
     <!-- GIFT -->
     <div class="view" id="view-gift">
-      <div class="card earn-hero">
+      <div class="card hero">
         <div class="icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#17e88f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"></rect><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M12 8H7.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h4.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z"></path></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#17e88f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"></rect><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M12 8H7.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h4.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z"></path></svg>
         </div>
-        <div style="font-size:21px; font-weight:900;">Redeem Gift Code</div>
-        <p style="color:var(--text-soft); font-size:12.5px; margin-top:6px;">Enter your code below to get instant cashback in your account.</p>
-        <input class="code-input" id="giftCodeInput" placeholder="e.g. WELCOME50" />
+        <div style="font-size:20px; font-weight:900; letter-spacing:-.02em;">Redeem gift code</div>
+        <p class="hint" style="margin-top:6px;">Enter your code to get instant cashback in your balance.</p>
+        <div class="field" style="margin-top:8px;">
+          <input class="code-input" id="giftCodeInput" placeholder="e.g. WELCOME50" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" inputmode="text" />
+          <div class="err-txt" id="giftCodeErr">Codes use letters, numbers, - and _ only.</div>
+        </div>
         <div style="margin-top:12px;"><button class="btn neon" id="claimBtn">Claim</button></div>
       </div>
       <div class="card">
         <h3 style="margin-bottom:6px;">How it works</h3>
         <div class="steps">
-          <div class="step-row"><div class="step-num">1</div><p>Get a gift code from our Telegram channel or special events</p></div>
-          <div class="step-row"><div class="step-num">2</div><p>Enter the code above and tap Claim</p></div>
-          <div class="step-row"><div class="step-num">3</div><p>Cash is instantly added to your account — withdraw anytime!</p></div>
+          <div class="step-row"><div class="step-num">1</div><p>Get a code from the official channel or an event.</p></div>
+          <div class="step-row"><div class="step-num">2</div><p>Type it above and tap Claim — each code works once per account.</p></div>
+          <div class="step-row"><div class="step-num">3</div><p>Cash lands in your balance instantly; withdraw anytime.</p></div>
         </div>
       </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="view-history">
+      <div class="chips" id="historyFilters">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="in">Money in</button>
+        <button class="chip" data-filter="out">Money out</button>
+        <button class="chip" data-filter="refer">Referrals</button>
+        <button class="chip" data-filter="bonus">Bonus</button>
+        <button class="chip" data-filter="gift">Gifts</button>
+        <button class="chip" data-filter="withdraw">Withdrawals</button>
+      </div>
+      <div class="flow-boxes">
+        <div class="flow-box"><div class="l">Total in</div><div class="n pos mono" id="flowIn">₹0.00</div></div>
+        <div class="flow-box"><div class="l">Total out</div><div class="n neg mono" id="flowOut">₹0.00</div></div>
+      </div>
+      <div id="historyBody"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
+      <button class="btn ghost sm" id="historyMoreBtn" style="display:none; margin-top:14px;">Show more</button>
     </div>
 
     <!-- RANK -->
@@ -476,182 +572,195 @@
           <div class="h">HALL OF <span class="g">FAME</span></div>
           <div class="s">Top promoters</div>
         </div>
-        <div id="lbList"><div class="empty" style="padding:30px 10px;"><p>Loading leaderboard…</p></div></div>
+        <div id="lbList" style="margin-top:14px;"><div class="skel-row"></div><div class="skel-row"></div></div>
       </div>
+      <p class="hint" style="text-align:center;">Account IDs are partly hidden to protect privacy.</p>
     </div>
 
     <!-- ADMIN -->
     <div class="view" id="view-admin">
       <div class="card">
-        <h3>Quick settings</h3>
+        <div class="card-head"><h3 style="margin:0;">Payout rules</h3><span class="status-pill" style="margin:0;">Admin only</span></div>
         <div class="field">
-          <label>Per referral (₹ or min-max e.g. 1-3)</label>
-          <input id="adminPerRefer" type="text" />
+          <label>Per referral (₹ or range e.g. 1-3)</label>
+          <input id="adminPerRefer" type="text" inputmode="text" maxlength="16" />
+          <div class="err-txt" id="adminPerReferErr">Use a number like 2 or a range like 1-3.</div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Min withdraw (₹)</label><input id="adminMinWithdraw" type="number" /></div>
-          <div class="field"><label>Max withdraw (₹)</label><input id="adminMaxWithdraw" type="number" /></div>
+          <div class="field"><label>Min withdraw (₹)</label><input id="adminMinWithdraw" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Max withdraw (₹)</label><input id="adminMaxWithdraw" type="number" min="0" step="0.01" /></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Min refers to withdraw</label><input id="adminMinRef" type="number" /></div>
-          <div class="field"><label>Withdrawal tax (%)</label><input id="adminTaxPercent" type="number" /></div>
+          <div class="field"><label>Min refers to withdraw</label><input id="adminMinRef" type="number" min="0" step="1" /></div>
+          <div class="field"><label>Withdrawal tax (%)</label><input id="adminTaxPercent" type="number" min="0" max="100" step="0.1" /></div>
         </div>
-        <div class="field"><label>Daily bonus amount (₹)</label><input id="adminDailyBonus" type="number" /></div>
+        <div class="field"><label>Daily bonus amount (₹)</label><input id="adminDailyBonus" type="number" min="0" step="0.01" /></div>
         <div class="field">
           <label>Payout channel (username or ID)</label>
-          <input id="adminPayoutChannel" type="text" placeholder="@yourchannel or -100123456789" />
-          <p id="payoutChannelStatus" style="font-size:11px; color:var(--text-soft); margin:6px 0 0;"></p>
+          <input id="adminPayoutChannel" type="text" placeholder="@yourchannel or -100123456789" maxlength="64" autocomplete="off" />
+          <div class="err-txt" id="adminChannelErr">Use @username or a numeric channel ID.</div>
+          <p class="hint" id="payoutChannelStatus" style="margin-top:6px;"></p>
+        </div>
+        <div class="field-row" style="margin-top:14px;">
+          <div class="field" style="margin-top:0;"><label>Live fund (₹)</label><input id="adminLiveFund" type="number" min="0" step="0.01" /></div>
+          <div class="field" style="margin-top:0;"><label>Total fund (₹)</label><input id="adminTotalFund" type="number" min="0" step="0.01" /></div>
         </div>
         <button class="btn neon" id="adminSaveBtn" style="margin-top:16px;">Save settings</button>
       </div>
 
       <div class="card">
-        <h3>Bot fund display</h3>
-        <p style="font-size:12px; color:var(--text-soft); margin:0 0 4px;">Shown to users on the Home tab as a "funds available" indicator.</p>
-        <div class="field-row">
-          <div class="field"><label>Live fund (₹)</label><input id="adminLiveFund" type="number" /></div>
-          <div class="field"><label>Total fund (₹)</label><input id="adminTotalFund" type="number" /></div>
+        <h3 style="margin-bottom:6px;">Duplicate protection</h3>
+        <p class="hint">Turn these OFF to stop one wallet or UPI being reused across many accounts.</p>
+        <div class="toggle-row">
+          <div><div class="t">Allow same wallet</div><div class="s">Multiple accounts, one wallet number</div></div>
+          <button class="pill-toggle" id="sameWalletToggle">…</button>
         </div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-bottom:4px;">Wallet &amp; UPI linking</h3>
-        <p style="font-size:12px; color:var(--text-soft); margin:0 0 10px;">When ON, the same wallet/UPI can be linked to multiple accounts. Turn OFF to block duplicates.</p>
-        <div class="gift-row">
-          <div><div class="code" style="font-family:'Inter',sans-serif; font-weight:700;">Allow same wallet</div></div>
-          <button class="gift-toggle" id="sameWalletToggle">…</button>
-        </div>
-        <div class="gift-row">
-          <div><div class="code" style="font-family:'Inter',sans-serif; font-weight:700;">Allow same UPI</div></div>
-          <button class="gift-toggle" id="sameUpiToggle">…</button>
+        <div class="toggle-row">
+          <div><div class="t">Allow same UPI</div><div class="s">Multiple accounts, one UPI ID</div></div>
+          <button class="pill-toggle" id="sameUpiToggle">…</button>
         </div>
       </div>
 
       <div class="card">
         <h3>Create gift code</h3>
         <div class="field-row">
-          <div class="field"><label>Amount per user (₹)</label><input id="giftAmtInput" type="number" /></div>
-          <div class="field"><label>Max users</label><input id="giftMaxInput" type="number" /></div>
+          <div class="field"><label>Amount per user (₹)</label><input id="giftAmtInput" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Max users</label><input id="giftMaxInput" type="number" min="1" step="1" /></div>
         </div>
-        <div class="field"><label>Min. referrals to claim</label><input id="giftMinRefInput" type="number" value="0" /></div>
+        <div class="field"><label>Min. referrals to claim</label><input id="giftMinRefInput" type="number" min="0" step="1" value="0" /></div>
         <button class="btn neon" id="giftCreateBtn" style="margin-top:16px;">Generate code</button>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:6px;">Recent gift codes</h3>
-        <div id="giftCodesList"><p style="color:var(--text-soft); font-size:12.5px;">Loading…</p></div>
+        <div class="card-head"><h3 style="margin:0;">Recent gift codes</h3><button class="link-btn" id="adminReloadBtn">Reload</button></div>
+        <div id="giftCodesList"><div class="skel-row" style="height:44px;"></div></div>
       </div>
 
       <div class="card">
         <h3 style="margin-bottom:10px;">Bot stats</h3>
-        <div id="statsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <p style="grid-column:1/3; color:var(--text-soft); font-size:12.5px;">Loading…</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Broadcast</h3>
-        <p style="font-size:12px; color:var(--text-soft); margin:0 0 4px;">Sends a text message to every user of this bot.</p>
-        <textarea id="broadcastText" rows="4" style="width:100%; margin-top:8px; border:1.5px solid var(--border); background:var(--bg2); border-radius:12px; padding:12px; font-family:'Inter',sans-serif; font-size:13.5px; color:var(--text); resize:vertical;" placeholder="Write your announcement here…"></textarea>
-        <div class="field-row" style="margin-top:12px;">
-          <div class="field" style="margin-top:0;"><label>Button text (optional)</label><input id="broadcastBtnText" type="text" placeholder="Open App" /></div>
-          <div class="field" style="margin-top:0;"><label>Button URL</label><input id="broadcastBtnUrl" type="text" placeholder="https://…" /></div>
-        </div>
-        <button class="btn neon" id="broadcastSendBtn" style="margin-top:12px;">📢 Send to all users</button>
+        <div id="statsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="skel-row" style="height:58px;"></div><div class="skel-row" style="height:58px;"></div></div>
       </div>
 
       <div class="card">
         <h3 style="margin-bottom:6px;">Recent withdrawals</h3>
-        <div id="adminWithdrawList"><p class="hint">Loading…</p></div>
+        <div id="adminWithdrawList"><div class="skel-row"></div></div>
       </div>
 
-      <div class="card">
-        <h3 style="margin-bottom:4px;">Ban / Unban user</h3>
-        <p style="font-size:12px; color:var(--text-soft); margin:0 0 10px;">Enter a Telegram user ID.</p>
-        <div class="field"><label>User ID</label><input id="banUserInput" type="text" placeholder="6925391837" /></div>
-        <div style="display:flex; gap:10px; margin-top:12px;">
-          <button class="btn ghost" id="banUserBtn" style="flex:1;">🚫 Ban</button>
-          <button class="btn ghost" id="unbanUserBtn" style="flex:1;">✅ Unban</button>
+      <div class="card danger-zone">
+        <h3>Broadcast</h3>
+        <p class="hint">Sends one message to every user of this bot. This cannot be undone.</p>
+        <div class="field">
+          <label>Message</label>
+          <textarea id="broadcastText" rows="4" maxlength="3500" placeholder="Write your announcement…"></textarea>
+          <div class="err-txt" id="broadcastErr">Write a message first (max 3500 characters).</div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Button text (optional)</label><input id="broadcastBtnText" type="text" maxlength="32" placeholder="Open App" /></div>
+          <div class="field"><label>Button URL</label><input id="broadcastBtnUrl" type="url" maxlength="256" placeholder="https://…" /><div class="err-txt" id="broadcastUrlErr">Button links must start with https://</div></div>
+        </div>
+        <button class="btn danger" id="broadcastSendBtn" style="margin-top:14px;">📢 Send to all users</button>
+      </div>
+
+      <div class="card danger-zone">
+        <h3 style="margin-bottom:6px;">Ban / unban user</h3>
+        <p class="hint">Enter a numeric Telegram user ID.</p>
+        <div class="field"><label>User ID</label><input id="banUserInput" type="text" inputmode="numeric" maxlength="20" placeholder="6925391837" /><div class="err-txt" id="banErr">User IDs are numbers only.</div></div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn danger sm" id="banUserBtn">🚫 Ban</button>
+          <button class="btn ghost sm" id="unbanUserBtn">✅ Unban</button>
         </div>
       </div>
 
       <div class="card">
         <h3>Full admin tools</h3>
-        <div class="admin-link-row" data-target="full"><div><div class="t">⚙️ Full admin panel</div><div class="s">Gift codes, tasks, bans, and more</div></div><span class="chev">›</span></div>
+        <div class="admin-link-row" data-target="full">
+          <div><div class="t">⚙️ Open full admin panel</div><div class="s">Tasks, channels, advanced settings — opens in chat</div></div>
+          <span class="chev">›</span>
+        </div>
       </div>
     </div>
 
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="tabbar" id="tabbar">
   <button class="tab active" data-view="home">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home
   </button>
   <button class="tab" data-view="earn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>Earn
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Earn
   </button>
   <button class="tab" data-view="gift">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"></rect><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M12 8H7.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h4.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z"></path></svg>Gift
   </button>
+  <button class="tab" data-view="history">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>History
+  </button>
   <button class="tab" data-view="rank">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M17 5h3a2 2 0 0 1-2 4h-1M7 5H4a2 2 0 0 0 2 4h1"></path></svg>Rank
-  </button>
-  <button class="tab" data-view="admin" id="adminTabBtn" style="display:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Admin
   </button>
 </div>
 
 <!-- WITHDRAW SHEET -->
 <div class="sheet-overlay" id="withdrawSheet">
-  <div class="sheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Withdraw">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><span class="t">Withdraw</span><button class="sheet-close" data-close="withdrawSheet">✕</button></div>
-
+    <div class="sheet-head"><span class="t">Withdraw</span><button class="sheet-close" data-close="withdrawSheet" aria-label="Close">✕</button></div>
     <div id="withdrawStep1">
       <p class="hint">Enter how much you'd like to withdraw.</p>
-      <div class="field"><label>Amount (₹)</label><input id="withdrawAmtInput" type="number" /></div>
-      <button class="btn neon" id="withdrawQuoteBtn" style="margin-top:16px;">Continue</button>
+      <div class="field">
+        <label>Amount (₹)</label>
+        <input id="withdrawAmtInput" type="number" min="0" step="0.01" inputmode="decimal" />
+        <div class="err-txt" id="withdrawAmtErr">Enter an amount within your balance and limits.</div>
+      </div>
+      <p class="hint" id="withdrawLimits" style="margin-top:8px;"></p>
+      <button class="btn neon" id="withdrawQuoteBtn" style="margin-top:14px;">Continue</button>
     </div>
-
     <div id="withdrawStep2" style="display:none;">
       <div class="ledger-line"><span class="k">Amount</span><span class="v mono" id="wdAmount">₹0</span></div>
       <div class="ledger-line"><span class="k">Tax (<span id="wdTaxPct">0</span>%)</span><span class="v mono" id="wdTaxAmt">-₹0</span></div>
-      <div class="ledger-line" style="border-top:1px solid var(--border); padding-top:12px;"><span class="k" style="color:var(--text); font-weight:700;">You'll receive</span><span class="v mono" style="color:var(--neon); font-size:15px;" id="wdNetAmt">₹0</span></div>
-      <p class="hint" style="margin-top:14px;">Choose a gateway to complete this withdrawal:</p>
+      <div class="ledger-line" style="border-top:1px solid var(--border); padding-top:12px;">
+        <span class="k" style="color:var(--text); font-weight:700;">You'll receive</span>
+        <span class="v mono" style="color:var(--neon); font-size:15.5px;" id="wdNetAmt">₹0</span>
+      </div>
+      <p class="hint" style="margin-top:14px;">Pick a payout gateway to confirm:</p>
       <div id="wdGatewayList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
-      <button class="btn ghost" id="withdrawBackBtn" style="margin-top:16px;">← Change amount</button>
+      <button class="btn ghost sm" id="withdrawBackBtn" style="margin-top:16px;">← Change amount</button>
     </div>
   </div>
 </div>
 
 <!-- RECEIPT SHEET -->
 <div class="sheet-overlay" id="receiptSheet">
-  <div class="sheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Receipt">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><span class="t">Receipt</span><button class="sheet-close" data-close="receiptSheet">✕</button></div>
-    <div style="text-align:center; margin-bottom:18px;">
-      <div id="receiptIcon" style="font-size:40px; margin-bottom:8px;">✅</div>
-      <div id="receiptTitle" style="font-size:17px; font-weight:800;">Withdrawal Successful</div>
+    <div class="sheet-head"><span class="t">Receipt</span><button class="sheet-close" data-close="receiptSheet" aria-label="Close">✕</button></div>
+    <div style="text-align:center; margin-bottom:16px;">
+      <div id="receiptIcon" style="font-size:38px; margin-bottom:6px;">✅</div>
+      <div id="receiptTitle" style="font-size:17px; font-weight:900;">Withdrawal successful</div>
     </div>
     <div class="ledger-line"><span class="k">Amount</span><span class="v mono" id="rcAmount">₹0</span></div>
     <div class="ledger-line"><span class="k">Gateway</span><span class="v mono" id="rcGateway">—</span></div>
     <div class="ledger-line"><span class="k">Status</span><span class="v mono" id="rcStatus">—</span></div>
-    <div class="ledger-line"><span class="k">Message</span><span class="v mono" id="rcMessage" style="text-align:right; max-width:60%;">—</span></div>
-    <div id="rcNotifyRow" style="margin-top:10px; font-size:11px; color:var(--text-soft); display:none;"></div>
+    <div class="ledger-line"><span class="k">Note</span><span class="v" id="rcMessage" style="max-width:62%; font-family:'Inter',sans-serif; font-weight:600;">—</span></div>
+    <div id="rcNotifyRow" class="hint" style="margin-top:10px; display:none;"></div>
     <button class="btn neon" id="receiptCloseBtn" style="margin-top:16px;">Done</button>
   </div>
 </div>
 
 <!-- WALLET SHEET -->
 <div class="sheet-overlay" id="walletSheet">
-  <div class="sheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Link wallet">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><span class="t">Link Wallet</span><button class="sheet-close" data-close="walletSheet">✕</button></div>
-    <p class="hint">Enter your 10-digit wallet number.</p>
-    <div class="field"><label>Wallet number</label><input id="walletInput" type="tel" maxlength="10" /></div>
+    <div class="sheet-head"><span class="t">Link wallet</span><button class="sheet-close" data-close="walletSheet" aria-label="Close">✕</button></div>
+    <p class="hint">Enter your 10-digit wallet number. Double-check it — payouts cannot be reversed.</p>
+    <div class="field">
+      <label>Wallet number</label>
+      <input id="walletInput" type="tel" inputmode="numeric" maxlength="10" autocomplete="off" />
+      <div class="err-txt" id="walletErr">Wallet numbers are exactly 10 digits.</div>
+    </div>
     <div id="walletJoinList"></div>
     <button class="btn neon" id="walletConfirmBtn" style="margin-top:16px;">Save wallet</button>
   </div>
@@ -659,241 +768,354 @@
 
 <!-- UPI SHEET -->
 <div class="sheet-overlay" id="upiSheet">
-  <div class="sheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Link UPI">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><span class="t">Link UPI</span><button class="sheet-close" data-close="upiSheet">✕</button></div>
-    <p class="hint">Enter your UPI ID.</p>
-    <div class="field"><label>UPI ID</label><input id="upiInput" type="text" placeholder="name@bank" /></div>
+    <div class="sheet-head"><span class="t">Link UPI</span><button class="sheet-close" data-close="upiSheet" aria-label="Close">✕</button></div>
+    <p class="hint">Enter your UPI ID exactly as it appears in your payment app.</p>
+    <div class="field">
+      <label>UPI ID</label>
+      <input id="upiInput" type="text" placeholder="name@bank" maxlength="64" autocomplete="off" autocapitalize="none" spellcheck="false" />
+      <div class="err-txt" id="upiErr">UPI IDs look like name@bank.</div>
+    </div>
     <div id="upiJoinList"></div>
     <button class="btn neon" id="upiConfirmBtn" style="margin-top:16px;">Save UPI</button>
   </div>
 </div>
 
+<!-- CONFIRM SHEET -->
+<div class="sheet-overlay" id="confirmSheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Confirm">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><span class="t" id="confirmTitle">Are you sure?</span><button class="sheet-close" data-close="confirmSheet" aria-label="Close">✕</button></div>
+    <p class="hint" id="confirmBody">This action cannot be undone.</p>
+    <div class="field" id="confirmTypeField" style="display:none;">
+      <label id="confirmTypeLabel">Type CONFIRM to continue</label>
+      <input id="confirmTypeInput" type="text" maxlength="24" autocomplete="off" />
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn ghost sm" id="confirmCancelBtn">Cancel</button>
+      <button class="btn danger sm" id="confirmOkBtn">Yes, continue</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
+  'use strict';
+
+  /* =========================================================
+     Telegram bootstrap
+     ========================================================= */
   const tg = window.Telegram ? window.Telegram.WebApp : null;
-  if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0d1811'); }catch(e){} }
+  if (tg) {
+    tg.ready(); tg.expand();
+    try { tg.setHeaderColor && tg.setHeaderColor('#050906'); } catch(e){}
+    try { tg.setBackgroundColor && tg.setBackgroundColor('#050906'); } catch(e){}
+    try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch(e){}
+  }
 
   const params = new URLSearchParams(location.search);
-  const botId = params.get('botid');
-  const apiUrl = params.get('api'); // legacy fallback (per-user "Open App" links)
-
-  function escapeHtml(s){
-    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
+  // Only pass through a strictly-shaped bot id; anything else is ignored so a
+  // crafted link can never steer the request somewhere unexpected.
+  const rawBotId = params.get('botid') || '';
+  const botId = /^[A-Za-z0-9_-]{1,40}$/.test(rawBotId) ? rawBotId : '';
+  const rawApi = params.get('api') || '';
+  // Legacy per-user links: only accept the known TBC webhook host.
+  let legacyApi = '';
+  try {
+    if (rawApi) {
+      const u = new URL(rawApi);
+      if (u.protocol === 'https:' && u.hostname === 'api.telebotcreator.com') legacyApi = u.toString();
+    }
+  } catch(e){ legacyApi = ''; }
 
   const $ = (id) => document.getElementById(id);
-  const toast = (msg, isErr) => {
-    const el = $('toast');
-    el.textContent = msg;
-    el.className = 'toast show' + (isErr ? ' err' : '');
+
+  /* =========================================================
+     Safe DOM helpers — everything from the server is inserted as
+     text, never as HTML, so a malicious value cannot run code.
+     ========================================================= */
+  function el(tag, opts, kids){
+    const n = document.createElement(tag);
+    if (opts) {
+      if (opts.class) n.className = opts.class;
+      if (opts.text != null) n.textContent = String(opts.text);
+      if (opts.style) n.setAttribute('style', opts.style);
+      if (opts.attrs) for (const k in opts.attrs) n.setAttribute(k, String(opts.attrs[k]));
+      if (opts.on) for (const k in opts.on) n.addEventListener(k, opts.on[k]);
+    }
+    (kids || []).forEach(k => { if (k) n.appendChild(k); });
+    return n;
+  }
+  function clear(node){ while (node.firstChild) node.removeChild(node.firstChild); }
+  function setChildren(node, kids){ clear(node); (kids||[]).forEach(k => k && node.appendChild(k)); }
+  function money(v){ return '₹' + (Number(v) || 0).toFixed(2); }
+  function num(v, d){ const n = Number(v); return Number.isFinite(n) ? n : (d || 0); }
+
+  // Only allow links we trust to be opened from server-provided data.
+  function safeLink(raw){
+    try {
+      const u = new URL(String(raw));
+      if (u.protocol !== 'https:') return null;
+      const host = u.hostname.toLowerCase();
+      if (host === 't.me' || host === 'telegram.me' || host.endsWith('.t.me')) return u.toString();
+      return null;
+    } catch(e){ return null; }
+  }
+  function openTgLink(url){
+    const safe = safeLink(url);
+    if (!safe) { toast('That link looks unsafe, so it was blocked.', true); return; }
+    if (tg && tg.openTelegramLink) tg.openTelegramLink(safe);
+    else window.open(safe, '_blank', 'noopener,noreferrer');
+  }
+
+  /* =========================================================
+     Toast
+     ========================================================= */
+  function toast(msg, isErr){
+    const t = $('toast');
+    clear(t);
+    t.appendChild(el('div', { text: String(msg || '').slice(0, 400) }));
+    if (isErr) t.appendChild(el('span', { class:'dismiss', text:'Tap to dismiss' }));
+    t.className = 'toast show ' + (isErr ? 'err' : 'ok');
     clearTimeout(toast._t);
-    if (isErr) {
-      el.onclick = () => el.classList.remove('show');
-    } else {
-      el.onclick = null;
-      toast._t = setTimeout(()=>el.classList.remove('show'), 3200);
-    }
-  };
-
-  function actionToast(msg, actionLabel, actionFn){
-    const el = $('toast');
-    el.innerHTML = '';
-    const p = document.createElement('div');
-    p.textContent = msg;
-    const btn = document.createElement('button');
-    btn.textContent = actionLabel;
-    btn.style.cssText = 'margin-top:10px; width:100%; background:var(--danger); color:#fff; border:none; border-radius:10px; padding:10px; font-weight:700; font-size:12.5px; cursor:pointer;';
-    btn.onclick = (e) => { e.stopPropagation(); actionFn(); el.classList.remove('show'); };
-    el.appendChild(p);
-    el.appendChild(btn);
-    el.className = 'toast show err';
+    t.onclick = () => t.classList.remove('show');
+    if (!isErr) toast._t = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+  function actionToast(msg, label, fn){
+    const t = $('toast');
+    clear(t);
+    t.appendChild(el('div', { text: String(msg || '').slice(0, 400) }));
+    t.appendChild(el('button', {
+      class:'btn danger sm', style:'margin-top:10px;', text: label,
+      on:{ click:(e)=>{ e.stopPropagation(); t.classList.remove('show'); fn(); } }
+    }));
+    t.className = 'toast show err';
     clearTimeout(toast._t);
-    el.onclick = () => el.classList.remove('show');
+    t.onclick = () => t.classList.remove('show');
   }
 
-  // Telegram's own fix for "bot can't message you yet": requestWriteAccess()
-  // grants permission inline, without leaving the app. Falls back to manually
-  // opening the bot's chat only if that API isn't available or is declined.
-  function handleNeedsBotStart(err, retryFn){
-    const botUsername = err.extra.bot_username;
-    if (tg && typeof tg.requestWriteAccess === 'function') {
-      toast('One quick permission needed…');
-      tg.requestWriteAccess((granted) => {
-        if (granted) {
-          toast('Access granted — retrying…');
-          retryFn();
-        } else {
-          actionToast(err.message, 'Open Bot Chat', () => {
-            const url = 'https://t.me/' + botUsername;
-            if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
-          });
-        }
-      });
-    } else {
-      actionToast(err.message, 'Open Bot Chat', () => {
-        const url = 'https://t.me/' + botUsername;
-        if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
-      });
-    }
-  }
-
-  function countUp(el, to){
-    const from = 0, dur = 700, start = performance.now();
-    function step(now){
-      const p = Math.min(1, (now-start)/dur);
-      const eased = 1 - Math.pow(1-p, 3);
-      el.textContent = (from + (to-from)*eased).toFixed(2);
-      if (p<1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  async function callApi(action, extra){
-    if (!botId && !apiUrl) throw new Error('no-api');
-    const initData = (tg && tg.initData) ? tg.initData : '';
-    const routeParams = botId ? { botid: botId } : { api: apiUrl };
-    const res = await fetch('/api/proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
-    });
-    let data;
-    try{
-      data = await res.json();
-    } catch(parseErr){
-      throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`);
-    }
-    const inner = (data && data.result !== undefined) ? data.result : data;
-    if (inner && inner.ok === false) {
-      const err = new Error(inner.error || 'Something went wrong');
-      err.extra = inner;
-      throw err;
-    }
-    return inner;
-  }
-
-  // ---------- Sound + celebration ----------
+  /* =========================================================
+     Feedback: haptics + subtle sound
+     ========================================================= */
   let audioCtx = null;
   function ensureAudio(){
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; audioCtx = new C(); }
     if (audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
   }
   function tick(){
-    try{
-      const ctx = ensureAudio();
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(980, now);
-      osc.frequency.exponentialRampToValueAtTime(1400, now + 0.05);
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.1);
-    } catch(e) {}
+    try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light'); } catch(e){}
+    try {
+      const ctx = ensureAudio(); if (!ctx) return;
+      const now = ctx.currentTime, osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type='triangle'; osc.frequency.setValueAtTime(980, now);
+      osc.frequency.exponentialRampToValueAtTime(1400, now+.05);
+      g.gain.setValueAtTime(.07, now); g.gain.exponentialRampToValueAtTime(.001, now+.09);
+      osc.connect(g).connect(ctx.destination); osc.start(now); osc.stop(now+.1);
+    } catch(e){}
   }
-  function playChime(){
-    try{
-      const ctx = ensureAudio();
+  function chime(){
+    try {
+      const ctx = ensureAudio(); if (!ctx) return;
       const now = ctx.currentTime;
-      [660, 880, 1320].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, now + i*0.07);
-        gain.gain.linearRampToValueAtTime(0.15, now + i*0.07 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + i*0.07 + 0.35);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now + i*0.07);
-        osc.stop(now + i*0.07 + 0.4);
+      [660,880,1320].forEach((f,i)=>{
+        const osc = ctx.createOscillator(), g = ctx.createGain();
+        osc.type='sine'; osc.frequency.value=f;
+        g.gain.setValueAtTime(0, now+i*.07);
+        g.gain.linearRampToValueAtTime(.13, now+i*.07+.02);
+        g.gain.exponentialRampToValueAtTime(.001, now+i*.07+.35);
+        osc.connect(g).connect(ctx.destination); osc.start(now+i*.07); osc.stop(now+i*.07+.4);
       });
-    } catch(e) {}
+    } catch(e){}
   }
-
-  // Every button in the app gets a subtle tick — feels responsive/premium
   document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button, .admin-link-row, .tab');
-    if (btn) tick();
+    if (e.target.closest('button, .admin-link-row, .chip')) tick();
   });
-
   function celebrate(){
-    playChime();
-    const colors = ['#17e88f','#ffcf4d','#5fd8ff','#e08bff'];
+    chime();
+    try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch(e){}
+    const colors = ['#17e88f','#ffcf4d','#5fd8ff','#c78bff'];
     for (let i=0;i<18;i++){
-      const p = document.createElement('div');
       const size = 6 + Math.random()*5;
-      p.style.cssText = `position:fixed; left:50%; top:35%; width:${size}px; height:${size}px; border-radius:2px; background:${colors[i%colors.length]}; z-index:80; pointer-events:none;`;
+      const p = el('div', { style:`position:fixed; left:50%; top:34%; width:${size}px; height:${size}px; border-radius:2px; background:${colors[i%colors.length]}; z-index:88; pointer-events:none;` });
       document.body.appendChild(p);
-      const angle = Math.random()*Math.PI*2;
-      const dist = 80 + Math.random()*140;
-      const dx = Math.cos(angle)*dist, dy = Math.sin(angle)*dist - 40;
-      const rot = (Math.random()*720-360);
+      const a = Math.random()*Math.PI*2, d = 80+Math.random()*140;
       p.animate([
-        { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
-        { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0 }
-      ], { duration: 900 + Math.random()*400, easing: 'cubic-bezier(.2,.7,.3,1)' });
+        { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+        { transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d-40}px) rotate(${Math.random()*720-360}deg)`, opacity:0 }
+      ], { duration: 900+Math.random()*400, easing:'cubic-bezier(.2,.7,.3,1)' });
       setTimeout(()=>p.remove(), 1400);
     }
   }
 
-  function renderEmpty(){
-    $('content').innerHTML = `
-      <div class="empty">
-        <div class="t">Open this from your bot</div>
-        <p>This app reads your live balance and referral data from Telegram.<br>Tap the "Open App" button inside your bot chat to load it.</p>
-      </div>`;
-    $('tabbar').style.display = 'none';
+  /* =========================================================
+     API layer: timeouts, de-duplication, throttling
+     ========================================================= */
+  const ALLOWED_ACTIONS = new Set([
+    'dashboard','trigger_verification','link_wallet','link_upi','withdraw_quote','withdraw_execute',
+    'bonus','leaderboard','get_activity','redeem_gift','admin_settings','admin_save_settings',
+    'admin_toggle_same','admin_create_gift','admin_toggle_gift','admin_stats','admin_withdrawals',
+    'admin_ban_user','admin_unban_user','admin_broadcast','admin_open'
+  ]);
+  const inFlight = new Map();
+  const lastCall = new Map();
+  const MIN_GAP_MS = 450;
+  const TIMEOUT_MS = 20000;
+
+  async function callApi(action, extra){
+    if (!ALLOWED_ACTIONS.has(action)) throw new Error('Unsupported action');
+    if (!botId && !legacyApi) throw new Error('no-api');
+
+    const key = action + '|' + JSON.stringify(extra || {});
+    if (inFlight.has(key)) return inFlight.get(key);
+    const now = Date.now();
+    if (now - (lastCall.get(action) || 0) < MIN_GAP_MS) throw new Error('You are going a bit fast — try again in a second.');
+    lastCall.set(action, now);
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(()=>ctrl.abort(), TIMEOUT_MS);
+    const body = Object.assign(
+      botId ? { botid: botId } : { api: legacyApi },
+      { action, init_data: (tg && tg.initData) ? tg.initData : '' },
+      extra || {}
+    );
+
+    const p = (async () => {
+      let res;
+      try {
+        res = await fetch('/api/proxy', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          credentials:'omit',
+          cache:'no-store',
+          referrerPolicy:'no-referrer',
+          signal: ctrl.signal,
+          body: JSON.stringify(body)
+        });
+      } catch(e){
+        throw new Error(e && e.name === 'AbortError'
+          ? 'The server took too long to answer. Please try again.'
+          : 'Network problem — check your connection and retry.');
+      }
+      let data;
+      try { data = await res.json(); }
+      catch(e){ throw new Error('The server sent an unreadable reply (' + res.status + '). Try again shortly.'); }
+      const inner = (data && data.result !== undefined) ? data.result : data;
+      if (!inner || typeof inner !== 'object') throw new Error('Unexpected reply from the server.');
+      if (inner.ok === false) {
+        const err = new Error(String(inner.error || 'Something went wrong').slice(0, 300));
+        err.extra = inner;
+        throw err;
+      }
+      return inner;
+    })();
+
+    const wrapped = p.finally(() => { clearTimeout(timer); inFlight.delete(key); });
+    inFlight.set(key, wrapped);
+    return wrapped;
   }
 
+  /* =========================================================
+     Validation
+     ========================================================= */
+  const V = {
+    wallet: (v) => /^\d{10}$/.test(v),
+    upi: (v) => /^[a-zA-Z0-9._-]{2,64}@[a-zA-Z][a-zA-Z0-9.-]{1,32}$/.test(v),
+    giftCode: (v) => /^[A-Z0-9_-]{3,32}$/.test(v),
+    userId: (v) => /^\d{4,20}$/.test(v),
+    channel: (v) => v === '' || /^@[A-Za-z0-9_]{4,32}$/.test(v) || /^-?\d{5,20}$/.test(v),
+    perRefer: (v) => /^\d+(\.\d{1,2})?$/.test(v) || /^\d+(\.\d{1,2})?-\d+(\.\d{1,2})?$/.test(v),
+    httpsUrl: (v) => { try { return new URL(v).protocol === 'https:'; } catch(e){ return false; } }
+  };
+  function markField(inputId, errId, bad){
+    const inp = $(inputId); if (!inp) return !bad;
+    const field = inp.closest('.field');
+    if (field) field.classList.toggle('invalid', !!bad);
+    return !bad;
+  }
+
+  /* =========================================================
+     State
+     ========================================================= */
+  let dash = {};
   let isAdmin = false;
-  let lastDashboard = {};
+  let activity = [];
+  let activityLoaded = false;
+  let historyFilter = 'all';
+  let historyLimit = 25;
+
+  /* =========================================================
+     Dashboard render
+     ========================================================= */
+  function countUp(node, to){
+    const dur = 650, start = performance.now(), from = num(node.dataset.v, 0);
+    node.dataset.v = String(to);
+    function step(t){
+      const p = Math.min(1, (t-start)/dur), e = 1 - Math.pow(1-p, 3);
+      node.textContent = (from + (to-from)*e).toFixed(2);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
   function renderDashboard(d){
-    lastDashboard = d;
-    $('botName').textContent = d.bot_name || d.bot_username || 'Wallet';
-    countUp($('balanceAmt'), Number(d.balance || 0));
-    $('refStarted').textContent = d.started_referrals ?? 0;
-    $('refVerified').textContent = d.verified_referrals ?? 0;
-    $('withdrawRange').textContent = (d.min_withdraw ? ('₹'+d.min_withdraw) : '—') + ' / ' + (d.max_withdraw ? ('₹'+d.max_withdraw) : '—');
-    $('taxLine').textContent = (d.tax_percent ? (d.tax_percent + '%') : 'None');
-    $('walletVal').textContent = d.wallet || 'Not Linked';
-    $('upiVal').textContent = d.upi || 'Not Linked';
+    dash = d;
+    $('botName').textContent = String(d.bot_name || d.bot_username || 'Wallet');
+    $('authLabel').textContent = d.auth_mode === 'verified' ? 'Verified session' : 'Linked session';
+    countUp($('balanceAmt'), num(d.balance));
 
-    if (d.total_fund && Number(d.total_fund) > 0) {
+    const bal = num(d.balance), minW = num(d.min_withdraw);
+    $('balSub').textContent = minW > 0 && bal < minW
+      ? `${money(minW - bal)} more to reach the ₹${minW} minimum`
+      : 'Ready to withdraw';
+
+    $('refStarted').textContent = String(d.started_referrals ?? 0);
+    $('refVerified').textContent = String(d.verified_referrals ?? 0);
+    $('withdrawRange').textContent = (d.min_withdraw ? '₹'+d.min_withdraw : '—') + ' / ' + (d.max_withdraw ? '₹'+d.max_withdraw : '—');
+    $('taxLine').textContent = d.tax_percent ? (d.tax_percent + '%') : 'None';
+
+    const w = String(d.wallet || 'Not Linked'), u = String(d.upi || 'Not Linked');
+    const wv = $('walletVal'), uv = $('upiVal');
+    wv.textContent = w === 'Not Linked' ? 'Not linked' : w;
+    wv.classList.toggle('muted', w === 'Not Linked');
+    uv.textContent = u === 'Not Linked' ? 'Not linked' : u;
+    uv.classList.toggle('muted', u === 'Not Linked');
+
+    if (num(d.total_fund) > 0) {
       $('fundCard').style.display = 'block';
-      const pct = Math.max(0, Math.min(100, (Number(d.live_fund||0) / Number(d.total_fund)) * 100));
+      const pct = Math.max(0, Math.min(100, (num(d.live_fund)/num(d.total_fund))*100));
       $('fundBar').style.width = pct.toFixed(0) + '%';
       $('fundPct').textContent = pct.toFixed(0) + '% left';
-      $('fundLive').textContent = '₹' + Number(d.live_fund||0).toFixed(2);
-      $('fundTotal').textContent = '₹' + Number(d.total_fund).toFixed(2);
+      $('fundLive').textContent = money(d.live_fund);
+      $('fundTotal').textContent = money(d.total_fund);
     }
 
-    $('perReferAmt').textContent = d.per_refer || 0;
-    $('earnRefLink').textContent = d.referral_link || '—';
-    $('homeRefLink').textContent = d.referral_link || '—';
-    $('earnRefCount').textContent = d.verified_referrals ?? 0;
-    const perReferNum = parseFloat(String(d.per_refer || '0').split('-')[0]) || 0;
-    $('earnIncome').textContent = '₹' + (perReferNum * (d.verified_referrals || 0)).toFixed(2);
-
-    window._refLink = d.referral_link || '';
+    $('perReferAmt').textContent = String(d.per_refer ?? 0);
+    const link = String(d.referral_link || '');
+    $('earnRefLink').textContent = link || '—';
+    $('homeRefLink').textContent = link || '—';
+    $('earnRefCount').textContent = String(d.verified_referrals ?? 0);
+    const per = parseFloat(String(d.per_refer || '0').split('-')[0]) || 0;
+    $('earnIncome').textContent = money(per * num(d.verified_referrals));
 
     isAdmin = !!d.is_admin;
-    $('adminTabBtn').style.display = isAdmin ? 'flex' : 'none';
+    $('adminGearBtn').style.display = isAdmin ? 'flex' : 'none';
+
+    const limits = [];
+    if (d.min_withdraw) limits.push('Minimum ₹' + d.min_withdraw);
+    if (d.max_withdraw) limits.push('maximum ₹' + d.max_withdraw);
+    if (d.tax_percent) limits.push(d.tax_percent + '% tax applies');
+    $('withdrawLimits').textContent = limits.length ? limits.join(' · ') : '';
 
     if (d.tier) {
-      $('tierEmoji').textContent = d.tier.emoji || '🥉';
-      $('tierName').textContent = d.tier.name || 'Bronze';
-      if (d.tier.next_name) {
-        const remaining = Math.max(0, d.tier.next_min - (d.verified_referrals || 0));
-        $('tierNext').textContent = `${remaining} more refer${remaining===1?'':'s'} to reach ${d.tier.next_name}`;
-        const prevMin = d.tier.next_min - (d.tier.next_min - (d.verified_referrals||0) > 0 ? d.tier.next_min : 0);
-        const pct = Math.max(4, Math.min(100, ((d.verified_referrals||0) / d.tier.next_min) * 100));
-        $('tierBar').style.width = pct + '%';
+      $('tierEmoji').textContent = String(d.tier.emoji || '🥉');
+      $('tierName').textContent = String(d.tier.name || 'Bronze');
+      const vr = num(d.verified_referrals);
+      if (d.tier.next_name && num(d.tier.next_min) > 0) {
+        const left = Math.max(0, num(d.tier.next_min) - vr);
+        $('tierNext').textContent = `${left} more invite${left===1?'':'s'} to reach ${d.tier.next_name}`;
+        $('tierBar').style.width = Math.max(4, Math.min(100, (vr/num(d.tier.next_min))*100)).toFixed(0) + '%';
       } else {
         $('tierNext').textContent = 'Highest tier reached 🎉';
         $('tierBar').style.width = '100%';
@@ -901,357 +1123,592 @@
     }
   }
 
-  function showSkeleton(){
+  function skeleton(on){
     ['balanceAmt','refStarted','refVerified','withdrawRange','taxLine','walletVal','upiVal'].forEach(id=>{
-      const el = $(id); if (el) el.classList.add('skel');
-    });
-  }
-  function hideSkeleton(){
-    ['balanceAmt','refStarted','refVerified','withdrawRange','taxLine','walletVal','upiVal'].forEach(id=>{
-      const el = $(id); if (el) el.classList.remove('skel');
+      const n = $(id); if (n) n.classList.toggle('skel', !!on);
     });
   }
 
+  /* =========================================================
+     Gate / banned / empty screens
+     ========================================================= */
+  function showGateScreen(kids){
+    $('app').style.display = 'none';
+    $('tabbar').style.display = 'none';
+    $('gateScreen').style.display = 'block';
+    setChildren($('gateInner'), kids);
+  }
+  function gateIcon(emoji, tone){
+    return el('div', {
+      text: emoji,
+      style:`width:64px; height:64px; margin:0 auto 18px; border-radius:20px; background:${tone==='bad'?'var(--danger-soft)':'var(--neon-soft)'}; border:1.5px solid ${tone==='bad'?'rgba(255,96,96,.35)':'rgba(23,232,143,.35)'}; display:flex; align-items:center; justify-content:center; font-size:28px;`
+    });
+  }
+  function renderBanned(){
+    showGateScreen([
+      gateIcon('🚫','bad'),
+      el('div',{ text:'Account restricted', style:'font-size:20px; font-weight:900; margin-bottom:8px;' }),
+      el('p',{ class:'hint', text:'This account is blocked from the bot. If you think that is a mistake, contact the bot admin in chat.' })
+    ]);
+  }
+  function renderNoSession(){
+    showGateScreen([
+      gateIcon('👋'),
+      el('div',{ text:'Open this from your bot', style:'font-size:20px; font-weight:900; margin-bottom:8px;' }),
+      el('p',{ class:'hint', text:'Your balance and referral data load only from inside Telegram. Tap the "Open App" button in your bot chat.' })
+    ]);
+  }
+  function renderGate(channels, verifyNeeded){
+    const kids = [
+      gateIcon('🔒'),
+      el('div',{ text:'One quick step', style:'font-size:20px; font-weight:900; margin-bottom:8px;' }),
+      el('p',{ class:'hint', style:'margin-bottom:20px;', text:'Finish the steps below to unlock your wallet.' })
+    ];
+    (channels || []).forEach(c => {
+      const url = safeLink(c && c.url);
+      if (!url) return;
+      kids.push(el('button', {
+        class:'btn ghost', style:'margin-bottom:8px;', text:'📡 Join ' + String(c.name || 'channel'),
+        on:{ click:()=>openTgLink(url) }
+      }));
+    });
+    if (verifyNeeded) {
+      kids.push(el('button', {
+        class:'btn neon', style:'margin-bottom:8px;', text:'🔐 Complete verification',
+        on:{ click: async (e) => {
+          const b = e.currentTarget; b.disabled = true;
+          try { const d = await callApi('trigger_verification'); toast(d.message || 'Check your Telegram chat'); }
+          catch(err){ toast(err.message, true); }
+          finally { b.disabled = false; }
+        }}
+      }));
+    }
+    kids.push(el('button', { class:'btn ghost', style:'margin-top:6px;', text:"↻ I've done this — continue", on:{ click:()=>loadDashboard() } }));
+    showGateScreen(kids);
+  }
+
+  /* =========================================================
+     Load dashboard
+     ========================================================= */
   async function loadDashboard(){
-    try{
+    try {
       const d = await callApi('dashboard');
-      if (d.banned) {
-        renderBanned();
-        return;
-      }
-      const joinNeeded = d.join_needed || [];
-      const verifyNeeded = !!d.verify_needed;
-      if (joinNeeded.length || verifyNeeded) {
-        renderGate(joinNeeded, verifyNeeded);
-        return;
-      }
+      if (d.banned) { renderBanned(); return; }
+      const joins = Array.isArray(d.join_needed) ? d.join_needed : [];
+      if (joins.length || d.verify_needed) { renderGate(joins, !!d.verify_needed); return; }
       $('gateScreen').style.display = 'none';
       $('app').style.display = 'block';
       $('tabbar').style.display = 'flex';
-      hideSkeleton();
+      skeleton(false);
       renderDashboard(d);
-      loadActivity();
+      loadActivity(true);
     } catch(e){
-      if (e.message === 'no-api') { renderEmpty(); return; }
-      hideSkeleton();
-      toast(e.message ? ("Couldn't load: " + e.message) : "Couldn't load your data — try again", true);
+      if (e.message === 'no-api') { renderNoSession(); return; }
+      skeleton(false);
+      toast("Couldn't load your wallet — " + e.message, true);
     }
   }
 
-  function renderBanned(){
-    $('app').style.display = 'none';
-    $('tabbar').style.display = 'none';
-    $('gateScreen').style.display = 'block';
-    $('gateScreen').innerHTML = `
-      <div style="max-width:360px; margin:0 auto; text-align:center;">
-        <div style="width:64px; height:64px; margin:0 auto 20px; border-radius:18px; background:rgba(255,90,90,.1); border:1.5px solid rgba(255,90,90,.35); display:flex; align-items:center; justify-content:center; font-size:28px;">🚫</div>
-        <div style="font-size:20px; font-weight:900; margin-bottom:8px;">Account Restricted</div>
-        <p style="color:var(--text-soft); font-size:13px; line-height:1.6;">Your account has been banned from this bot. If you believe this is a mistake, contact the bot admin.</p>
-      </div>`;
+  /* =========================================================
+     Activity + history
+     ========================================================= */
+  const KIND_META = {
+    refer:    { icon:'👥', label:'Referral' },
+    bonus:    { icon:'⭐', label:'Bonus' },
+    gift:     { icon:'🎁', label:'Gift code' },
+    withdraw: { icon:'💸', label:'Withdrawal' },
+    tax:      { icon:'🧾', label:'Tax' },
+    admin:    { icon:'🛠', label:'Adjustment' }
+  };
+  function metaFor(kind){ return KIND_META[String(kind||'').toLowerCase()] || { icon:'•', label: String(kind||'Activity') }; }
+
+  function activityRow(a){
+    const amt = num(a.amount);
+    const pos = amt >= 0;
+    const m = metaFor(a.kind);
+    return el('div', { class:'activity-row' }, [
+      el('div', { class:'activity-icon ' + (pos?'pos':'neg'), text:m.icon }),
+      el('div', { class:'activity-body' }, [
+        el('div', { class:'activity-note', text: String(a.note || m.label) }),
+        el('div', { class:'activity-meta' }, [
+          el('span', { class:'activity-tag', text:m.label }),
+          el('span', { text: [String(a.date||''), String(a.time||'')].filter(Boolean).join(' · ') })
+        ])
+      ]),
+      el('div', { class:'activity-amt ' + (pos?'pos':'neg'), text:(pos?'+':'−') + money(Math.abs(amt)).slice(0) })
+    ]);
   }
 
-  async function loadActivity(){
-    try{
+  function passesFilter(a){
+    const kind = String(a.kind || '').toLowerCase();
+    const amt = num(a.amount);
+    switch (historyFilter) {
+      case 'all': return true;
+      case 'in': return amt >= 0;
+      case 'out': return amt < 0;
+      default: return kind === historyFilter;
+    }
+  }
+
+  function dayLabel(dateStr){
+    const s = String(dateStr || '').trim();
+    if (!s) return 'Earlier';
+    const today = new Date(), yest = new Date(Date.now() - 864e5);
+    const fmt = (dt) => `${String(dt.getDate()).padStart(2,'0')}-${String(dt.getMonth()+1).padStart(2,'0')}-${dt.getFullYear()}`;
+    const alt = (dt) => `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    if (s === fmt(today) || s === alt(today)) return 'Today';
+    if (s === fmt(yest) || s === alt(yest)) return 'Yesterday';
+    return s;
+  }
+
+  function renderHistory(){
+    const body = $('historyBody');
+    const rows = activity.filter(passesFilter);
+
+    let inSum = 0, outSum = 0;
+    activity.forEach(a => { const v = num(a.amount); if (v >= 0) inSum += v; else outSum += Math.abs(v); });
+    $('flowIn').textContent = money(inSum);
+    $('flowOut').textContent = money(outSum);
+
+    if (!activityLoaded) return;
+    if (!rows.length) {
+      setChildren(body, [ el('div', { class:'card' }, [
+        el('div', { class:'empty' }, [
+          el('div', { class:'ic', text:'🗂' }),
+          el('div', { class:'t', text: historyFilter === 'all' ? 'No activity yet' : 'Nothing in this filter' }),
+          el('p', { text: historyFilter === 'all'
+            ? 'Referrals, bonuses, gift codes and withdrawals will appear here.'
+            : 'Try another filter to see the rest of your history.' })
+        ])
+      ])]);
+      $('historyMoreBtn').style.display = 'none';
+      return;
+    }
+
+    const shown = rows.slice(0, historyLimit);
+    const groups = [];
+    shown.forEach(a => {
+      const label = dayLabel(a.date);
+      let g = groups.find(x => x.label === label);
+      if (!g) { g = { label, items:[], net:0 }; groups.push(g); }
+      g.items.push(a); g.net += num(a.amount);
+    });
+
+    const kids = [];
+    groups.forEach(g => {
+      kids.push(el('div', { class:'day-head' }, [
+        el('span', { text:g.label }),
+        el('span', { class:'sum', text:(g.net >= 0 ? '+' : '−') + money(Math.abs(g.net)) })
+      ]));
+      kids.push(el('div', { class:'act-list' }, g.items.map(activityRow)));
+    });
+    setChildren(body, kids);
+    $('historyMoreBtn').style.display = rows.length > historyLimit ? 'flex' : 'none';
+  }
+
+  function renderHomeActivity(){
+    const box = $('homeActivity');
+    if (!activity.length) {
+      setChildren(box, [ el('p', { class:'hint', text:'No activity yet — earnings and withdrawals will show up here.' }) ]);
+      return;
+    }
+    setChildren(box, [ el('div', { class:'act-list' }, activity.slice(0, 4).map(activityRow)) ]);
+  }
+
+  async function loadActivity(force){
+    if (activityLoaded && !force) return;
+    try {
       const d = await callApi('get_activity');
-      const rows = d.activity || [];
-      const list = $('activityList');
-      if (!rows.length){
-        list.innerHTML = '<p style="color:var(--text-soft); font-size:12.5px;">No activity yet — your earnings and withdrawals will show up here.</p>';
-        return;
-      }
-      const ICONS = { withdraw: '💸', gift: '🎁', bonus: '⭐', refer: '👥' };
-      list.innerHTML = rows.slice(0, 8).map(a => {
-        const isPos = Number(a.amount) >= 0;
-        return `
-          <div class="activity-row">
-            <div class="activity-icon ${isPos?'pos':'neg'}">${ICONS[a.kind] || '•'}</div>
-            <div class="activity-body">
-              <div class="activity-note">${escapeHtml(a.note || a.kind)}</div>
-              <div class="activity-date">${escapeHtml(a.date || '')} ${escapeHtml(a.time || '')}</div>
-            </div>
-            <div class="activity-amt ${isPos?'pos':'neg'}">${isPos?'+':''}₹${Math.abs(Number(a.amount)).toFixed(2)}</div>
-          </div>`;
-      }).join('');
+      const rows = Array.isArray(d.activity) ? d.activity : [];
+      // newest first, whatever order the bot stores them in
+      activity = rows.slice().reverse().filter(a => a && typeof a === 'object');
+      if (activity.length && num(activity[0].amount) === 0 && rows.length > 1) activity = rows.slice();
+      activityLoaded = true;
+      renderHomeActivity();
+      renderHistory();
     } catch(e){
-      $('activityList').innerHTML = '<p style="color:var(--text-soft); font-size:12.5px;">Couldn\'t load activity.</p>';
+      activityLoaded = true;
+      setChildren($('homeActivity'), [ el('p', { class:'hint', text:"Couldn't load activity right now." }) ]);
+      setChildren($('historyBody'), [ el('div',{class:'card'},[ el('div',{class:'empty'},[
+        el('div',{class:'ic',text:'⚠️'}),
+        el('div',{class:'t',text:"Couldn't load history"}),
+        el('p',{ text: e.message })
+      ])])]);
     }
   }
 
-  function renderGate(channels, verifyNeeded){
-    $('app').style.display = 'none';
-    $('tabbar').style.display = 'none';
-    $('gateScreen').style.display = 'block';
-    const joinList = $('gateJoinList');
-    if (channels.length){
-      joinList.innerHTML = channels.map(c => `<a href="${escapeHtml(c.url)}" target="_blank" class="btn ghost" style="width:100%; text-decoration:none; margin-bottom:8px;">📡 Join ${escapeHtml(c.name)}</a>`).join('');
-    } else {
-      joinList.innerHTML = '';
-    }
-    $('gateVerifyBox').style.display = verifyNeeded ? 'block' : 'none';
-  }
-
-  $('gateRefreshBtn').addEventListener('click', () => { tick(); loadDashboard(); });
-  $('gateVerifyBtn').addEventListener('click', async () => {
-    tick();
-    const btn = $('gateVerifyBtn');
-    btn.disabled = true;
-    try{
-      const d = await callApi('trigger_verification');
-      toast(d.message || 'Check your Telegram chat');
-    } catch(e){ toast(e.message || 'Something went wrong', true); }
-    finally { btn.disabled = false; }
+  $('historyFilters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip'); if (!chip) return;
+    document.querySelectorAll('#historyFilters .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    historyFilter = chip.getAttribute('data-filter');
+    historyLimit = 25;
+    renderHistory();
   });
+  $('historyMoreBtn').addEventListener('click', () => { historyLimit += 25; renderHistory(); });
+  $('seeAllActivity').addEventListener('click', () => switchView('history'));
 
+  /* =========================================================
+     Copy / share
+     ========================================================= */
   function copyText(text){
-    if (!text) return;
+    const v = String(text || '');
+    if (!v) { toast('Nothing to copy yet', true); return; }
+    const done = () => toast('Copied to clipboard');
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(()=>toast('Copied')).catch(fallback);
+      navigator.clipboard.writeText(v).then(done).catch(fallback);
     } else fallback();
     function fallback(){
-      const ta = document.createElement('textarea');
-      ta.value = text; document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      toast('Copied');
+      const ta = el('textarea', { style:'position:fixed; opacity:0;' });
+      ta.value = v; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e){ toast("Couldn't copy — long-press the link instead", true); }
+      ta.remove();
     }
   }
-
-  $('earnCopyBtn').addEventListener('click', () => copyText(window._refLink));
-  $('homeCopyBtn').addEventListener('click', () => copyText(window._refLink));
+  $('earnCopyBtn').addEventListener('click', () => copyText(dash.referral_link));
+  $('homeCopyBtn').addEventListener('click', () => copyText(dash.referral_link));
   $('earnShareBtn').addEventListener('click', () => {
-    const link = window._refLink;
-    if (!link) return;
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Join me and start earning 💸')}`;
-    if (tg && tg.openTelegramLink) tg.openTelegramLink(shareUrl); else window.open(shareUrl, '_blank');
+    const link = safeLink(dash.referral_link);
+    if (!link) { toast('Your referral link is still loading', true); return; }
+    openTgLink('https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('Join me and start earning 💸'));
   });
 
-  // ---------- SHEETS ----------
+  /* =========================================================
+     Sheets + confirm dialog
+     ========================================================= */
   function openSheet(id){ $(id).classList.add('show'); }
   function closeSheet(id){ $(id).classList.remove('show'); }
-
-  function showReceipt(info){
-    $('receiptIcon').textContent = info.ok ? '✅' : '❌';
-    $('receiptTitle').textContent = info.ok ? 'Withdrawal Successful' : 'Withdrawal Failed';
-    $('receiptTitle').style.color = info.ok ? 'var(--neon)' : 'var(--danger)';
-    $('rcAmount').textContent = '₹' + (info.amount ?? '—');
-    $('rcGateway').textContent = info.gateway || '—';
-    $('rcStatus').textContent = info.status || '—';
-    $('rcMessage').textContent = info.message || '—';
-
-    const notifyRow = $('rcNotifyRow');
-    if (info.channelNotify || info.userNotify) {
-      const bits = [];
-      if (info.channelNotify) bits.push(info.channelNotify.ok ? '✅ Payout channel notified' : '⚠️ Channel not notified (' + (info.channelNotify.reason || 'unknown') + ')');
-      if (info.userNotify) bits.push(info.userNotify.ok ? '✅ Chat message sent' : '⚠️ Chat message not sent (' + (info.userNotify.reason || 'unknown') + ')');
-      notifyRow.innerHTML = bits.join('<br>');
-      notifyRow.style.display = 'block';
-    } else {
-      notifyRow.style.display = 'none';
-    }
-    openSheet('receiptSheet');
-  }
-
-  $('receiptCloseBtn').addEventListener('click', () => closeSheet('receiptSheet'));
-
   document.querySelectorAll('.sheet-close').forEach(b => b.addEventListener('click', () => closeSheet(b.getAttribute('data-close'))));
   document.querySelectorAll('.sheet-overlay').forEach(ov => ov.addEventListener('click', (e) => { if (e.target === ov) ov.classList.remove('show'); }));
 
-  // Withdraw (2-step: amount -> tax breakdown + gateway pick, all in-app)
+  function confirmAction(opts){
+    return new Promise((resolve) => {
+      $('confirmTitle').textContent = opts.title || 'Are you sure?';
+      $('confirmBody').textContent = opts.body || 'This action cannot be undone.';
+      const needType = !!opts.typeWord;
+      $('confirmTypeField').style.display = needType ? 'block' : 'none';
+      $('confirmTypeLabel').textContent = needType ? `Type ${opts.typeWord} to continue` : '';
+      $('confirmTypeInput').value = '';
+      $('confirmOkBtn').textContent = opts.okLabel || 'Yes, continue';
+      openSheet('confirmSheet');
+      const finish = (v) => {
+        closeSheet('confirmSheet');
+        $('confirmOkBtn').onclick = null; $('confirmCancelBtn').onclick = null;
+        resolve(v);
+      };
+      $('confirmCancelBtn').onclick = () => finish(false);
+      $('confirmOkBtn').onclick = () => {
+        if (needType && $('confirmTypeInput').value.trim().toUpperCase() !== String(opts.typeWord).toUpperCase()) {
+          toast('Type ' + opts.typeWord + ' exactly to confirm', true); return;
+        }
+        finish(true);
+      };
+    });
+  }
+
+  function handleNeedsBotStart(err, retry){
+    const username = String((err.extra && err.extra.bot_username) || '').replace(/[^A-Za-z0-9_]/g, '');
+    if (tg && typeof tg.requestWriteAccess === 'function') {
+      toast('One quick permission needed…');
+      tg.requestWriteAccess((granted) => {
+        if (granted) { toast('Permission granted — retrying…'); retry(); }
+        else if (username) actionToast(err.message, 'Open bot chat', () => openTgLink('https://t.me/' + username));
+        else toast(err.message, true);
+      });
+    } else if (username) {
+      actionToast(err.message, 'Open bot chat', () => openTgLink('https://t.me/' + username));
+    } else toast(err.message, true);
+  }
+
+  /* =========================================================
+     Withdraw
+     ========================================================= */
   $('withdrawBtn').addEventListener('click', () => {
-    $('withdrawAmtInput').value='';
+    $('withdrawAmtInput').value = '';
+    markField('withdrawAmtInput','withdrawAmtErr', false);
     $('withdrawStep1').style.display = 'block';
     $('withdrawStep2').style.display = 'none';
     openSheet('withdrawSheet');
-  });
-  $('withdrawQuoteBtn').addEventListener('click', async () => {
-    const amt = $('withdrawAmtInput').value.trim();
-    if (!amt || Number(amt) <= 0) { toast('Enter a valid amount', true); return; }
-    const btn = $('withdrawQuoteBtn'); btn.disabled = true;
-    try{
-      const d = await callApi('withdraw_quote', { amount: amt });
-      $('wdAmount').textContent = '₹' + d.amount;
-      $('wdTaxPct').textContent = d.tax_percent;
-      $('wdTaxAmt').textContent = '-₹' + d.tax_amount;
-      $('wdNetAmt').textContent = '₹' + d.net_amount;
-      const list = $('wdGatewayList');
-      list.innerHTML = (d.gateways||[]).map(g => `<button class="btn ghost" style="flex:0 0 auto; padding:10px 16px;" data-gw="${g.key}">${escapeHtml(g.name)}</button>`).join('');
-      list.querySelectorAll('button').forEach(gwBtn => {
-        const doWithdraw = async () => {
-          gwBtn.disabled = true;
-          try{
-            const r = await callApi('withdraw_execute', { amount: d.amount, gateway: gwBtn.getAttribute('data-gw') });
-            closeSheet('withdrawSheet');
-            celebrate();
-            tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
-            showReceipt({
-              ok: true,
-              amount: r.amount || d.amount,
-              gateway: r.gateway || gwBtn.textContent,
-              status: r.gateway_status || 'submitted',
-              message: r.gateway_message || r.message,
-              channelNotify: r.channel_notify,
-              userNotify: r.user_notify
-            });
-            loadDashboard();
-          } catch(e){
-            if (e.extra && e.extra.needs_bot_start && e.extra.bot_username) {
-              handleNeedsBotStart(e, doWithdraw);
-            } else if (e.extra && e.extra.gateway_status) {
-              showReceipt({
-                ok: false,
-                amount: d.amount,
-                gateway: gwBtn.textContent,
-                status: e.extra.gateway_status,
-                message: e.extra.gateway_message || e.message
-              });
-            } else {
-              toast(e.message || 'Could not process withdrawal', true);
-            }
-          } finally {
-            gwBtn.disabled = false;
-          }
-        };
-        gwBtn.addEventListener('click', doWithdraw);
-      });
-      $('withdrawStep1').style.display = 'none';
-      $('withdrawStep2').style.display = 'block';
-    } catch(e){ toast(e.message || 'Could not quote withdrawal', true); }
-    finally { btn.disabled = false; }
   });
   $('withdrawBackBtn').addEventListener('click', () => {
     $('withdrawStep1').style.display = 'block';
     $('withdrawStep2').style.display = 'none';
   });
 
+  $('withdrawQuoteBtn').addEventListener('click', async () => {
+    const raw = $('withdrawAmtInput').value.trim();
+    const amt = Number(raw);
+    const minW = num(dash.min_withdraw), maxW = num(dash.max_withdraw), bal = num(dash.balance);
+    let problem = '';
+    if (!raw || !Number.isFinite(amt) || amt <= 0) problem = 'Enter a valid amount.';
+    else if (minW && amt < minW) problem = `Minimum withdrawal is ₹${minW}.`;
+    else if (maxW && amt > maxW) problem = `Maximum withdrawal is ₹${maxW}.`;
+    else if (amt > bal) problem = 'That is more than your available balance.';
+    if (problem) {
+      const f = $('withdrawAmtInput').closest('.field');
+      f.querySelector('.err-txt').textContent = problem;
+      f.classList.add('invalid');
+      toast(problem, true);
+      return;
+    }
+    markField('withdrawAmtInput','withdrawAmtErr', false);
+
+    const btn = $('withdrawQuoteBtn'); btn.disabled = true;
+    try {
+      const d = await callApi('withdraw_quote', { amount: String(amt) });
+      $('wdAmount').textContent = '₹' + String(d.amount);
+      $('wdTaxPct').textContent = String(d.tax_percent ?? 0);
+      $('wdTaxAmt').textContent = '-₹' + String(d.tax_amount ?? 0);
+      $('wdNetAmt').textContent = '₹' + String(d.net_amount ?? 0);
+
+      const list = $('wdGatewayList');
+      const gws = Array.isArray(d.gateways) ? d.gateways : [];
+      setChildren(list, gws.map(g => {
+        const key = String(g.key || '');
+        const b = el('button', { class:'btn ghost sm', style:'flex:0 0 auto;', text:String(g.name || key) });
+        const run = async () => {
+          if (b.dataset.busy === '1') return;
+          b.dataset.busy = '1'; b.disabled = true;
+          try {
+            const r = await callApi('withdraw_execute', { amount: String(d.amount), gateway: key });
+            closeSheet('withdrawSheet');
+            celebrate();
+            showReceipt({ ok:true, amount:r.amount ?? d.amount, gateway:r.gateway || g.name,
+              status:r.gateway_status || 'submitted', message:r.gateway_message || r.message,
+              channelNotify:r.channel_notify, userNotify:r.user_notify });
+            loadDashboard();
+          } catch(e){
+            if (e.extra && e.extra.needs_bot_start) handleNeedsBotStart(e, run);
+            else if (e.extra && e.extra.gateway_status) showReceipt({ ok:false, amount:d.amount, gateway:g.name, status:e.extra.gateway_status, message:e.extra.gateway_message || e.message });
+            else { toast(e.message, true); try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error'); } catch(x){} }
+          } finally { b.dataset.busy = '0'; b.disabled = false; }
+        };
+        b.addEventListener('click', run);
+        return b;
+      }));
+      if (!gws.length) setChildren(list, [ el('p', { class:'hint', text:'No payout gateway is available right now — try again later.' }) ]);
+
+      $('withdrawStep1').style.display = 'none';
+      $('withdrawStep2').style.display = 'block';
+    } catch(e){ toast(e.message, true); }
+    finally { btn.disabled = false; }
+  });
+
+  function showReceipt(info){
+    $('receiptIcon').textContent = info.ok ? '✅' : '❌';
+    $('receiptTitle').textContent = info.ok ? 'Withdrawal successful' : 'Withdrawal failed';
+    $('receiptTitle').style.color = info.ok ? 'var(--neon)' : 'var(--danger)';
+    $('rcAmount').textContent = '₹' + String(info.amount ?? '—');
+    $('rcGateway').textContent = String(info.gateway || '—');
+    $('rcStatus').textContent = String(info.status || '—');
+    $('rcMessage').textContent = String(info.message || '—').slice(0, 300);
+    const notes = [];
+    if (info.channelNotify && info.channelNotify.ok === false) notes.push('Channel post failed.');
+    if (info.userNotify && info.userNotify.ok === false) notes.push('Chat notification failed.');
+    const row = $('rcNotifyRow');
+    row.textContent = notes.join(' ');
+    row.style.display = notes.length ? 'block' : 'none';
+    openSheet('receiptSheet');
+  }
+  $('receiptCloseBtn').addEventListener('click', () => closeSheet('receiptSheet'));
+
+  /* =========================================================
+     Wallet / UPI linking
+     ========================================================= */
   function renderJoinLinks(containerId, channels){
-    const el = $(containerId);
-    if (!channels || !channels.length){ el.innerHTML = ''; return; }
-    el.innerHTML = '<p class="hint" style="margin-top:10px;">Join these channels first:</p>' +
-      channels.map(c => `<a href="${escapeHtml(c.url)}" target="_blank" class="btn ghost" style="text-decoration:none; margin-top:8px;">Join ${escapeHtml(c.name)}</a>`).join('');
+    const box = $(containerId);
+    const list = (channels || []).map(c => {
+      const url = safeLink(c && c.url); if (!url) return null;
+      return el('button', { class:'btn ghost sm', style:'margin-top:8px;', text:'Join ' + String(c.name || 'channel'), on:{ click:()=>openTgLink(url) } });
+    }).filter(Boolean);
+    setChildren(box, list.length ? [ el('p', { class:'hint', style:'margin-top:10px;', text:'Join these channels first:' }) ].concat(list) : []);
   }
 
-  // Wallet
-  $('changeWalletBtn').addEventListener('click', () => { $('walletInput').value=''; $('walletJoinList').innerHTML=''; openSheet('walletSheet'); });
+  $('changeWalletBtn').addEventListener('click', () => {
+    $('walletInput').value = ''; clear($('walletJoinList'));
+    markField('walletInput','walletErr', false); openSheet('walletSheet');
+  });
+  $('walletInput').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g,'').slice(0,10);
+  });
   $('walletConfirmBtn').addEventListener('click', async () => {
-    const w = $('walletInput').value.trim();
+    const v = $('walletInput').value.trim();
+    if (!V.wallet(v)) { markField('walletInput','walletErr', true); toast('Wallet numbers are exactly 10 digits.', true); return; }
+    markField('walletInput','walletErr', false);
+    if (!(await confirmAction({ title:'Confirm wallet', body:`Payouts will go to ${v}. Wrong numbers cannot be recovered.`, okLabel:'Save wallet' }))) return;
     const btn = $('walletConfirmBtn'); btn.disabled = true;
-    try{
-      const d = await callApi('link_wallet', { wallet: w });
+    try {
+      const d = await callApi('link_wallet', { wallet: v });
       toast(d.message || 'Wallet linked');
-      closeSheet('walletSheet');
-      loadDashboard();
+      closeSheet('walletSheet'); loadDashboard();
     } catch(e){
-      toast(e.message || 'Could not link wallet', true);
+      toast(e.message, true);
       if (e.extra && e.extra.channels) renderJoinLinks('walletJoinList', e.extra.channels);
-    }
-    finally { btn.disabled = false; }
-  });
-
-  // UPI
-  $('changeUpiBtn').addEventListener('click', () => { $('upiInput').value=''; $('upiJoinList').innerHTML=''; openSheet('upiSheet'); });
-  $('upiConfirmBtn').addEventListener('click', async () => {
-    const v = $('upiInput').value.trim();
-    const btn = $('upiConfirmBtn'); btn.disabled = true;
-    try{
-      const d = await callApi('link_upi', { upi: v });
-      toast(d.message || 'UPI linked');
-      closeSheet('upiSheet');
-      loadDashboard();
-    } catch(e){
-      toast(e.message || 'Could not link UPI', true);
-      if (e.extra && e.extra.channels) renderJoinLinks('upiJoinList', e.extra.channels);
-    }
-    finally { btn.disabled = false; }
-  });
-
-  // ---------- GIFT ----------
-  $('claimBtn').addEventListener('click', async () => {
-    const input = $('giftCodeInput');
-    const code = input.value.trim();
-    if (!code) { toast('Enter a code first', true); return; }
-    const btn = $('claimBtn'); btn.disabled = true;
-    try{
-      const d = await callApi('redeem_gift', { code });
-      toast(d.message || 'Claimed!');
-      input.value = '';
-      celebrate();
-      tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
-      loadDashboard();
-    } catch(e){
-      toast(e.message || 'Could not redeem that code', true);
-      tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error');
     } finally { btn.disabled = false; }
   });
 
-  // ---------- RANK ----------
+  $('changeUpiBtn').addEventListener('click', () => {
+    $('upiInput').value = ''; clear($('upiJoinList'));
+    markField('upiInput','upiErr', false); openSheet('upiSheet');
+  });
+  $('upiConfirmBtn').addEventListener('click', async () => {
+    const v = $('upiInput').value.trim();
+    if (!V.upi(v)) { markField('upiInput','upiErr', true); toast('That UPI ID does not look right.', true); return; }
+    markField('upiInput','upiErr', false);
+    if (!(await confirmAction({ title:'Confirm UPI', body:`Payouts will go to ${v}. Please double-check it.`, okLabel:'Save UPI' }))) return;
+    const btn = $('upiConfirmBtn'); btn.disabled = true;
+    try {
+      const d = await callApi('link_upi', { upi: v });
+      toast(d.message || 'UPI linked');
+      closeSheet('upiSheet'); loadDashboard();
+    } catch(e){
+      toast(e.message, true);
+      if (e.extra && e.extra.channels) renderJoinLinks('upiJoinList', e.extra.channels);
+    } finally { btn.disabled = false; }
+  });
+
+  /* =========================================================
+     Daily bonus
+     ========================================================= */
+  $('bonusBtn').addEventListener('click', async () => {
+    const btn = $('bonusBtn'); btn.disabled = true;
+    try {
+      const d = await callApi('bonus');
+      toast(d.message || 'Bonus claimed!');
+      if (d.amount) celebrate();
+      loadDashboard();
+    } catch(e){ toast(e.message, true); }
+    finally { btn.disabled = false; }
+  });
+
+  /* =========================================================
+     Gift redeem
+     ========================================================= */
+  $('giftCodeInput').addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,32);
+    markField('giftCodeInput','giftCodeErr', false);
+  });
+  $('claimBtn').addEventListener('click', async () => {
+    const code = $('giftCodeInput').value.trim().toUpperCase();
+    if (!V.giftCode(code)) { markField('giftCodeInput','giftCodeErr', true); toast('Check the code and try again.', true); return; }
+    const btn = $('claimBtn'); btn.disabled = true;
+    try {
+      const d = await callApi('redeem_gift', { code });
+      toast(d.message || 'Claimed!');
+      $('giftCodeInput').value = '';
+      celebrate(); loadDashboard();
+    } catch(e){
+      toast(e.message, true);
+      try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error'); } catch(x){}
+    } finally { btn.disabled = false; }
+  });
+
+  /* =========================================================
+     Leaderboard
+     ========================================================= */
   let lbLoaded = false;
   async function loadLeaderboard(){
     if (lbLoaded) return;
-    try{
+    try {
       const d = await callApi('leaderboard');
-      const rows = d.leaderboard || [];
+      const rows = (Array.isArray(d.leaderboard) ? d.leaderboard : []).filter(r => r && typeof r === 'object');
       const list = $('lbList');
-      if (!rows.length){
-        list.innerHTML = '<div class="empty" style="padding:30px 10px;"><p>No referrals yet — be the first!</p></div>';
-      } else {
-        const top3 = rows.slice(0,3);
-        const rest = rows.slice(3);
-        let podiumHtml = '';
-        if (top3.length){
-          const order = top3.length >= 2 ? [top3[1], top3[0], top3[2]].filter(Boolean) : top3;
-          podiumHtml = '<div class="podium">' + order.map(r => {
-            const cls = r.rank === 1 ? 'p1' : (r.rank === 2 ? 'p2' : 'p3');
-            return `<div class="p ${cls}">
-              <div class="rank-tag">#${r.rank}</div>
-              <div class="circ">${r.referrals}</div>
-              <div class="box"><div class="id">${escapeHtml(r.user_id)}</div><div class="cnt">${r.referrals}</div><div class="cnt-l">Invites</div></div>
-            </div>`;
-          }).join('') + '</div>';
-        }
-        const restHtml = rest.map(r => `
-          <div class="lb-row ${r.is_you ? 'you':''}">
-            <div class="lb-rank">#${r.rank}</div>
-            <div class="lb-id">${escapeHtml(r.user_id)}${r.is_you?' (you)':''}</div>
-            <div style="text-align:right;"><div class="lb-count">${r.referrals}</div><div class="lb-count-l">Refers</div></div>
-          </div>`).join('');
-        list.innerHTML = podiumHtml + restHtml;
+      if (!rows.length) {
+        setChildren(list, [ el('div',{class:'empty'},[
+          el('div',{class:'ic',text:'🏆'}),
+          el('div',{class:'t',text:'No invites yet'}),
+          el('p',{text:'Be the first on the board — share your link from the Earn tab.'})
+        ])]);
+        lbLoaded = true; return;
       }
+      const kids = [];
+      const top3 = rows.slice(0,3);
+      if (top3.length) {
+        const order = top3.length >= 2 ? [top3[1], top3[0], top3[2]].filter(Boolean) : top3;
+        kids.push(el('div', { class:'podium' }, order.map(r => {
+          const cls = r.rank === 1 ? 'p1' : (r.rank === 2 ? 'p2' : 'p3');
+          return el('div', { class:'p ' + cls }, [
+            el('div', { class:'rank-tag', text:'#' + num(r.rank) }),
+            el('div', { class:'circ', text:String(num(r.referrals)) }),
+            el('div', { class:'box' }, [
+              el('div', { class:'id', text:String(r.user_id || '—') }),
+              el('div', { class:'cnt', text:String(num(r.referrals)) }),
+              el('div', { class:'cnt-l', text:'Invites' })
+            ])
+          ]);
+        })));
+      }
+      rows.slice(3).forEach(r => {
+        kids.push(el('div', { class:'lb-row' + (r.is_you ? ' you' : '') }, [
+          el('div', { class:'lb-rank', text:'#' + num(r.rank) }),
+          el('div', { class:'lb-id', text:String(r.user_id || '—') + (r.is_you ? ' (you)' : '') }),
+          el('div', { style:'text-align:right;' }, [
+            el('div', { class:'lb-count', text:String(num(r.referrals)) }),
+            el('div', { class:'lb-count-l', text:'Invites' })
+          ])
+        ]));
+      });
+      setChildren(list, kids);
       lbLoaded = true;
     } catch(e){
-      $('lbList').innerHTML = '<div class="empty" style="padding:30px 10px;"><p>Couldn\'t load the leaderboard.</p></div>';
+      setChildren($('lbList'), [ el('div',{class:'empty'},[
+        el('div',{class:'ic',text:'⚠️'}),
+        el('div',{class:'t',text:"Couldn't load the board"}),
+        el('p',{text:e.message})
+      ])]);
     }
   }
 
-  // ---------- ADMIN ----------
+  /* =========================================================
+     Admin
+     ========================================================= */
   let adminLoaded = false;
+
   function renderGiftCodes(codes){
     const list = $('giftCodesList');
-    if (!codes || !codes.length){ list.innerHTML = '<p style="color:var(--text-soft); font-size:12.5px;">No gift codes yet.</p>'; return; }
-    list.innerHTML = codes.map(c => `
-      <div class="gift-row">
-        <div>
-          <div class="code">${escapeHtml(c.code)}</div>
-          <div class="meta">₹${c.amount} · ${c.claimed}/${c.max} claimed · min ${c.min_ref} refers</div>
-        </div>
-        <button class="gift-toggle ${c.status==='Active'?'active':'inactive'}" data-code="${escapeHtml(c.code)}">${c.status}</button>
-      </div>
-    `).join('');
-    list.querySelectorAll('.gift-toggle').forEach(btn => {
+    const rows = Array.isArray(codes) ? codes : [];
+    if (!rows.length) { setChildren(list, [ el('p',{class:'hint',text:'No gift codes yet.'}) ]); return; }
+    setChildren(list, rows.map(c => {
+      const active = String(c.status) === 'Active';
+      const btn = el('button', { class:'pill-toggle ' + (active?'on':'off'), text:String(c.status || '—') });
       btn.addEventListener('click', async () => {
-        const code = btn.getAttribute('data-code');
         btn.disabled = true;
-        try{
-          const d = await callApi('admin_toggle_gift', { code });
-          toast('Code is now ' + d.status);
-          loadAdmin(true);
-        } catch(e){ toast(e.message || 'Could not update code', true); }
+        try { const d = await callApi('admin_toggle_gift', { code:String(c.code) }); toast('Code is now ' + String(d.status)); loadAdmin(true); }
+        catch(e){ toast(e.message, true); }
         finally { btn.disabled = false; }
       });
-    });
+      return el('div', { class:'gift-row' }, [
+        el('div', {}, [
+          el('div', { class:'code', text:String(c.code || '—') }),
+          el('div', { class:'meta', text:`₹${num(c.amount)} · ${num(c.claimed)}/${num(c.max)} claimed · min ${num(c.min_ref)} invites` })
+        ]),
+        btn
+      ]);
+    }));
+  }
+
+  function renderSameToggle(id, value, which){
+    const btn = $(id);
+    const on = String(value) !== 'OFF';
+    btn.textContent = on ? 'ON' : 'OFF';
+    btn.className = 'pill-toggle ' + (on ? 'on' : 'off');
+    btn.onclick = async () => {
+      if (on && !(await confirmAction({
+        title:'Turn duplicate protection on?',
+        body:'Blocking duplicates stops one wallet or UPI being reused across accounts. Existing links are unaffected.',
+        okLabel:'Turn OFF sharing'
+      }))) return;
+      btn.disabled = true;
+      try { const r = await callApi('admin_toggle_same', { which }); renderSameToggle(id, r.value, which); }
+      catch(e){ toast(e.message, true); }
+      finally { btn.disabled = false; }
+    };
   }
 
   async function loadAdmin(force){
+    if (!isAdmin) return;
     if (adminLoaded && !force) return;
-    try{
+    try {
       const d = await callApi('admin_settings');
       $('adminPerRefer').value = d.per_refer ?? '';
       $('adminMinWithdraw').value = d.min_withdraw ?? '';
@@ -1261,211 +1718,219 @@
       $('adminDailyBonus').value = d.daily_bonus ?? '';
       $('adminLiveFund').value = d.live_fund ?? '';
       $('adminTotalFund').value = d.total_fund ?? '';
-      $('payoutChannelStatus').textContent = d.payout_channel_configured
-        ? '✅ Payout channel is configured (leave the field blank to keep it unchanged)'
-        : '⚠️ No payout channel set — withdrawal/gift notifications won\'t be posted anywhere until you add one';
-      $('payoutChannelStatus').style.color = d.payout_channel_configured ? 'var(--neon)' : 'var(--danger)';
+      const st = $('payoutChannelStatus');
+      st.textContent = d.payout_channel_configured
+        ? '✅ Payout channel is set (leave blank to keep it unchanged)'
+        : '⚠️ No payout channel set — payout notices are not posted anywhere yet';
+      st.style.color = d.payout_channel_configured ? 'var(--neon)' : '#ffa8a8';
       renderGiftCodes(d.gift_codes);
       renderSameToggle('sameWalletToggle', d.same_wallet, 'wallet');
       renderSameToggle('sameUpiToggle', d.same_upi, 'upi');
       adminLoaded = true;
-    } catch(e){ toast(e.message || 'Could not load admin settings', true); }
-    loadStats();
-    loadAdminWithdrawals();
-  }
-
-  async function loadAdminWithdrawals(){
-    try{
-      const d = await callApi('admin_withdrawals');
-      const rows = d.withdrawals || [];
-      const list = $('adminWithdrawList');
-      if (!rows.length){
-        list.innerHTML = '<p class="hint">No withdrawals yet.</p>';
-        return;
-      }
-      list.innerHTML = rows.slice(0, 10).map(w => `
-        <div class="activity-row">
-          <div class="activity-icon ${w.status==='success'?'pos':'neg'}">💸</div>
-          <div class="activity-body">
-            <div class="activity-note">User ${escapeHtml(w.user)} — ${escapeHtml(w.gateway)} (${escapeHtml(w.status)})</div>
-            <div class="activity-date">${escapeHtml(w.date)} ${escapeHtml(w.time)}</div>
-          </div>
-          <div class="activity-amt neg">-₹${Math.abs(Number(w.amount)||0).toFixed(2)}</div>
-        </div>
-      `).join('');
-    } catch(e){
-      $('adminWithdrawList').innerHTML = `<p class="hint" style="color:var(--danger);">Couldn't load: ${escapeHtml(e.message||'error')}</p>`;
-    }
-  }
-
-  $('banUserBtn').addEventListener('click', async () => {
-    const uid = $('banUserInput').value.trim();
-    if (!uid) { toast('Enter a user ID', true); return; }
-    try{
-      const d = await callApi('admin_ban_user', { user_id: uid });
-      toast(d.message || 'User banned');
-    } catch(e){ toast(e.message || 'Could not ban user', true); }
-  });
-
-  $('unbanUserBtn').addEventListener('click', async () => {
-    const uid = $('banUserInput').value.trim();
-    if (!uid) { toast('Enter a user ID', true); return; }
-    try{
-      const d = await callApi('admin_unban_user', { user_id: uid });
-      toast(d.message || 'User unbanned');
-    } catch(e){ toast(e.message || 'Could not unban user', true); }
-  });
-
-  function renderSameToggle(elId, value, which){
-    const btn = $(elId);
-    const isOn = value !== 'OFF';
-    btn.textContent = isOn ? 'ON' : 'OFF';
-    btn.className = 'gift-toggle ' + (isOn ? 'active' : 'inactive');
-    btn.onclick = async () => {
-      btn.disabled = true;
-      try{
-        const r = await callApi('admin_toggle_same', { which });
-        renderSameToggle(elId, r.value, which);
-      } catch(e){ toast(e.message || 'Could not update setting', true); }
-      finally { btn.disabled = false; }
-    };
+      loadStats(); loadWithdrawals();
+    } catch(e){ toast(e.message, true); }
   }
 
   async function loadStats(){
-    try{
+    try {
       const s = await callApi('admin_stats');
-      $('statsGrid').innerHTML = `
-        <div class="stat-tile"><div class="n">${s.total_members}</div><div class="l">Members</div></div>
-        <div class="stat-tile"><div class="n">${s.total_verified}</div><div class="l">Verified</div></div>
-        <div class="stat-tile"><div class="n mono">₹${s.total_payouts_success}</div><div class="l">Total payouts</div></div>
-        <div class="stat-tile"><div class="n">${s.total_bonus_claimers}</div><div class="l">Bonus claimers</div></div>
-      `;
+      const tile = (n,l) => el('div',{class:'stat-tile'},[ el('div',{class:'n mono',text:String(n)}), el('div',{class:'l',text:l}) ]);
+      setChildren($('statsGrid'), [
+        tile(num(s.total_members), 'Members'),
+        tile(num(s.total_verified), 'Verified'),
+        tile('₹' + num(s.total_payouts_success), 'Total payouts'),
+        tile(num(s.total_bonus_claimers), 'Bonus claimers')
+      ]);
     } catch(e){
-      $('statsGrid').innerHTML = `<p style="grid-column:1/3; color:var(--danger); font-size:12.5px;">Couldn't load stats: ${escapeHtml(e.message || 'error')}</p>`;
+      setChildren($('statsGrid'), [ el('p',{class:'hint',style:'grid-column:1/3;',text:"Couldn't load stats."}) ]);
     }
   }
 
-  $('broadcastSendBtn').addEventListener('click', async () => {
-    const text = $('broadcastText').value.trim();
-    const btnText = $('broadcastBtnText').value.trim();
-    const btnUrl = $('broadcastBtnUrl').value.trim();
-    if (!text) { toast('Write a message first', true); return; }
-    if (btnText && !btnUrl) { toast('Add a URL for the button, or clear the button text', true); return; }
-    if (btnUrl && !btnText) { toast('Add button text, or clear the URL', true); return; }
-    const btn = $('broadcastSendBtn');
-    btn.disabled = true;
-    try{
-      const d = await callApi('admin_broadcast', { text, btn_text: btnText, btn_url: btnUrl });
-      toast(d.message || 'Broadcast started');
-      $('broadcastText').value = '';
-      $('broadcastBtnText').value = '';
-      $('broadcastBtnUrl').value = '';
+  async function loadWithdrawals(){
+    try {
+      const d = await callApi('admin_withdrawals');
+      const rows = Array.isArray(d.withdrawals) ? d.withdrawals : [];
+      const list = $('adminWithdrawList');
+      if (!rows.length) { setChildren(list, [ el('p',{class:'hint',text:'No withdrawals yet.'}) ]); return; }
+      setChildren(list, [ el('div',{class:'act-list'}, rows.slice(0,12).map(w => {
+        const ok = String(w.status) === 'success';
+        return el('div',{class:'activity-row'},[
+          el('div',{class:'activity-icon ' + (ok?'pos':'neg'), text:'💸'}),
+          el('div',{class:'activity-body'},[
+            el('div',{class:'activity-note', text:'User ' + String(w.user || '—')}),
+            el('div',{class:'activity-meta'},[
+              el('span',{class:'activity-tag', text:String(w.gateway || '—')}),
+              el('span',{text:String(w.status || '') + ' · ' + [String(w.date||''),String(w.time||'')].filter(Boolean).join(' ')})
+            ])
+          ]),
+          el('div',{class:'activity-amt neg', text:'−' + money(Math.abs(num(w.amount)))})
+        ]);
+      })) ]);
     } catch(e){
-      toast(e.message || 'Could not send broadcast', true);
-    } finally { btn.disabled = false; }
-  });
+      setChildren($('adminWithdrawList'), [ el('p',{class:'hint',text:"Couldn't load withdrawals."}) ]);
+    }
+  }
+
+  $('adminReloadBtn').addEventListener('click', () => loadAdmin(true));
 
   $('adminSaveBtn').addEventListener('click', async () => {
+    const per = $('adminPerRefer').value.trim();
+    const channel = $('adminPayoutChannel').value.trim();
+    const tax = $('adminTaxPercent').value.trim();
+    const minW = Number($('adminMinWithdraw').value), maxW = Number($('adminMaxWithdraw').value);
+
+    if (per && !V.perRefer(per)) { markField('adminPerRefer','adminPerReferErr', true); toast('Per referral must be a number or a range like 1-3.', true); return; }
+    markField('adminPerRefer','adminPerReferErr', false);
+    if (!V.channel(channel)) { markField('adminPayoutChannel','adminChannelErr', true); toast('Payout channel must be @username or a numeric ID.', true); return; }
+    markField('adminPayoutChannel','adminChannelErr', false);
+    if (tax !== '' && (Number(tax) < 0 || Number(tax) > 100)) { toast('Tax must be between 0 and 100.', true); return; }
+    if (minW && maxW && minW > maxW) { toast('Minimum withdrawal cannot be higher than the maximum.', true); return; }
+
+    if (!(await confirmAction({ title:'Save payout rules?', body:'These limits apply to every user immediately.', okLabel:'Save settings' }))) return;
+
     const btn = $('adminSaveBtn'); btn.disabled = true;
-    try{
+    try {
       await callApi('admin_save_settings', {
-        per_refer: $('adminPerRefer').value.trim(),
+        per_refer: per,
         min_withdraw: $('adminMinWithdraw').value.trim(),
         max_withdraw: $('adminMaxWithdraw').value.trim(),
         min_ref: $('adminMinRef').value.trim(),
-        tax_percent: $('adminTaxPercent').value.trim(),
+        tax_percent: tax,
         daily_bonus: $('adminDailyBonus').value.trim(),
         live_fund: $('adminLiveFund').value.trim(),
         total_fund: $('adminTotalFund').value.trim(),
-        payout_channel: $('adminPayoutChannel').value.trim()
+        payout_channel: channel
       });
       toast('Settings saved');
-      loadAdmin(true);
-      loadDashboard();
-    } catch(e){ toast(e.message || 'Could not save settings', true); }
+      $('adminPayoutChannel').value = '';
+      loadAdmin(true); loadDashboard();
+    } catch(e){ toast(e.message, true); }
     finally { btn.disabled = false; }
   });
 
   $('giftCreateBtn').addEventListener('click', async () => {
     const amount = $('giftAmtInput').value.trim();
-    const max_users = $('giftMaxInput').value.trim();
-    const min_ref = $('giftMinRefInput').value.trim() || '0';
-    if (!amount || !max_users) { toast('Fill amount and max users', true); return; }
+    const maxUsers = $('giftMaxInput').value.trim();
+    const minRef = $('giftMinRefInput').value.trim() || '0';
+    if (!amount || Number(amount) <= 0) { toast('Enter an amount above 0.', true); return; }
+    if (!maxUsers || Number(maxUsers) < 1) { toast('Max users must be at least 1.', true); return; }
+    if (Number(minRef) < 0) { toast('Min referrals cannot be negative.', true); return; }
+    const total = (Number(amount) * Number(maxUsers)).toFixed(2);
+    if (!(await confirmAction({ title:'Create gift code?', body:`Up to ₹${total} can be claimed in total (₹${amount} × ${maxUsers} users).`, okLabel:'Generate code' }))) return;
     const btn = $('giftCreateBtn'); btn.disabled = true;
-    try{
-      const d = await callApi('admin_create_gift', { amount, max_users, min_ref });
-      toast('Code created: ' + d.code);
+    try {
+      const d = await callApi('admin_create_gift', { amount, max_users: maxUsers, min_ref: minRef });
+      toast('Code created: ' + String(d.code));
       $('giftAmtInput').value=''; $('giftMaxInput').value=''; $('giftMinRefInput').value='0';
       loadAdmin(true);
-    } catch(e){ toast(e.message || 'Could not create code', true); }
+    } catch(e){ toast(e.message, true); }
     finally { btn.disabled = false; }
   });
 
+  $('broadcastSendBtn').addEventListener('click', async () => {
+    const text = $('broadcastText').value.trim();
+    const btnText = $('broadcastBtnText').value.trim();
+    const btnUrl = $('broadcastBtnUrl').value.trim();
+    if (!text || text.length > 3500) { markField('broadcastText','broadcastErr', true); toast('Write a message first (max 3500 characters).', true); return; }
+    markField('broadcastText','broadcastErr', false);
+    if (btnUrl && !V.httpsUrl(btnUrl)) { markField('broadcastBtnUrl','broadcastUrlErr', true); toast('Button links must start with https://', true); return; }
+    markField('broadcastBtnUrl','broadcastUrlErr', false);
+    if (btnUrl && !btnText) { toast('Add button text for that link.', true); return; }
+    if (!(await confirmAction({ title:'Send to every user?', body:'This message goes out to all bot users at once and cannot be recalled.', typeWord:'SEND', okLabel:'Send broadcast' }))) return;
+    const btn = $('broadcastSendBtn'); btn.disabled = true;
+    try {
+      const d = await callApi('admin_broadcast', { text, btn_text: btnText, btn_url: btnUrl });
+      toast(d.message || 'Broadcast started');
+      $('broadcastText').value=''; $('broadcastBtnText').value=''; $('broadcastBtnUrl').value='';
+    } catch(e){ toast(e.message, true); }
+    finally { btn.disabled = false; }
+  });
+
+  $('banUserInput').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g,'').slice(0,20);
+    markField('banUserInput','banErr', false);
+  });
+  async function banAction(action, verb){
+    const uid = $('banUserInput').value.trim();
+    if (!V.userId(uid)) { markField('banUserInput','banErr', true); toast('Enter a numeric Telegram user ID.', true); return; }
+    markField('banUserInput','banErr', false);
+    if (!(await confirmAction({ title:verb + ' this user?', body:`User ${uid} will be ${verb === 'Ban' ? 'blocked from the bot' : 'allowed back in'}.`, typeWord: verb === 'Ban' ? 'BAN' : null, okLabel:verb }))) return;
+    try { const d = await callApi(action, { user_id: uid }); toast(d.message || (verb + ' done')); }
+    catch(e){ toast(e.message, true); }
+  }
+  $('banUserBtn').addEventListener('click', () => banAction('admin_ban_user','Ban'));
+  $('unbanUserBtn').addEventListener('click', () => banAction('admin_unban_user','Unban'));
+
   document.querySelectorAll('.admin-link-row').forEach(row => {
     row.addEventListener('click', async () => {
-      const target = row.getAttribute('data-target');
-      try{
-        await callApi('admin_open', { target });
+      try {
+        await callApi('admin_open', { target: String(row.getAttribute('data-target') || '') });
         toast('Opened in your Telegram chat');
-        setTimeout(()=>{ tg ? tg.close() : null; }, 900);
-      } catch(e){ toast(e.message || 'Something went wrong', true); }
+        setTimeout(()=>{ try { tg && tg.close(); } catch(e){} }, 900);
+      } catch(e){ toast(e.message, true); }
     });
   });
 
-  // ---------- TAB SWITCHING ----------
-  document.querySelectorAll('.tab').forEach(tabBtn => {
-    tabBtn.addEventListener('click', () => {
-      const view = tabBtn.getAttribute('data-view');
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      tabBtn.classList.add('active');
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      $('view-' + view).classList.add('active');
-      window.scrollTo(0,0);
-      if (view === 'rank') loadLeaderboard();
-      if (view === 'admin') loadAdmin();
-    });
-  });
+  /* =========================================================
+     Navigation
+     ========================================================= */
+  function switchView(view){
+    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.getAttribute('data-view') === view));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = $('view-' + view);
+    if (target) target.classList.add('active');
+    window.scrollTo(0,0);
+    if (view === 'rank') loadLeaderboard();
+    if (view === 'history') { loadActivity(); renderHistory(); }
+    if (view === 'admin') loadAdmin();
+  }
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => switchView(b.getAttribute('data-view'))));
+  $('adminGearBtn').addEventListener('click', () => switchView('admin'));
 
-  // ---------- PULL TO REFRESH ----------
+  /* =========================================================
+     Pull to refresh + manual refresh
+     ========================================================= */
   (function(){
     let startY = 0, pulling = false, triggered = false;
-    const indicator = $('pullIndicator');
+    const ind = $('pullIndicator');
     document.addEventListener('touchstart', (e) => {
-      if (window.scrollY <= 0 && document.getElementById('view-home').classList.contains('active')) {
-        startY = e.touches[0].clientY;
-        pulling = true; triggered = false;
-      }
-    }, { passive: true });
+      if (window.scrollY <= 0) { startY = e.touches[0].clientY; pulling = true; triggered = false; }
+    }, { passive:true });
     document.addEventListener('touchmove', (e) => {
       if (!pulling) return;
-      const dy = e.touches[0].clientY - startY;
-      if (dy > 60 && !triggered) {
-        triggered = true;
-        indicator.classList.add('show');
-      }
-    }, { passive: true });
+      if (e.touches[0].clientY - startY > 70 && !triggered) { triggered = true; ind.classList.add('show'); }
+    }, { passive:true });
     document.addEventListener('touchend', () => {
       if (triggered) {
-        tick();
-        loadDashboard().then(() => toast('● Refreshed!')).finally(() => {
-          setTimeout(()=>indicator.classList.remove('show'), 400);
-        });
+        refreshAll().finally(() => setTimeout(()=>ind.classList.remove('show'), 400));
       }
       pulling = false; triggered = false;
     });
   })();
 
-  showSkeleton();
-  loadDashboard();
+  function refreshAll(){
+    lbLoaded = false;
+    return loadDashboard()
+      .then(() => loadActivity(true))
+      .then(() => { if ($('view-admin').classList.contains('active')) loadAdmin(true); })
+      .then(() => toast('Up to date'));
+  }
 
   $('headerRefreshBtn').addEventListener('click', () => {
-    tick();
-    const svg = document.querySelector('#headerRefreshBtn svg');
+    const svg = $('headerRefreshBtn').querySelector('svg');
     svg.style.transition = 'transform .6s ease';
     svg.style.transform = 'rotate(360deg)';
-    loadDashboard().then(() => toast('● Refreshed!')).finally(() => {
-      setTimeout(()=>{ svg.style.transition='none'; svg.style.transform='rotate(0deg)'; }, 650);
-    });
+    refreshAll().finally(() => setTimeout(()=>{ svg.style.transition='none'; svg.style.transform='rotate(0deg)'; }, 650));
+  });
+
+  /* =========================================================
+     Boot
+     ========================================================= */
+  skeleton(true);
+  loadDashboard();
+  // Quietly re-check the balance when the app comes back to the foreground.
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && (botId || legacyApi)) loadDashboard();
   });
 })();
 </script>
