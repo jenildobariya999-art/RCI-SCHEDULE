@@ -1261,12 +1261,15 @@
       $('adminDailyBonus').value = d.daily_bonus ?? '';
       $('adminLiveFund').value = d.live_fund ?? '';
       $('adminTotalFund').value = d.total_fund ?? '';
+      $('payoutChannelStatus').textContent = d.payout_channel_configured
+        ? '✅ Payout channel is configured (leave the field blank to keep it unchanged)'
+        : '⚠️ No payout channel set — withdrawal/gift notifications won\'t be posted anywhere until you add one';
+      $('payoutChannelStatus').style.color = d.payout_channel_configured ? 'var(--neon)' : 'var(--danger)';
       renderGiftCodes(d.gift_codes);
       renderSameToggle('sameWalletToggle', d.same_wallet, 'wallet');
       renderSameToggle('sameUpiToggle', d.same_upi, 'upi');
       adminLoaded = true;
     } catch(e){ toast(e.message || 'Could not load admin settings', true); }
-    loadGatewayToggles();
     loadStats();
     loadAdminWithdrawals();
   }
@@ -1362,28 +1365,6 @@
     } finally { btn.disabled = false; }
   });
 
-  async function loadGatewayToggles(){
-    try{
-      const d = await callApi('admin_gateways');
-      const list = $('gatewayToggleList');
-      list.innerHTML = (d.gateways||[]).map(g => `
-        <button class="gift-toggle ${g.active?'active':'inactive'}" data-key="${g.key}" style="flex:0 0 auto; padding:9px 14px; position:relative;" title="${g.configured ? 'API key configured' : 'No API key set — configure in chat first'}">
-          ${escapeHtml(g.name)} ${g.configured ? '' : '⚠️'}
-        </button>
-      `).join('');
-      list.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          btn.disabled = true;
-          try{
-            const r = await callApi('admin_toggle_gateway', { key: btn.getAttribute('data-key') });
-            btn.className = 'gift-toggle ' + (r.active ? 'active' : 'inactive');
-          } catch(e){ toast(e.message || 'Could not toggle gateway', true); }
-          finally { btn.disabled = false; }
-        });
-      });
-    } catch(e){ toast(e.message || 'Could not load gateways', true); }
-  }
-
   $('adminSaveBtn').addEventListener('click', async () => {
     const btn = $('adminSaveBtn'); btn.disabled = true;
     try{
@@ -1395,9 +1376,11 @@
         tax_percent: $('adminTaxPercent').value.trim(),
         daily_bonus: $('adminDailyBonus').value.trim(),
         live_fund: $('adminLiveFund').value.trim(),
-        total_fund: $('adminTotalFund').value.trim()
+        total_fund: $('adminTotalFund').value.trim(),
+        payout_channel: $('adminPayoutChannel').value.trim()
       });
       toast('Settings saved');
+      loadAdmin(true);
       loadDashboard();
     } catch(e){ toast(e.message || 'Could not save settings', true); }
     finally { btn.disabled = false; }
