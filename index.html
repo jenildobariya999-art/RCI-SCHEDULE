@@ -497,6 +497,11 @@
           <div class="field"><label>Withdrawal tax (%)</label><input id="adminTaxPercent" type="number" /></div>
         </div>
         <div class="field"><label>Daily bonus amount (₹)</label><input id="adminDailyBonus" type="number" /></div>
+        <div class="field">
+          <label>Payout channel (username or ID)</label>
+          <input id="adminPayoutChannel" type="text" placeholder="@yourchannel or -100123456789" />
+          <p id="payoutChannelStatus" style="font-size:11px; color:var(--text-soft); margin:6px 0 0;"></p>
+        </div>
         <button class="btn neon" id="adminSaveBtn" style="margin-top:16px;">Save settings</button>
       </div>
 
@@ -520,12 +525,6 @@
           <div><div class="code" style="font-family:'Inter',sans-serif; font-weight:700;">Allow same UPI</div></div>
           <button class="gift-toggle" id="sameUpiToggle">…</button>
         </div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-bottom:10px;">Payment gateways</h3>
-        <div id="gatewayToggleList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-        <p style="font-size:11px; color:var(--text-soft); margin:10px 0 0;">⚠️ = no API key set for that gateway yet — configure it in chat before turning it on.</p>
       </div>
 
       <div class="card">
@@ -916,6 +915,10 @@
   async function loadDashboard(){
     try{
       const d = await callApi('dashboard');
+      if (d.banned) {
+        renderBanned();
+        return;
+      }
       const joinNeeded = d.join_needed || [];
       const verifyNeeded = !!d.verify_needed;
       if (joinNeeded.length || verifyNeeded) {
@@ -933,6 +936,18 @@
       hideSkeleton();
       toast(e.message ? ("Couldn't load: " + e.message) : "Couldn't load your data — try again", true);
     }
+  }
+
+  function renderBanned(){
+    $('app').style.display = 'none';
+    $('tabbar').style.display = 'none';
+    $('gateScreen').style.display = 'block';
+    $('gateScreen').innerHTML = `
+      <div style="max-width:360px; margin:0 auto; text-align:center;">
+        <div style="width:64px; height:64px; margin:0 auto 20px; border-radius:18px; background:rgba(255,90,90,.1); border:1.5px solid rgba(255,90,90,.35); display:flex; align-items:center; justify-content:center; font-size:28px;">🚫</div>
+        <div style="font-size:20px; font-weight:900; margin-bottom:8px;">Account Restricted</div>
+        <p style="color:var(--text-soft); font-size:13px; line-height:1.6;">Your account has been banned from this bot. If you believe this is a mistake, contact the bot admin.</p>
+      </div>`;
   }
 
   async function loadActivity(){
@@ -1072,7 +1087,9 @@
               amount: r.amount || d.amount,
               gateway: r.gateway || gwBtn.textContent,
               status: r.gateway_status || 'submitted',
-              message: r.gateway_message || r.message
+              message: r.gateway_message || r.message,
+              channelNotify: r.channel_notify,
+              userNotify: r.user_notify
             });
             loadDashboard();
           } catch(e){
