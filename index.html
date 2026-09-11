@@ -677,8 +677,21 @@
   if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0d1811'); }catch(e){} }
 
   const params = new URLSearchParams(location.search);
-  const botId = params.get('botid');
+  let botId = params.get('botid');
   const apiUrl = params.get('api'); // legacy fallback (per-user "Open App" links)
+
+  // If opened with zero identifying params (a bare link, not the configured
+  // Menu Button), auto-detect the bot when exactly one is registered — so the
+  // app works from any link as long as only one bot is set up.
+  async function resolveBotId(){
+    if (botId || apiUrl) return;
+    try{
+      const res = await fetch('/api/get-bots');
+      const data = await res.json();
+      const ids = Object.keys(data.bots || {});
+      if (ids.length === 1) botId = ids[0];
+    } catch(e){ /* fall through to empty state */ }
+  }
 
   function escapeHtml(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
