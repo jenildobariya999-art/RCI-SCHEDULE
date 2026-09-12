@@ -69,8 +69,54 @@
   @keyframes cardIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
   .card h3{
     margin:0 0 14px; font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft);
-    font-weight:700; display:flex; align-items:center; gap:7px;
+    font-weight:700; display:flex; align-items:center; gap:9px;
   }
+  .h-icon{
+    width:27px; height:27px; border-radius:9px; background:var(--bg3); border:1px solid var(--border);
+    display:inline-flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+  }
+  .card h3 .h-title{ flex:1; }
+  .card h3 .h-tag{
+    text-transform:none; letter-spacing:0; font-size:10.5px; font-weight:700; color:var(--emerald);
+    background:rgba(34,227,160,.12); padding:3px 9px; border-radius:8px;
+  }
+
+  /* ===== Hero-style cards (referral / earn) ===== */
+  .hero-card{
+    position:relative; overflow:hidden;
+    background: linear-gradient(155deg, #1c1730 0%, var(--bg2) 45%, var(--bg1) 100%);
+    border-color: rgba(185,139,255,.2);
+  }
+  .hero-card::before{
+    content:''; position:absolute; inset:-45% -25%; background: radial-gradient(circle, rgba(185,139,255,.22), transparent 62%);
+    opacity:.4; animation: balGlow 8s ease-in-out infinite; pointer-events:none;
+  }
+  .hero-card > *{ position:relative; z-index:1; }
+  .hero-card .hero-top{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .hero-ic{
+    width:44px; height:44px; border-radius:13px; flex-shrink:0; font-size:21px;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, rgba(185,139,255,.22), rgba(185,139,255,.06)); border:1px solid rgba(185,139,255,.28);
+  }
+  .hero-title{ font-size:14.5px; font-weight:800; }
+  .hero-sub{ font-size:11.5px; color:var(--text-soft); margin-top:2px; }
+
+  /* ===== Stat tiles with icon ===== */
+  .stat-tile .ic{ font-size:15px; margin-bottom:4px; display:block; }
+
+  /* ===== Rank / leaderboard podium ===== */
+  .rank-hero{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .rank-hero .hero-ic{
+    background: linear-gradient(135deg, rgba(255,207,107,.25), rgba(255,207,107,.06)); border:1px solid rgba(255,207,107,.3);
+  }
+  .list-row .rank{
+    width:28px; height:28px; border-radius:50%; background:var(--bg3); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:11.5px; flex-shrink:0;
+  }
+  .list-row:nth-child(1) .rank{ background:linear-gradient(135deg,#ffd873,#e0a020); color:#3a2400; border-color:transparent; }
+  .list-row:nth-child(2) .rank{ background:linear-gradient(135deg,#e6ecf2,#b8c2cc); color:#20262c; border-color:transparent; }
+  .list-row:nth-child(3) .rank{ background:linear-gradient(135deg,#e0a86b,#a9682f); color:#2e1a06; border-color:transparent; }
+  .list-row:nth-child(1), .list-row:nth-child(2), .list-row:nth-child(3){ padding:12px 8px; }
 
   /* ===== Balance / hero card ===== */
   .bal-card{
@@ -362,21 +408,21 @@
     </div>
 
     <div class="card">
-      <h3>🏦 Wallet</h3>
+      <h3><span class="h-icon">🏦</span><span class="h-title">Wallet</span></h3>
       <div class="rules-line"><span class="k">Linked number</span><span class="v" id="walletStatusText">—</span></div>
       <button class="btn ghost" id="walletUpdateBtn" style="margin-top:12px;">🔗 Link / Update Wallet</button>
     </div>
 
     <div class="card">
-      <h3>💼 Bot Fund</h3>
+      <h3><span class="h-icon">💼</span><span class="h-title">Bot Fund</span></h3>
       <div class="stat-grid">
-        <div class="stat-tile"><div class="n" id="fundLive">₹0</div><div class="l">Live Fund</div></div>
-        <div class="stat-tile"><div class="n" id="fundTotal">₹0</div><div class="l">Total Fund</div></div>
+        <div class="stat-tile"><span class="ic">🟢</span><div class="n" id="fundLive">₹0</div><div class="l">Live Fund</div></div>
+        <div class="stat-tile"><span class="ic">📦</span><div class="n" id="fundTotal">₹0</div><div class="l">Total Fund</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h3>🔗 Your referral link</h3>
+      <h3><span class="h-icon">🔗</span><span class="h-title">Your referral link</span></h3>
       <div class="ref-link-box" id="walletRefLinkBox">—</div>
       <div style="display:flex; gap:10px; margin-top:12px;">
         <button class="btn ghost" id="walletCopyRefBtn" style="flex:1;">📋 Copy</button>
@@ -385,7 +431,7 @@
     </div>
 
     <div class="card">
-      <h3>🎟️ Redeem a gift code</h3>
+      <h3><span class="h-icon">🎟️</span><span class="h-title">Redeem a gift code</span></h3>
       <div class="field"><input id="giftCodeInput" type="text" placeholder="Enter gift code" style="text-transform:uppercase;" /></div>
       <button class="btn neon" id="redeemBtn">🎁 Redeem</button>
     </div>
@@ -430,8 +476,14 @@
 
   <!-- ===== EARN VIEW ===== -->
   <div class="view" id="view-earn">
-    <div class="card">
-      <h3>👥 Your referral link</h3>
+    <div class="card hero-card">
+      <div class="hero-top">
+        <div class="hero-ic">👥</div>
+        <div>
+          <div class="hero-title">Invite friends, earn together</div>
+          <div class="hero-sub">Share your link — get paid for every verified referral</div>
+        </div>
+      </div>
       <div class="ref-link-box" id="refLinkBox">—</div>
       <div style="display:flex; gap:10px; margin-top:12px;">
         <button class="btn ghost" id="copyRefBtn" style="flex:1;">📋 Copy</button>
@@ -439,12 +491,12 @@
       </div>
     </div>
     <div class="card">
-      <h3>📊 Your stats</h3>
+      <h3><span class="h-icon">📊</span><span class="h-title">Your stats</span></h3>
       <div class="stat-grid">
-        <div class="stat-tile"><div class="n" id="statStarted">0</div><div class="l">Started</div></div>
-        <div class="stat-tile"><div class="n" id="statVerified">0</div><div class="l">Verified</div></div>
-        <div class="stat-tile"><div class="n" id="statPerRefer">₹0</div><div class="l">Per Refer</div></div>
-        <div class="stat-tile"><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
+        <div class="stat-tile"><span class="ic">🚀</span><div class="n" id="statStarted">0</div><div class="l">Started</div></div>
+        <div class="stat-tile"><span class="ic">✅</span><div class="n" id="statVerified">0</div><div class="l">Verified</div></div>
+        <div class="stat-tile"><span class="ic">💰</span><div class="n" id="statPerRefer">₹0</div><div class="l">Per Refer</div></div>
+        <div class="stat-tile"><span class="ic">🏅</span><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
       </div>
     </div>
   </div>
@@ -452,7 +504,13 @@
   <!-- ===== RANK VIEW ===== -->
   <div class="view" id="view-rank">
     <div class="card">
-      <h3>🏆 Top referrers</h3>
+      <div class="rank-hero">
+        <div class="hero-ic">🏆</div>
+        <div>
+          <div class="hero-title">Top referrers</div>
+          <div class="hero-sub">Climb the board by inviting more friends</div>
+        </div>
+      </div>
       <div id="leaderboardList"><div class="skel" style="height:200px;"></div></div>
     </div>
   </div>
