@@ -9,7 +9,7 @@
 <title>Loot Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
@@ -35,7 +35,156 @@
     -webkit-font-smoothing:antialiased;
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
+  .display{ font-family:'Archivo Black', 'Inter', sans-serif; }
   ::selection{ background: var(--emerald-glow); }
+
+  /* ===== Status pill ===== */
+  .status-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:999px;
+    background:rgba(34,227,160,.1); border:1px solid rgba(34,227,160,.35); color:var(--emerald);
+    font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.08em;
+  }
+  .status-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--emerald); box-shadow:0 0 0 3px rgba(34,227,160,.22); }
+  .status-pill.purple{ background:rgba(185,139,255,.1); border-color:rgba(185,139,255,.35); color:var(--purple); }
+  .status-pill.purple .dot{ background:var(--purple); box-shadow:0 0 0 3px rgba(185,139,255,.22); }
+  .icon-btn-round{
+    width:38px; height:38px; border-radius:12px; background:var(--bg3); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; color:var(--text-soft); cursor:pointer; flex-shrink:0;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), color .15s ease, border-color .15s ease;
+  }
+  .icon-btn-round:active{ transform: scale(.9) rotate(180deg); color:var(--emerald); border-color:rgba(34,227,160,.3); }
+
+  /* ===== Big display balance ===== */
+  .balance-block{ text-align:center; padding:6px 0 4px; }
+  .balance-block .lbl{ font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:var(--text-soft); font-weight:700; }
+  .balance-block .amt{
+    font-family:'Archivo Black', sans-serif; font-size:44px; letter-spacing:-.01em; margin-top:8px;
+    display:flex; align-items:baseline; justify-content:center; gap:6px;
+  }
+  .balance-block .amt .cur{ color:var(--emerald); font-size:26px; }
+  .balance-block .amt.bump{ animation: bump .35s ease; }
+
+  .withdraw-cta{
+    width:100%; border:none; border-radius:16px; padding:19px; margin-top:18px; cursor:pointer;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald-deep)); color:#04150c;
+    font-family:'Inter',sans-serif; font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:.04em;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    box-shadow: 0 16px 34px -14px var(--emerald-glow);
+    transition: transform .13s cubic-bezier(.3,.8,.3,1);
+  }
+  .withdraw-cta:active{ transform: scale(.97); }
+  .withdraw-cta:disabled{ opacity:.5; }
+
+  /* ===== Wallet link row ===== */
+  .wallet-link-row{
+    display:flex; align-items:center; gap:13px; background:var(--bg1); border:1px solid var(--border);
+    border-radius:15px; padding:13px 14px; margin-top:16px;
+  }
+  .wallet-link-row .icon-box{
+    width:44px; height:44px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:20px; flex-shrink:0; color:#0d1811;
+  }
+  .wallet-link-row .info{ flex:1; min-width:0; }
+  .wallet-link-row .lbl{ font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-soft); font-weight:700; }
+  .wallet-link-row .val{ font-size:14.5px; font-weight:800; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .change-btn{
+    background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:10px;
+    padding:9px 14px; font-size:11.5px; font-weight:800; cursor:pointer; flex-shrink:0; text-transform:uppercase; letter-spacing:.03em;
+    transition: transform .12s cubic-bezier(.3,.8,.3,1), border-color .15s ease;
+  }
+  .change-btn:active{ transform: scale(.93); }
+
+  /* ===== Fund progress ===== */
+  .fund-head{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .fund-head .icon-box-sm{
+    width:32px; height:32px; border-radius:10px; background:var(--bg3); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;
+  }
+  .fund-head .lbl{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; flex:1; }
+  .fund-pct{ font-size:10.5px; font-weight:800; color:var(--text-soft); background:var(--bg3); padding:4px 10px; border-radius:8px; }
+  .fund-bar{ height:9px; border-radius:99px; background:var(--bg3); overflow:hidden; border:1px solid var(--border); }
+  .fund-bar-fill{ height:100%; border-radius:99px; background:linear-gradient(90deg,var(--emerald-deep),var(--emerald)); transition:width .6s cubic-bezier(.2,.8,.2,1); width:0%; }
+  .fund-foot{ display:flex; justify-content:space-between; margin-top:12px; }
+  .fund-foot .f{ }
+  .fund-foot .k{ font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-soft); font-weight:700; }
+  .fund-foot .v{ font-family:'IBM Plex Mono',monospace; font-weight:800; font-size:14px; margin-top:3px; }
+
+  /* ===== Gift hero ===== */
+  .gift-hero{ text-align:center; padding:6px 0 4px; }
+  .gift-hero .ring{
+    width:74px; height:74px; margin:0 auto 16px; border-radius:50%; border:1.5px solid rgba(34,227,160,.4);
+    display:flex; align-items:center; justify-content:center; font-size:30px;
+    background: radial-gradient(circle, rgba(34,227,160,.14), transparent 70%);
+  }
+  .gift-hero h2{ font-size:21px; font-weight:800; margin:0 0 8px; letter-spacing:-.01em; }
+  .gift-hero p{ font-size:12.5px; color:var(--text-soft); line-height:1.5; margin:0; max-width:280px; margin:0 auto; }
+  .gift-row{ display:flex; gap:10px; margin-top:8px; align-items:stretch; }
+  .gift-row .field{ flex:1; margin-bottom:0; }
+  .gift-row .field input{ margin-top:0; height:100%; }
+  .gift-row .btn{ width:auto; padding:0 22px; flex-shrink:0; height:auto; }
+
+  /* ===== Step list ===== */
+  .step-item{ display:flex; gap:13px; padding:11px 0; }
+  .step-item .num{
+    width:26px; height:26px; border-radius:9px; background:rgba(34,227,160,.14); color:var(--emerald);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12.5px; flex-shrink:0;
+  }
+  .step-item p{ margin:0; font-size:12.5px; color:var(--text-soft); line-height:1.5; }
+  .step-item p b{ color:var(--text); font-weight:700; }
+
+  /* ===== Invite CTA row ===== */
+  .invite-row{ display:flex; gap:10px; margin-top:14px; }
+  .invite-cta{
+    flex:1; border:none; border-radius:15px; padding:16px; cursor:pointer;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald-deep)); color:#04150c;
+    font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:.03em;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    box-shadow: 0 14px 28px -14px var(--emerald-glow);
+    transition: transform .13s cubic-bezier(.3,.8,.3,1);
+  }
+  .invite-cta:active{ transform: scale(.96); }
+  .invite-icon-btn{
+    width:54px; flex-shrink:0; border-radius:15px; background:var(--bg3); border:1px solid var(--border); color:var(--text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:17px;
+    transition: transform .13s cubic-bezier(.3,.8,.3,1), border-color .15s ease;
+  }
+  .invite-icon-btn:active{ transform: scale(.9); }
+
+  /* ===== Rank headline & podium ===== */
+  .rank-headline{ text-align:center; padding:4px 0 6px; }
+  .rank-headline h2{
+    font-family:'Archivo Black', sans-serif; font-size:26px; font-style:italic; letter-spacing:-.01em; margin:0;
+    text-transform:uppercase; line-height:1.05;
+  }
+  .rank-headline h2 .hl{
+    color:var(--emerald); text-shadow: 0 0 24px var(--emerald-glow);
+  }
+  .rank-headline .sub{ font-size:11px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.22em; font-weight:700; margin-top:8px; }
+  .rank-headline .crown{ font-size:30px; margin-top:16px; filter: drop-shadow(0 6px 14px rgba(255,207,107,.5)); }
+
+  .podium{ display:flex; align-items:flex-end; gap:10px; margin-top:20px; padding:0 2px; }
+  .podium-col{ flex:1; text-align:center; }
+  .podium-col.first{ flex:1.08; }
+  .podium-block{
+    border-radius:20px 20px 8px 8px; display:flex; align-items:center; justify-content:center;
+    font-family:'Archivo Black', sans-serif; color:#fff; position:relative; margin-bottom:-14px; z-index:2;
+  }
+  .podium-col.first .podium-block{ height:96px; font-size:30px; background:linear-gradient(160deg,#4be3ac,#0f9e6e); box-shadow:0 14px 30px -12px rgba(34,227,160,.55); }
+  .podium-col.second .podium-block{ height:76px; font-size:24px; background:linear-gradient(160deg,#6cc6ff,#2f8fdb); box-shadow:0 14px 30px -12px rgba(95,176,255,.5); }
+  .podium-col.third .podium-block{ height:76px; font-size:24px; background:linear-gradient(160deg,#d79bff,#a555e8); box-shadow:0 14px 30px -12px rgba(185,139,255,.5); }
+  .podium-rank-tag{
+    display:inline-block; background:#0a0f14; color:#fff; font-size:10.5px; font-weight:800; padding:4px 10px;
+    border-radius:8px; position:relative; z-index:3; margin-bottom:12px;
+  }
+  .podium-card{ background:var(--bg1); border:1px solid var(--border); border-radius:16px; padding:16px 8px 14px; }
+  .podium-col.first .podium-card{ border-color:rgba(34,227,160,.3); }
+  .podium-card .uid{ font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--text-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .podium-card .cnt{ font-family:'Archivo Black', sans-serif; font-size:24px; margin-top:8px; }
+  .podium-col.first .podium-card .cnt{ color:var(--emerald); }
+  .podium-col.second .podium-card .cnt{ color:var(--info); }
+  .podium-col.third .podium-card .cnt{ color:var(--purple); }
+  .podium-card .cnt-lbl{ font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-faint); font-weight:700; margin-top:2px; }
 
   /* ===== Header ===== */
   header.app-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
@@ -113,10 +262,7 @@
     width:28px; height:28px; border-radius:50%; background:var(--bg3); border:1px solid var(--border);
     display:flex; align-items:center; justify-content:center; font-size:11.5px; flex-shrink:0;
   }
-  .list-row:nth-child(1) .rank{ background:linear-gradient(135deg,#ffd873,#e0a020); color:#3a2400; border-color:transparent; }
-  .list-row:nth-child(2) .rank{ background:linear-gradient(135deg,#e6ecf2,#b8c2cc); color:#20262c; border-color:transparent; }
-  .list-row:nth-child(3) .rank{ background:linear-gradient(135deg,#e0a86b,#a9682f); color:#2e1a06; border-color:transparent; }
-  .list-row:nth-child(1), .list-row:nth-child(2), .list-row:nth-child(3){ padding:12px 8px; }
+
 
   /* ===== Balance / hero card ===== */
   .bal-card{
@@ -396,33 +542,47 @@
 
   <!-- ===== WALLET VIEW (home) ===== -->
   <div class="view active" id="view-wallet">
-    <div class="card bal-card">
-      <div>
-        <div class="lbl">Balance</div>
+    <div class="card">
+      <div class="status-row">
+        <span class="status-pill"><span class="dot"></span>System Live</span>
+        <span class="icon-btn-round" id="refreshBtn" title="Refresh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </span>
+      </div>
+      <div class="balance-block">
+        <div class="lbl">Available Balance</div>
         <div class="amt" id="balanceWrap"><span class="cur">₹</span><span class="mono" id="balanceAmt">0.00</span></div>
       </div>
-      <div class="bal-actions">
-        <button class="pill-btn" id="bonusBtn">🎁 Bonus</button>
-        <button class="pill-btn neon" id="withdrawOpenBtn">💸 Withdraw</button>
+      <button class="withdraw-cta" id="withdrawOpenBtn">Withdraw Now
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </button>
+      <button class="pill-btn" id="bonusBtn" style="width:100%; margin-top:10px;">🎁 Daily Bonus</button>
+      <div class="wallet-link-row">
+        <div class="icon-box">👛</div>
+        <div class="info">
+          <div class="lbl">Linked Wallet</div>
+          <div class="val" id="walletStatusText">—</div>
+        </div>
+        <button class="change-btn" id="walletUpdateBtn">Change</button>
       </div>
     </div>
 
     <div class="card">
-      <h3><span class="h-icon">🏦</span><span class="h-title">Wallet</span></h3>
-      <div class="rules-line"><span class="k">Linked number</span><span class="v" id="walletStatusText">—</span></div>
-      <button class="btn ghost" id="walletUpdateBtn" style="margin-top:12px;">🔗 Link / Update Wallet</button>
-    </div>
-
-    <div class="card">
-      <h3><span class="h-icon">💼</span><span class="h-title">Bot Fund</span></h3>
-      <div class="stat-grid">
-        <div class="stat-tile"><span class="ic">🟢</span><div class="n" id="fundLive">₹0</div><div class="l">Live Fund</div></div>
-        <div class="stat-tile"><span class="ic">📦</span><div class="n" id="fundTotal">₹0</div><div class="l">Total Fund</div></div>
+      <div class="fund-head">
+        <span class="icon-box-sm">💼</span>
+        <span class="lbl">System Funds</span>
+        <span class="fund-pct" id="fundPct">—</span>
+      </div>
+      <div class="fund-bar"><div class="fund-bar-fill" id="fundBarFill"></div></div>
+      <div class="fund-foot">
+        <div class="f"><div class="k">Available</div><div class="v" id="fundLive">₹0</div></div>
+        <div class="f" style="text-align:right;"><div class="k">Distributed</div><div class="v" id="fundTotal">₹0</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h3><span class="h-icon">🔗</span><span class="h-title">Your referral link</span></h3>
+      <span class="status-pill" style="margin-bottom:14px;"><span class="dot"></span>Active Referral</span>
+      <h3 style="margin-top:2px;"><span class="h-icon">🔗</span><span class="h-title">Your referral link</span></h3>
       <div class="ref-link-box" id="walletRefLinkBox">—</div>
       <div style="display:flex; gap:10px; margin-top:12px;">
         <button class="btn ghost" id="walletCopyRefBtn" style="flex:1;">📋 Copy</button>
@@ -431,9 +591,21 @@
     </div>
 
     <div class="card">
-      <h3><span class="h-icon">🎟️</span><span class="h-title">Redeem a gift code</span></h3>
-      <div class="field"><input id="giftCodeInput" type="text" placeholder="Enter gift code" style="text-transform:uppercase;" /></div>
-      <button class="btn neon" id="redeemBtn">🎁 Redeem</button>
+      <div class="gift-hero">
+        <div class="ring">🎁</div>
+        <h2>Redeem Gift Code</h2>
+        <p>Enter your code below to get instant balance added to your account</p>
+      </div>
+      <div class="field" style="margin-top:18px; margin-bottom:6px;"><label>Gift code</label></div>
+      <div class="gift-row">
+        <div class="field"><input id="giftCodeInput" type="text" placeholder="e.g. FASTIFYGIFT" style="text-transform:uppercase;" /></div>
+        <button class="btn neon" id="redeemBtn">Claim</button>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="step-item"><span class="num">1</span><p>Get a gift code from our <b>Telegram channel</b> or special events</p></div>
+        <div class="step-item"><span class="num">2</span><p>Enter the code above and tap <b>Claim</b></p></div>
+        <div class="step-item"><span class="num">3</span><p>Balance is added instantly — <b>withdraw anytime</b></p></div>
+      </div>
     </div>
   </div>
 
@@ -476,18 +648,19 @@
 
   <!-- ===== EARN VIEW ===== -->
   <div class="view" id="view-earn">
-    <div class="card hero-card">
-      <div class="hero-top">
-        <div class="hero-ic">👥</div>
-        <div>
-          <div class="hero-title">Invite friends, earn together</div>
-          <div class="hero-sub">Share your link — get paid for every verified referral</div>
-        </div>
+    <div class="card">
+      <div class="status-row" style="justify-content:center; margin-bottom:16px;">
+        <span class="status-pill purple"><span class="dot"></span>Active Referral Bonus</span>
       </div>
+      <div class="balance-block">
+        <div class="amt" style="justify-content:center;"><span class="mono" id="statPerRefer">₹0</span></div>
+        <div class="lbl" style="margin-top:8px;">Per Successful Invite</div>
+      </div>
+      <div class="field" style="margin-top:20px; margin-bottom:6px;"><label>Your network link</label></div>
       <div class="ref-link-box" id="refLinkBox">—</div>
-      <div style="display:flex; gap:10px; margin-top:12px;">
-        <button class="btn ghost" id="copyRefBtn" style="flex:1;">📋 Copy</button>
-        <button class="btn neon" id="shareRefBtn" style="flex:1;">📤 Share</button>
+      <div class="invite-row">
+        <button class="invite-cta" id="shareRefBtn">📤 Invite Friends</button>
+        <button class="invite-icon-btn" id="copyRefBtn" title="Copy link">📋</button>
       </div>
     </div>
     <div class="card">
@@ -495,8 +668,7 @@
       <div class="stat-grid">
         <div class="stat-tile"><span class="ic">🚀</span><div class="n" id="statStarted">0</div><div class="l">Started</div></div>
         <div class="stat-tile"><span class="ic">✅</span><div class="n" id="statVerified">0</div><div class="l">Verified</div></div>
-        <div class="stat-tile"><span class="ic">💰</span><div class="n" id="statPerRefer">₹0</div><div class="l">Per Refer</div></div>
-        <div class="stat-tile"><span class="ic">🏅</span><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
+        <div class="stat-tile" style="grid-column:span 2;"><span class="ic">🏅</span><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
       </div>
     </div>
   </div>
@@ -504,14 +676,13 @@
   <!-- ===== RANK VIEW ===== -->
   <div class="view" id="view-rank">
     <div class="card">
-      <div class="rank-hero">
-        <div class="hero-ic">🏆</div>
-        <div>
-          <div class="hero-title">Top referrers</div>
-          <div class="hero-sub">Climb the board by inviting more friends</div>
-        </div>
+      <div class="rank-headline">
+        <h2>Hall of <span class="hl">Fame</span></h2>
+        <div class="sub">Top Promoters</div>
+        <div class="crown">👑</div>
       </div>
-      <div id="leaderboardList"><div class="skel" style="height:200px;"></div></div>
+      <div id="leaderboardPodium"></div>
+      <div id="leaderboardList" style="margin-top:8px;"><div class="skel" style="height:160px;"></div></div>
     </div>
   </div>
 
@@ -772,6 +943,12 @@
       $('walletStatusText').textContent = d.wallet && d.wallet !== 'Not Linked' ? d.wallet : 'Not linked yet';
       $('fundLive').textContent = '₹' + Number(d.live_fund || 0).toFixed(0);
       $('fundTotal').textContent = '₹' + Number(d.total_fund || 0).toFixed(0);
+      {
+        const liveF = Number(d.live_fund || 0), totalF = Number(d.total_fund || 0);
+        const pct = totalF > 0 ? Math.max(0, Math.min(100, (liveF / totalF) * 100)) : 0;
+        if ($('fundPct')) $('fundPct').textContent = pct.toFixed(1) + '% left';
+        if ($('fundBarFill')) $('fundBarFill').style.width = pct + '%';
+      }
 
       $('refLinkBox').textContent = d.referral_link || '—';
       $('walletRefLinkBox').textContent = d.referral_link || '—';
@@ -1010,13 +1187,54 @@
     finally { btn.disabled = false; }
   });
 
+  function maskUserId(id){
+    const s = String(id == null ? '' : id);
+    if (s.length <= 6) return escapeHtml(s);
+    return escapeHtml(s.slice(0,2) + '*****' + s.slice(-3));
+  }
+
   async function loadLeaderboard(){
-    $('leaderboardList').innerHTML = '<div class="skel" style="height:200px;"></div>';
+    $('leaderboardList').innerHTML = '<div class="skel" style="height:160px;"></div>';
+    if ($('leaderboardPodium')) $('leaderboardPodium').innerHTML = '';
     try{
       const r = await callApi('leaderboard');
       const rows = r.leaderboard || [];
-      if (!rows.length){ $('leaderboardList').innerHTML = '<p style="color:var(--text-soft); font-size:13px;">No referrers yet — be the first!</p>'; return; }
-      $('leaderboardList').innerHTML = rows.map(row => `
+      if (!rows.length){
+        $('leaderboardList').innerHTML = '<p style="color:var(--text-soft); font-size:13px;">No referrers yet — be the first!</p>';
+        return;
+      }
+
+      const top3 = rows.slice(0,3);
+      const rest = rows.slice(3);
+
+      if ($('leaderboardPodium') && top3.length){
+        const order = ['second','first','third'].filter(pos => {
+          if (pos==='first') return top3[0];
+          if (pos==='second') return top3[1];
+          return top3[2];
+        });
+        const byPos = { first: top3[0], second: top3[1], third: top3[2] };
+        $('leaderboardPodium').innerHTML = `<div class="podium">${
+          order.map(pos => {
+            const row = byPos[pos];
+            if (!row) return '';
+            const rankNum = pos==='first'?1:(pos==='second'?2:3);
+            return `
+              <div class="podium-col ${pos}">
+                <div class="podium-block">${rankNum===1?'🥇':(rankNum===2?'🥈':'🥉')}</div>
+                <div class="podium-rank-tag">#${rankNum}</div>
+                <div class="podium-card">
+                  <div class="uid">${maskUserId(row.user_id)}${row.is_you?' (You)':''}</div>
+                  <div class="cnt">${row.referrals}</div>
+                  <div class="cnt-lbl">Invites</div>
+                </div>
+              </div>`;
+          }).join('')
+        }</div>`;
+      }
+
+      if (!rest.length){ $('leaderboardList').innerHTML = ''; return; }
+      $('leaderboardList').innerHTML = rest.map(row => `
         <div class="list-row ${row.is_you?'you':''}">
           <div class="rank">${row.rank}</div>
           <div style="flex:1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">${escapeHtml(row.user_id)}${row.is_you?' (You)':''}</div>
@@ -1240,6 +1458,7 @@
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchView(el.getAttribute('data-view'))));
 
   $('backBtn').addEventListener('click', () => { if (tg && tg.close) tg.close(); else history.back(); });
+  if ($('refreshBtn')) $('refreshBtn').addEventListener('click', () => loadDashboard());
 
   (async () => { await resolveBotId(); await loadDashboard(); })();
 })();
