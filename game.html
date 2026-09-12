@@ -13,86 +13,163 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
-    --bg0:#060b07; --bg1:#0d1811; --bg2:#142519; --border: rgba(255,255,255,.08);
-    --neon:#17e88f; --neon-deep:#0cae6a; --gold:#ffcf4d; --danger:#ff5a5a; --info:#5fb0ff;
-    --text:#eef7f0; --text-soft:#7f9587; --radius:20px;
+    --bg0:#05090a; --bg1:#0b1712; --bg2:#12241c; --bg3:#183327; --border: rgba(255,255,255,.09);
+    --neon:#1de893; --neon-deep:#0aa864; --neon-glow: rgba(29,232,147,.35);
+    --gold:#ffcf4d; --gold-deep:#e0a716; --danger:#ff5a72; --info:#5fb0ff; --purple:#b98bff;
+    --text:#f1f8f3; --text-soft:#7fa090; --radius:20px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background: radial-gradient(ellipse 120% 60% at 50% -10%, rgba(23,232,143,.10), transparent 60%), var(--bg0);
-    color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh; padding:18px 16px 100px;
+    background:
+      radial-gradient(ellipse 90% 50% at 15% -8%, rgba(29,232,147,.14), transparent 55%),
+      radial-gradient(ellipse 80% 45% at 100% 10%, rgba(185,139,255,.08), transparent 55%),
+      var(--bg0);
+    color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh; padding:16px 14px 96px;
+    -webkit-font-smoothing:antialiased;
   }
   .mono{font-family:'IBM Plex Mono', monospace;}
+  ::selection{ background: var(--neon-glow); }
 
-  header.app-head{ display:flex; align-items:center; gap:11px; margin-bottom:16px; }
+  header.app-head{ display:flex; align-items:center; gap:11px; margin-bottom:14px; }
   .back-btn{
-    width:38px; height:38px; border-radius:11px; background:var(--bg2); border:1px solid var(--border);
+    width:38px; height:38px; border-radius:12px; background:var(--bg2); border:1px solid var(--border);
     color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+    transition: transform .15s cubic-bezier(.2,.8,.3,1), background .15s ease;
   }
+  .back-btn:active{ transform: scale(.9); background:var(--bg3); }
   .app-head .titles{ line-height:1.2; flex:1; }
-  .app-head .titles .name{ font-weight:800; font-size:16.5px; }
+  .app-head .titles .name{
+    font-weight:900; font-size:17px; letter-spacing:-.01em;
+    background: linear-gradient(90deg, var(--text), var(--neon) 120%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
   .app-head .titles .sub{ font-size:11px; color:var(--text-soft); margin-top:2px; }
 
   .card{
-    background: linear-gradient(180deg, var(--bg1), var(--bg0));
+    background: linear-gradient(165deg, var(--bg2), var(--bg1) 70%);
     border:1px solid var(--border); border-radius: var(--radius); padding:18px; margin-bottom:14px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 14px 30px -18px rgba(0,0,0,.6);
+    animation: cardIn .35s cubic-bezier(.2,.8,.2,1) both;
   }
+  @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
   .card h3{ margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-soft); font-weight:700; }
 
   /* balance bar */
-  .bal-card{ display:flex; align-items:center; gap:12px; padding:14px 16px; }
-  .bal-card .lbl{ font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:700; }
-  .bal-card .amt{ font-size:24px; font-weight:900; }
+  .bal-card{ display:flex; align-items:center; gap:12px; padding:15px 16px; position:relative; overflow:hidden; }
+  .bal-card::before{
+    content:''; position:absolute; inset:-40% -20%; background: radial-gradient(circle, var(--neon-glow), transparent 60%);
+    opacity:.35; animation: balGlow 6s ease-in-out infinite;
+  }
+  @keyframes balGlow{ 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6%,4%) scale(1.15);} }
+  .bal-card > *{ position:relative; z-index:1; }
+  .bal-card .lbl{ font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-soft); font-weight:700; }
+  .bal-card .amt{ font-size:25px; font-weight:900; transition: transform .2s ease; }
+  .bal-card .amt.bump{ animation: bump .35s ease; }
+  @keyframes bump{ 0%{ transform:scale(1);} 40%{ transform:scale(1.12);} 100%{ transform:scale(1);} }
   .bal-card .amt .cur{ color:var(--neon); font-size:16px; margin-right:2px; }
   .bal-actions{ margin-left:auto; display:flex; gap:8px; }
   .pill-btn{
-    border:1px solid var(--border); background:var(--bg2); color:var(--text); border-radius:10px;
-    padding:8px 12px; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+    border:1px solid var(--border); background:var(--bg3); color:var(--text); border-radius:11px;
+    padding:9px 13px; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+    transition: transform .12s cubic-bezier(.3,.8,.3,1), filter .12s ease;
   }
-  .pill-btn.neon{ background:linear-gradient(135deg,var(--neon),var(--neon-deep)); color:#04150c; border:none; }
-  .pill-btn:disabled{ opacity:.45; }
+  .pill-btn:active{ transform: scale(.94); }
+  .pill-btn.neon{ background:linear-gradient(135deg,var(--neon),var(--neon-deep)); color:#04150c; border:none; box-shadow: 0 6px 18px -8px var(--neon-glow); }
+  .pill-btn:disabled{ opacity:.4; transform:none; }
 
-  /* tabs */
-  .segtabs{ display:flex; gap:6px; background:var(--bg2); border-radius:14px; padding:5px; margin-bottom:14px; overflow-x:auto; }
-  .segtabs .seg{
-    flex:1; text-align:center; padding:9px 6px; border-radius:10px; font-size:11.5px; font-weight:700;
-    color:var(--text-soft); cursor:pointer; white-space:nowrap;
-  }
-  .segtabs .seg.active{ background:var(--bg1); color:var(--neon); }
-
-  /* game grid */
-  .game-picker{ display:flex; gap:10px; margin-bottom:6px; overflow-x:auto; padding-bottom:2px; }
+  /* game picker */
+  .game-picker{ display:flex; gap:9px; margin-bottom:4px; overflow-x:auto; padding:2px 2px 8px; scroll-snap-type:x proximity; }
+  .game-picker::-webkit-scrollbar{ display:none; }
   .game-chip{
-    flex:1; min-width:96px; background:var(--bg2); border:1.5px solid var(--border); border-radius:16px;
-    padding:14px 10px; text-align:center; cursor:pointer;
+    flex:0 0 auto; min-width:92px; background:var(--bg3); border:1.5px solid var(--border); border-radius:16px;
+    padding:13px 8px; text-align:center; cursor:pointer; scroll-snap-align:start;
+    transition: border-color .18s ease, background .18s ease, transform .12s cubic-bezier(.3,.8,.3,1);
   }
-  .game-chip.active{ border-color:var(--neon); background:rgba(23,232,143,.08); }
-  .game-chip .ic{ font-size:28px; }
-  .game-chip .nm{ font-size:11.5px; font-weight:700; margin-top:6px; }
-  .game-chip .mx{ font-size:9.5px; color:var(--text-soft); margin-top:2px; }
+  .game-chip:active{ transform: scale(.96); }
+  .game-chip.active{ border-color:var(--neon); background: linear-gradient(160deg, rgba(29,232,147,.14), rgba(29,232,147,.03)); box-shadow: 0 0 0 1px var(--neon) inset; }
+  .game-chip.disabled{ opacity:.35; filter:grayscale(.6); pointer-events:none; }
+  .game-chip .ic{ font-size:27px; display:block; }
+  .game-chip .nm{ font-size:10.5px; font-weight:700; margin-top:6px; white-space:nowrap; }
+  .game-chip .mx{ font-size:9px; color:var(--text-soft); margin-top:2px; }
 
-  .stage{ display:flex; justify-content:center; align-items:center; padding:20px 0 6px; min-height:130px; }
-  .stage .piece{ font-size:70px; transition: transform .15s ease; }
-  .stage .piece.spin{ animation: pieceSpin 1.05s cubic-bezier(.2,.7,.2,1); }
+  .stage{
+    display:flex; justify-content:center; align-items:center; padding:26px 0 10px; min-height:150px; position:relative;
+  }
+  .stage-ring{
+    position:absolute; width:130px; height:130px; border-radius:50%; border:2px solid transparent; opacity:0;
+  }
+  .stage-ring.spinning{ opacity:1; border-top-color:var(--neon); border-right-color:var(--neon-glow); animation: ringSpin 1s linear infinite; }
+  @keyframes ringSpin{ to{ transform:rotate(360deg); } }
+
+  .piece{ font-size:66px; transition: transform .18s cubic-bezier(.3,.8,.3,1); }
+  .piece.spin{ animation: pieceSpin 1.1s cubic-bezier(.22,.75,.24,1); }
   @keyframes pieceSpin{
     0%{ transform: rotate(0deg) scale(1); }
-    50%{ transform: rotate(720deg) scale(1.15); }
-    100%{ transform: rotate(1080deg) scale(1); }
+    45%{ transform: rotate(680deg) scale(1.2); }
+    100%{ transform: rotate(1000deg) scale(1); }
+  }
+  .piece.shake{ animation: pieceShake 1.05s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes pieceShake{
+    0%,100%{ transform:translateX(0) rotate(0); }
+    15%{ transform:translateX(-10px) rotate(-12deg); }
+    30%{ transform:translateX(9px) rotate(10deg); }
+    45%{ transform:translateX(-8px) rotate(-9deg); }
+    60%{ transform:translateX(7px) rotate(7deg); }
+    75%{ transform:translateX(-4px) rotate(-4deg); }
+    90%{ transform:translateX(2px) rotate(2deg); }
   }
 
-  .result-pill{
-    text-align:center; font-size:13px; font-weight:800; padding:9px 14px; border-radius:12px;
-    margin:2px auto 0; max-width:280px; display:none;
+  /* dice number readout */
+  .die-face{
+    width:78px; height:78px; border-radius:20px; background:linear-gradient(160deg,#fff,#dfe9e2);
+    display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:#0d1811;
+    box-shadow: 0 10px 24px -10px rgba(0,0,0,.55);
   }
-  .result-pill.win{ display:block; background:rgba(23,232,143,.12); color:var(--neon); border:1px solid rgba(23,232,143,.35); }
-  .result-pill.lose{ display:block; background:rgba(255,90,90,.12); color:#ffb3b3; border:1px solid rgba(255,90,90,.35); }
+  .die-face.rolling{ animation: dieRoll .9s cubic-bezier(.3,.7,.3,1); }
+  @keyframes dieRoll{
+    0%{ transform: rotate(0deg) scale(1); }
+    50%{ transform: rotate(360deg) scale(1.1); }
+    100%{ transform: rotate(720deg) scale(1); }
+  }
+
+  /* slot reels */
+  .slots-wrap{ display:flex; gap:8px; }
+  .reel{
+    width:58px; height:78px; background:linear-gradient(160deg,var(--bg3),var(--bg2)); border:1.5px solid var(--border);
+    border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:32px; overflow:hidden;
+    position:relative;
+  }
+  .reel .sym{ transition: transform .1s linear; }
+  .reel.spinning .sym{ animation: reelSpin .12s linear infinite; }
+  @keyframes reelSpin{ from{ transform: translateY(0);} to{ transform: translateY(-14px);} }
+
+  /* wheel */
+  .wheel-wrap{ position:relative; width:130px; height:130px; }
+  .wheel-disc{
+    width:100%; height:100%; border-radius:50%;
+    background: conic-gradient(var(--neon) 0deg 60deg, var(--purple) 60deg 120deg, var(--gold) 120deg 180deg, var(--info) 180deg 240deg, var(--danger) 240deg 300deg, var(--neon-deep) 300deg 360deg);
+    display:flex; align-items:center; justify-content:center; font-size:30px;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,.55);
+    transition: transform 1.4s cubic-bezier(.15,.65,.15,1);
+  }
+  .wheel-pointer{ position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:20px; }
+
+  .result-pill{
+    text-align:center; font-size:13.5px; font-weight:800; padding:10px 14px; border-radius:13px;
+    margin:8px auto 0; max-width:290px; display:none; opacity:0; transform:translateY(6px);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .result-pill.show{ display:block; opacity:1; transform:translateY(0); }
+  .result-pill.win{ background:rgba(29,232,147,.13); color:var(--neon); border:1px solid rgba(29,232,147,.35); }
+  .result-pill.lose{ background:rgba(255,90,114,.13); color:#ffb3bf; border:1px solid rgba(255,90,114,.35); }
 
   .bet-row{ display:flex; align-items:center; gap:10px; margin-top:14px; }
   .bet-input-wrap{
-    flex:1; display:flex; align-items:center; gap:6px; background:var(--bg2); border:1.5px solid var(--border);
-    border-radius:14px; padding:0 14px;
+    flex:1; display:flex; align-items:center; gap:6px; background:var(--bg3); border:1.5px solid var(--border);
+    border-radius:14px; padding:0 14px; transition: border-color .15s ease;
   }
+  .bet-input-wrap:focus-within{ border-color:var(--neon); }
   .bet-input-wrap .cur{ color:var(--neon); font-weight:800; font-size:15px; }
   .bet-input-wrap input{
     flex:1; border:none; background:transparent; color:var(--text); font-family:'IBM Plex Mono',monospace;
@@ -100,22 +177,24 @@
   }
   .bet-input-wrap input:focus{ outline:none; }
   .chip-btn{
-    background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:10px;
+    background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:10px;
     padding:9px 12px; font-size:11.5px; font-weight:700; cursor:pointer; flex-shrink:0;
+    transition: transform .12s cubic-bezier(.3,.8,.3,1), border-color .15s ease;
   }
+  .chip-btn:active{ transform: scale(.93); }
   .chip-row{ display:flex; gap:8px; margin-top:10px; }
   .chip-row .chip-btn{ flex:1; }
 
   .btn{
     width:100%; border:none; border-radius:14px; padding:15px; font-family:'Inter',sans-serif; font-weight:800;
     font-size:14.5px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
-    transition: transform .12s ease, opacity .12s ease;
+    transition: transform .13s cubic-bezier(.3,.8,.3,1), opacity .12s ease, filter .12s ease;
   }
-  .btn:active{ transform: scale(.97); }
-  .btn.neon{ background: linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#04150c; }
-  .btn.ghost{ background:var(--bg2); color:var(--text); border:1px solid var(--border); }
-  .btn.danger{ background:rgba(255,90,90,.12); color:#ffb3b3; border:1px solid rgba(255,90,90,.3); }
-  .btn:disabled{ opacity:.5; cursor:default; }
+  .btn:active{ transform: scale(.965); }
+  .btn.neon{ background: linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#04150c; box-shadow: 0 10px 24px -12px var(--neon-glow); }
+  .btn.ghost{ background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+  .btn.danger{ background:rgba(255,90,114,.13); color:#ffb3bf; border:1px solid rgba(255,90,114,.3); }
+  .btn:disabled{ opacity:.5; cursor:default; transform:none; }
 
   .rules-line{ display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:8px 0; border-bottom:1px solid var(--border); }
   .rules-line:last-of-type{ border-bottom:none; }
@@ -125,20 +204,22 @@
   .field{ margin-bottom:12px; }
   .field label{ font-size:10.5px; color:var(--text-soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
   .field input, .field textarea{
-    width:100%; margin-top:6px; border:1.5px solid var(--border); background:var(--bg2);
+    width:100%; margin-top:6px; border:1.5px solid var(--border); background:var(--bg3);
     border-radius:12px; padding:11px 12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:var(--text);
+    transition: border-color .15s ease;
   }
+  .field input:focus, .field textarea:focus{ outline:none; border-color:var(--neon); }
   .field textarea{ resize:vertical; }
   .row2{ display:flex; gap:10px; }
   .row2 .field{ flex:1; }
 
-  .stat-tile{ background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px; text-align:center; }
+  .stat-tile{ background:var(--bg3); border:1px solid var(--border); border-radius:14px; padding:12px; text-align:center; }
   .stat-tile .n{ font-size:17px; font-weight:900; }
   .stat-tile .l{ font-size:9px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; font-weight:700; }
   .stat-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
 
   .ref-link-box{
-    display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border);
+    display:flex; align-items:center; gap:8px; background:var(--bg3); border:1px solid var(--border);
     border-radius:12px; padding:11px 12px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
     overflow-x:auto; white-space:nowrap; margin-top:8px;
   }
@@ -146,53 +227,75 @@
   .list-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
   .list-row:last-child{ border-bottom:none; }
   .list-row .rank{ width:26px; text-align:center; font-weight:800; color:var(--text-soft); }
-  .list-row.you{ background:rgba(23,232,143,.06); border-radius:10px; padding-left:6px; }
+  .list-row.you{ background:rgba(29,232,147,.07); border-radius:10px; padding-left:6px; }
   .badge{ font-size:9.5px; font-weight:800; padding:3px 8px; border-radius:8px; }
-  .badge.on{ background:rgba(23,232,143,.15); color:var(--neon); }
-  .badge.off{ background:rgba(255,90,90,.15); color:#ffb3b3; }
+  .badge.on{ background:rgba(29,232,147,.16); color:var(--neon); }
+  .badge.off{ background:rgba(255,90,114,.16); color:#ffb3bf; }
+
+  /* admin game row + toggle switch */
+  .admin-game-row{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+  .admin-game-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .admin-game-head .nm{ font-weight:800; flex:1; }
+  .switch{ position:relative; width:42px; height:24px; flex-shrink:0; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .track{
+    position:absolute; inset:0; background:var(--bg3); border:1px solid var(--border); border-radius:999px; cursor:pointer;
+    transition: background .2s ease;
+  }
+  .switch .track::before{
+    content:''; position:absolute; width:18px; height:18px; left:2px; top:2px; background:#fff; border-radius:50%;
+    transition: transform .2s cubic-bezier(.3,.8,.3,1); box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  }
+  .switch input:checked + .track{ background: linear-gradient(135deg,var(--neon),var(--neon-deep)); border-color:transparent; }
+  .switch input:checked + .track::before{ transform: translateX(18px); }
 
   .sheet-overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:90; opacity:0; pointer-events:none; transition:opacity .2s ease;
+    position:fixed; inset:0; background:rgba(0,0,0,.62); z-index:90; opacity:0; pointer-events:none; transition:opacity .25s ease;
+    backdrop-filter: blur(2px);
   }
   .sheet-overlay.show{ opacity:1; pointer-events:auto; }
   .sheet{
     position:fixed; left:0; right:0; bottom:0; background:var(--bg1); border-top:1px solid var(--border);
-    border-radius:22px 22px 0 0; padding:20px 18px calc(24px + env(safe-area-inset-bottom)); z-index:91;
-    transform:translateY(100%); transition:transform .25s cubic-bezier(.2,.8,.2,1); max-height:82vh; overflow-y:auto;
+    border-radius:24px 24px 0 0; padding:20px 18px calc(24px + env(safe-area-inset-bottom)); z-index:91;
+    transform:translateY(100%); transition:transform .3s cubic-bezier(.16,.8,.24,1); max-height:82vh; overflow-y:auto;
   }
   .sheet.show{ transform:translateY(0); }
   .sheet .handle{ width:36px; height:4px; background:var(--border); border-radius:3px; margin:0 auto 16px; }
   .sheet h3{ font-size:15px; font-weight:800; margin:0 0 14px; }
 
   .toast{
-    position:fixed; left:16px; right:16px; top:20px; background:var(--bg2); border:1px solid var(--border);
+    position:fixed; left:16px; right:16px; top:18px; background:var(--bg2); border:1px solid var(--border);
     color:var(--text); padding:13px 16px; border-radius:16px; font-size:13px; font-weight:600;
-    opacity:0; pointer-events:none; transform:translateY(-12px); transition: opacity .2s ease, transform .2s ease;
-    z-index:120; text-align:left; line-height:1.5; box-shadow: 0 12px 28px -10px rgba(0,0,0,.6);
+    opacity:0; pointer-events:none; transform:translateY(-16px) scale(.98); transition: opacity .25s cubic-bezier(.2,.8,.2,1), transform .25s cubic-bezier(.2,.8,.2,1);
+    z-index:120; text-align:left; line-height:1.5; box-shadow: 0 16px 32px -12px rgba(0,0,0,.65);
   }
-  .toast.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
-  .toast.err{ border-color: rgba(255,90,90,.5); color:#ffb3b3; }
+  .toast.show{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+  .toast.err{ border-color: rgba(255,90,114,.5); color:#ffb3bf; }
 
   .tabbar{
-    position:fixed; left:0; right:0; bottom:0; background:var(--bg1); border-top:1px solid var(--border);
-    display:flex; padding:8px 6px calc(6px + env(safe-area-inset-bottom)); z-index:60;
+    position:fixed; left:0; right:0; bottom:0; background: rgba(11,23,18,.92); backdrop-filter: blur(10px);
+    border-top:1px solid var(--border); display:flex; padding:8px 6px calc(6px + env(safe-area-inset-bottom)); z-index:60;
   }
   .tab{
     flex:1; background:none; border:none; color:var(--text-soft); font-size:10px; font-weight:700;
     display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; cursor:pointer;
+    transition: color .15s ease, transform .12s cubic-bezier(.3,.8,.3,1);
   }
-  .tab .ic{ font-size:18px; }
+  .tab:active{ transform: scale(.9); }
+  .tab .ic{ font-size:18px; transition: transform .15s cubic-bezier(.3,.8,.3,1); }
   .tab.active{ color:var(--neon); }
+  .tab.active .ic{ transform: translateY(-2px); }
 
   .view{ display:none; }
-  .view.active{ display:block; }
+  .view.active{ display:block; animation: viewIn .28s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes viewIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
 
   .empty{ text-align:center; padding:60px 16px; }
   .empty .t{ font-size:18px; font-weight:800; margin-bottom:8px; }
   .empty p{ color:var(--text-soft); font-size:13.5px; line-height:1.5; }
 
   .skel{
-    background: linear-gradient(90deg, var(--bg2) 25%, var(--border) 37%, var(--bg2) 63%);
+    background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 37%, var(--bg3) 63%);
     background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite; border-radius:8px; color:transparent !important;
   }
   @keyframes skel-shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
@@ -216,7 +319,7 @@
   <div class="card bal-card">
     <div>
       <div class="lbl">Balance</div>
-      <div class="amt"><span class="cur">₹</span><span class="mono" id="balanceAmt">0.00</span></div>
+      <div class="amt" id="balanceWrap"><span class="cur">₹</span><span class="mono" id="balanceAmt">0.00</span></div>
     </div>
     <div class="bal-actions">
       <button class="pill-btn" id="bonusBtn">🎁 Bonus</button>
@@ -224,18 +327,14 @@
     </div>
   </div>
 
-  <div class="segtabs" id="segtabs">
-    <div class="seg active" data-view="game">🎮 Game</div>
-    <div class="seg" data-view="earn">👫 Earn</div>
-    <div class="seg" data-view="gift">🎁 Gift</div>
-    <div class="seg" data-view="rank">🏆 Rank</div>
-  </div>
-
   <!-- ===== GAME VIEW ===== -->
   <div class="view active" id="view-game">
     <div class="card">
       <div class="game-picker" id="gamePicker"></div>
-      <div class="stage"><div class="piece" id="piece">🪙</div></div>
+      <div class="stage" id="stage">
+        <div class="stage-ring" id="stageRing"></div>
+        <div class="piece" id="piece">🪙</div>
+      </div>
       <div class="result-pill" id="resultPill"></div>
 
       <div class="bet-row">
@@ -260,7 +359,7 @@
       <div class="rules-line"><span class="k">Maximum bet</span><span class="v" id="ruleMax">—</span></div>
       <div class="rules-line"><span class="k">Win multiplier</span><span class="v" id="ruleMulti">—</span></div>
       <p style="font-size:11px; color:var(--text-soft); margin:10px 0 0; line-height:1.5;">
-        A flip/roll/scratch costs your bet. Win and you get your bet back plus a bonus; lose and the bet is deducted. Play responsibly.
+        A play costs your bet. Win and you get your bet back plus a bonus; lose and the bet is deducted. Play responsibly.
       </p>
     </div>
   </div>
@@ -316,7 +415,7 @@
     </div>
 
     <div class="card">
-      <h3>Game settings</h3>
+      <h3>Games — on/off &amp; payout settings</h3>
       <div id="adminGamesList"></div>
       <button class="btn neon" id="saveGamesBtn" style="margin-top:6px;">💾 Save game settings</button>
     </div>
@@ -408,7 +507,7 @@
 <script>
 (function(){
   const tg = window.Telegram ? window.Telegram.WebApp : null;
-  if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0d1811'); }catch(e){} }
+  if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0b1712'); }catch(e){} }
 
   const params = new URLSearchParams(location.search);
   let botId = params.get('botid');
@@ -474,7 +573,7 @@
   function playChime(win){
     try{
       const ctx = ensureAudio(); const now = ctx.currentTime;
-      const notes = win ? [660, 880, 1320] : [440, 320];
+      const notes = win ? [660, 880, 1320] : [420, 300];
       notes.forEach((freq,i)=>{
         const osc = ctx.createOscillator(); const gain = ctx.createGain();
         osc.type = win ? 'sine' : 'sawtooth'; osc.frequency.value = freq;
@@ -486,23 +585,24 @@
   }
   function celebrate(){
     playChime(true);
-    const colors = ['#17e88f','#ffcf4d','#5fd8ff','#e08bff'];
-    for (let i=0;i<18;i++){
+    const colors = ['#1de893','#ffcf4d','#5fb0ff','#b98bff'];
+    for (let i=0;i<20;i++){
       const p = document.createElement('div');
       const size = 6 + Math.random()*5;
-      p.style.cssText = `position:fixed; left:50%; top:32%; width:${size}px; height:${size}px; border-radius:2px; background:${colors[i%colors.length]}; z-index:110; pointer-events:none;`;
+      p.style.cssText = `position:fixed; left:50%; top:30%; width:${size}px; height:${size}px; border-radius:2px; background:${colors[i%colors.length]}; z-index:110; pointer-events:none;`;
       document.body.appendChild(p);
-      const angle = Math.random()*Math.PI*2, dist = 80 + Math.random()*140;
-      const dx = Math.cos(angle)*dist, dy = Math.sin(angle)*dist - 40, rot = (Math.random()*720-360);
+      const angle = Math.random()*Math.PI*2, dist = 90 + Math.random()*150;
+      const dx = Math.cos(angle)*dist, dy = Math.sin(angle)*dist - 50, rot = (Math.random()*720-360);
       p.animate([{ transform:'translate(0,0) rotate(0deg)', opacity:1 }, { transform:`translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity:0 }],
-        { duration: 900+Math.random()*400, easing:'cubic-bezier(.2,.7,.3,1)' });
-      setTimeout(()=>p.remove(), 1400);
+        { duration: 950+Math.random()*450, easing:'cubic-bezier(.16,.8,.24,1)' });
+      setTimeout(()=>p.remove(), 1500);
     }
   }
   document.addEventListener('click', (e) => { if (e.target.closest('button')) tick(); });
 
   function countUp(el, to){
     const from = parseFloat(el.textContent) || 0, dur = 500, start = performance.now();
+    $('balanceWrap').classList.remove('bump'); void $('balanceWrap').offsetWidth; $('balanceWrap').classList.add('bump');
     function step(now){
       const p = Math.min(1, (now-start)/dur);
       const eased = 1 - Math.pow(1-p, 3);
@@ -571,30 +671,35 @@
     try{
       const g = await callApi('game_list');
       games = g.games || [];
-      if (!activeGameId && games.length) activeGameId = games[0].id;
+      if (!games.find(x=>x.id===activeGameId)) activeGameId = games.length ? games[0].id : null;
       renderGamePicker();
       renderGameRules();
+      renderStageForGame();
+      if (!games.length){
+        $('playBtn').disabled = true;
+        $('playBtn').textContent = 'No games available right now';
+      } else {
+        $('playBtn').disabled = false;
+        $('playBtn').textContent = '▶️ Play';
+      }
     } catch(e){ toast(e.message || "Couldn't load games", true); }
   }
 
   function renderGamePicker(){
     $('gamePicker').innerHTML = games.map(g => `
       <div class="game-chip ${g.id===activeGameId?'active':''}" data-game="${g.id}">
-        <div class="ic">${g.emoji}</div>
+        <span class="ic">${g.emoji}</span>
         <div class="nm">${escapeHtml(g.name)}</div>
-        <div class="mx">${g.multiplier}x payout</div>
+        <div class="mx">${g.multiplier}x</div>
       </div>`).join('');
     document.querySelectorAll('.game-chip').forEach(el => {
       el.addEventListener('click', () => {
         activeGameId = el.getAttribute('data-game');
         renderGamePicker();
         renderGameRules();
-        const g = games.find(x=>x.id===activeGameId);
-        $('piece').textContent = g ? g.emoji : '🪙';
+        renderStageForGame();
       });
     });
-    const g = games.find(x=>x.id===activeGameId);
-    if (g) $('piece').textContent = g.emoji;
   }
 
   function renderGameRules(){
@@ -606,6 +711,38 @@
     $('betInput').placeholder = `Min ₹${g.min_bet} — Max ₹${g.max_bet}`;
   }
 
+  // ---------- Stage rendering per game type ----------
+  const SLOT_SYMS = ['🍒','🍋','🍇','⭐','💎','7️⃣'];
+
+  function renderStageForGame(){
+    const stage = $('stage');
+    const g = games.find(x=>x.id===activeGameId);
+    const gid = g ? g.id : 'flip';
+    // clear stage except the ring
+    stage.querySelectorAll('.piece, .die-face, .slots-wrap, .wheel-wrap').forEach(n => n.remove());
+
+    if (gid === 'dice'){
+      const el = document.createElement('div');
+      el.className = 'die-face'; el.id = 'piece'; el.textContent = '?';
+      stage.appendChild(el);
+    } else if (gid === 'slots'){
+      const wrap = document.createElement('div');
+      wrap.className = 'slots-wrap'; wrap.id = 'piece';
+      wrap.innerHTML = `<div class="reel"><span class="sym">🍒</span></div><div class="reel"><span class="sym">🍋</span></div><div class="reel"><span class="sym">⭐</span></div>`;
+      stage.appendChild(wrap);
+    } else if (gid === 'wheel'){
+      const wrap = document.createElement('div');
+      wrap.className = 'wheel-wrap'; wrap.id = 'piece';
+      wrap.innerHTML = `<div class="wheel-pointer">🔻</div><div class="wheel-disc" id="wheelDisc">🎡</div>`;
+      stage.appendChild(wrap);
+    } else {
+      const el = document.createElement('div');
+      el.className = 'piece'; el.id = 'piece';
+      el.textContent = g ? g.emoji : '🪙';
+      stage.appendChild(el);
+    }
+  }
+
   document.querySelectorAll('[data-chip]').forEach(btn => {
     btn.addEventListener('click', () => { $('betInput').value = btn.getAttribute('data-chip'); });
   });
@@ -614,6 +751,64 @@
     const bal = dash ? Number(dash.balance||0) : 0;
     $('betInput').value = g ? Math.min(bal, g.max_bet).toFixed(2) : bal.toFixed(2);
   });
+
+  function playStageAnimation(gid){
+    // Returns a Promise resolving after the animation runs, purely visual.
+    return new Promise(resolve => {
+      const ring = $('stageRing');
+      ring.classList.add('spinning');
+
+      if (gid === 'dice'){
+        const el = $('piece');
+        el.classList.remove('rolling'); void el.offsetWidth; el.classList.add('rolling');
+        let n = 0;
+        const iv = setInterval(() => { el.textContent = String(1 + Math.floor(Math.random()*6)); }, 90);
+        setTimeout(() => { clearInterval(iv); ring.classList.remove('spinning'); resolve(); }, 900);
+      } else if (gid === 'slots'){
+        const reels = document.querySelectorAll('#piece .reel');
+        reels.forEach(r => r.classList.add('spinning'));
+        const ivs = Array.from(reels).map(r => setInterval(() => {
+          r.querySelector('.sym').textContent = SLOT_SYMS[Math.floor(Math.random()*SLOT_SYMS.length)];
+        }, 80));
+        setTimeout(() => {
+          ivs.forEach(iv => clearInterval(iv));
+          reels.forEach(r => r.classList.remove('spinning'));
+          ring.classList.remove('spinning');
+          resolve();
+        }, 1000);
+      } else if (gid === 'wheel'){
+        const disc = $('wheelDisc');
+        const spins = 4 + Math.random()*2;
+        disc.style.transform = `rotate(${spins*360 + Math.floor(Math.random()*360)}deg)`;
+        setTimeout(() => { ring.classList.remove('spinning'); resolve(); }, 1300);
+      } else if (gid === 'scratch'){
+        const el = $('piece');
+        el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin');
+        setTimeout(() => { ring.classList.remove('spinning'); resolve(); }, 1000);
+      } else {
+        const el = $('piece');
+        el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin');
+        setTimeout(() => { ring.classList.remove('spinning'); resolve(); }, 1000);
+      }
+    });
+  }
+
+  function showStageResult(gid, win, emoji){
+    const el = $('piece');
+    if (gid === 'dice'){
+      el.textContent = win ? '🎯' : String(1 + Math.floor(Math.random()*6));
+    } else if (gid === 'slots'){
+      const reels = document.querySelectorAll('#piece .reel .sym');
+      if (win){ reels.forEach(r => r.textContent = '7️⃣'); }
+      else { reels.forEach(r => r.textContent = SLOT_SYMS[Math.floor(Math.random()*SLOT_SYMS.length)]); }
+    } else if (gid === 'wheel'){
+      // wheel piece stays as-is; just shake container slightly on loss
+      if (!win) el.animate([{transform:'scale(1)'},{transform:'scale(0.97)'},{transform:'scale(1)'}], {duration:250});
+    } else {
+      el.textContent = win ? '🎉' : emoji;
+      if (!win){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+    }
+  }
 
   $('playBtn').addEventListener('click', async () => {
     const g = games.find(x=>x.id===activeGameId);
@@ -629,34 +824,28 @@
     btn.disabled = true;
     $('resultPill').className = 'result-pill';
     $('resultPill').textContent = '';
-    const piece = $('piece');
-    piece.classList.remove('spin');
-    void piece.offsetWidth;
-    piece.classList.add('spin');
 
     try{
       const [r] = await Promise.all([
         callApi('game_play', { game: g.id, bet }),
-        new Promise(res => setTimeout(res, 1050))
+        playStageAnimation(g.id)
       ]);
       dash.balance = Number(r.balance || 0);
       countUp($('balanceAmt'), dash.balance);
+      showStageResult(g.id, r.win, g.emoji);
       const pill = $('resultPill');
       if (r.win){
-        piece.textContent = '🎉';
-        pill.className = 'result-pill win';
+        pill.className = 'result-pill win show';
         pill.textContent = `🎉 You won ₹${Number(r.profit).toFixed(2)}!`;
         celebrate();
         tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
       } else {
-        piece.textContent = g.emoji;
-        pill.className = 'result-pill lose';
+        pill.className = 'result-pill lose show';
         pill.textContent = `😬 You lost ₹${Math.abs(Number(r.profit)).toFixed(2)}`;
         playChime(false);
         tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error');
       }
     } catch(e){
-      piece.textContent = g.emoji;
       toast(e.message || 'Could not play right now', true);
     } finally {
       btn.disabled = false;
@@ -724,7 +913,7 @@
           <div style="flex:1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">${escapeHtml(row.user_id)}${row.is_you?' (You)':''}</div>
           <div style="font-weight:800;">${row.referrals} refs</div>
         </div>`).join('');
-    } catch(e){ $('leaderboardList').innerHTML = `<p style="color:#ffb3b3; font-size:13px;">${escapeHtml(e.message||'Failed to load')}</p>`; }
+    } catch(e){ $('leaderboardList').innerHTML = `<p style="color:#ffb3bf; font-size:13px;">${escapeHtml(e.message||'Failed to load')}</p>`; }
   }
 
   // ---------- Withdraw sheet ----------
@@ -740,14 +929,12 @@
   });
   $('withdrawOverlay').addEventListener('click', () => closeSheet('withdrawOverlay','withdrawSheet'));
 
-  let lastQuote = null;
   $('withdrawQuoteBtn').addEventListener('click', async () => {
     const amount = parseFloat($('withdrawAmt').value);
     if (!amount || amount <= 0){ toast('Enter a valid amount', true); return; }
     const btn = $('withdrawQuoteBtn'); btn.disabled = true;
     try{
       const q = await callApi('withdraw_quote', { amount });
-      lastQuote = q;
       $('wNet').textContent = '₹' + q.net_amount;
       $('wWallet').textContent = q.wallet;
       $('gatewayList').innerHTML = (q.gateways||[]).map(gw => `
@@ -806,8 +993,15 @@
       $('adminTax').value = s.tax_percent ?? '';
 
       $('adminGamesList').innerHTML = (s.games||[]).map(g => `
-        <div style="margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border);" data-gid="${g.id}">
-          <div style="font-weight:800; margin-bottom:8px;">${g.emoji} ${escapeHtml(g.name)}</div>
+        <div class="admin-game-row" data-gid="${g.id}">
+          <div class="admin-game-head">
+            <span style="font-size:20px;">${g.emoji}</span>
+            <span class="nm">${escapeHtml(g.name)}</span>
+            <label class="switch">
+              <input type="checkbox" class="g-enabled" ${g.enabled ? 'checked' : ''} />
+              <span class="track"></span>
+            </label>
+          </div>
           <div class="row2">
             <div class="field"><label>Min bet</label><input class="g-min" type="number" value="${g.min_bet}" /></div>
             <div class="field"><label>Max bet</label><input class="g-max" type="number" value="${g.max_bet}" /></div>
@@ -817,6 +1011,15 @@
             <div class="field"><label>Payout multiplier</label><input class="g-multi" type="number" step="0.1" value="${g.multiplier}" /></div>
           </div>
         </div>`).join('');
+
+      // Instant toggle on/off (no need to hit Save for this part)
+      document.querySelectorAll('.g-enabled').forEach(cb => {
+        cb.addEventListener('change', async () => {
+          const gid = cb.closest('[data-gid]').getAttribute('data-gid');
+          try{ await callApi('admin_toggle_game', { id: gid }); toast(cb.checked ? `${gid} enabled` : `${gid} disabled`); await loadGames(); }
+          catch(e){ cb.checked = !cb.checked; toast(e.message || 'Failed', true); }
+        });
+      });
 
       const stats = await callApi('admin_stats');
       $('adminStats').innerHTML = `
@@ -856,7 +1059,8 @@
         min_bet: block.querySelector('.g-min').value,
         max_bet: block.querySelector('.g-max').value,
         win_chance: block.querySelector('.g-chance').value,
-        multiplier: block.querySelector('.g-multi').value
+        multiplier: block.querySelector('.g-multi').value,
+        enabled: block.querySelector('.g-enabled').checked
       });
     });
     const btn = $('saveGamesBtn'); btn.disabled = true;
@@ -919,10 +1123,9 @@
     finally { btn.disabled = false; }
   });
 
-  // ---------- Tab switching (segmented + bottom tabbar stay in sync) ----------
+  // ---------- Single nav: bottom tabbar only ----------
   function switchView(view){
     if (view === 'admin' && !isAdmin) return;
-    document.querySelectorAll('.seg').forEach(s => s.classList.toggle('active', s.getAttribute('data-view')===view));
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-view')===view));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     $('view-' + view).classList.add('active');
@@ -930,7 +1133,6 @@
     if (view === 'rank') loadLeaderboard();
     if (view === 'admin') loadAdmin();
   }
-  document.querySelectorAll('.seg').forEach(el => el.addEventListener('click', () => switchView(el.getAttribute('data-view'))));
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchView(el.getAttribute('data-view'))));
 
   $('backBtn').addEventListener('click', () => { if (tg && tg.close) tg.close(); else history.back(); });
