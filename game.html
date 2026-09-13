@@ -356,6 +356,10 @@
   .empty{ text-align:center; padding:60px 16px; }
   .empty .t{ font-size:18px; font-weight:800; margin-bottom:8px; }
   .empty p{ color:var(--text-soft); font-size:13.5px; line-height:1.5; }
+  .gate-ic{
+    width:64px; height:64px; margin:0 auto 18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid rgba(29,232,147,.4); background: radial-gradient(circle, rgba(29,232,147,.14), transparent 70%); color:var(--neon);
+  }
 
   .skel{
     background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 37%, var(--bg3) 63%);
@@ -750,6 +754,41 @@
       </div>`;
   }
 
+  function normalizeChannel(c){
+    if (typeof c === 'string'){
+      const handle = c.replace(/^@/, '');
+      return { name: c, url: c.startsWith('http') ? c : `https://t.me/${handle}` };
+    }
+    const name = c.name || c.title || c.username || 'Channel';
+    const url = c.url || c.link || (c.username ? `https://t.me/${String(c.username).replace(/^@/, '')}` : '#');
+    return { name, url };
+  }
+
+  function renderVerifyGate(d){
+    $('app').style.display = 'none';
+    $('tabbarWrap').style.display = 'none';
+    $('emptyState').style.display = 'block';
+    const channels = (d.join_needed || []).map(normalizeChannel);
+    const channelBtns = channels.map(c => `
+      <a class="btn ghost" href="${escapeHtml(c.url)}" target="_blank" rel="noopener"
+         style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; margin-bottom:10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+        Join ${escapeHtml(c.name)}
+      </a>`).join('');
+    $('emptyState').innerHTML = `
+      <div class="empty">
+        <div class="gate-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+        <div class="t">One quick step left</div>
+        <p>${d.verify_needed ? 'Please complete verification in the bot chat, then tap refresh below.' : 'Join the required channel(s) below, then tap refresh.'}</p>
+        <div style="margin-top:18px; text-align:left;">${channelBtns}</div>
+        <button class="btn neon" id="gateRefreshBtn" style="margin-top:4px;">I've done this — Refresh</button>
+      </div>`;
+    $('gateRefreshBtn').addEventListener('click', () => {
+      const btn = $('gateRefreshBtn'); btn.disabled = true; btn.textContent = 'Checking…';
+      loadDashboard();
+    });
+  }
+
   let dash = null;
   let games = [];
   let activeGameId = null;
@@ -773,9 +812,11 @@
     try{
       const d = await callApi('dashboard');
       if (d.banned){ renderEmpty('Your account has been banned from this bot.'); return; }
+      if ((d.join_needed && d.join_needed.length) || d.verify_needed){ renderVerifyGate(d); return; }
       dash = d;
       isAdmin = !!d.is_admin;
 
+      $('emptyState').style.display = 'none';
       $('app').style.display = 'block';
       $('tabbarWrap').style.display = 'flex';
       $('botNameTitle').textContent = '👑 ' + (d.bot_name || 'Loot Games');
@@ -799,10 +840,6 @@
       if (d.tier) $('statTier').textContent = d.tier.emoji + ' ' + d.tier.name;
 
       $('adminTabBtn').style.display = isAdmin ? 'flex' : 'none';
-
-      if ((d.join_needed && d.join_needed.length) || d.verify_needed){
-        toast('Please complete verification / join required channels in the bot chat first', true);
-      }
 
       await loadGames();
     } catch(e){
