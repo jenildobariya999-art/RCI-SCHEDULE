@@ -318,6 +318,20 @@
   .wd-summary .w{ font-size:12.5px; color:var(--text-soft); font-family:'IBM Plex Mono',monospace; }
 
   .gw-label{ font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800; margin-bottom:10px; display:block; }
+  .diag-row{
+    display:flex; align-items:flex-start; gap:11px; padding:12px 13px; border-radius:14px; background:var(--bg2);
+    border:1px solid var(--border); margin-bottom:9px;
+  }
+  .diag-row.ok{ border-color:rgba(29,232,147,.35); }
+  .diag-row.bad{ border-color:rgba(255,90,114,.4); }
+  .diag-row .diag-dot{ width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+  .diag-row.ok .diag-dot{ background:var(--neon); box-shadow:0 0 0 3px rgba(29,232,147,.2); }
+  .diag-row.bad .diag-dot{ background:#ff5a72; box-shadow:0 0 0 3px rgba(255,90,114,.2); }
+  .diag-row .diag-body{ flex:1; min-width:0; }
+  .diag-row .diag-name{ font-weight:700; font-size:13px; word-break:break-word; }
+  .diag-row .diag-meta{ font-size:11px; color:var(--text-soft); margin-top:3px; line-height:1.5; word-break:break-word; }
+  .diag-row .diag-meta code{ background:var(--bg3); padding:1px 5px; border-radius:5px; font-size:10.5px; }
+
   .gw-option{
     display:flex; align-items:center; gap:13px; padding:14px 15px; border-radius:16px; background:var(--bg2);
     border:1.5px solid var(--border); margin-bottom:10px; cursor:pointer;
@@ -592,6 +606,12 @@
   <!-- ===== ADMIN VIEW (admin only) ===== -->
   <div class="view" id="view-admin">
     <div class="card">
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span>Channel diagnostics</h3>
+      <p style="font-size:12px; color:var(--text-soft); margin:0 0 12px; line-height:1.5;">Checks each required channel against your own account — shows the exact status Telegram reports, and any error (e.g. bot not admin).</p>
+      <button class="btn ghost" id="checkChannelsBtn">Check my channel status</button>
+      <div id="channelDiagList" style="margin-top:14px;"></div>
+    </div>
+    <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
       <div class="stat-grid" id="adminStats">
         <div class="stat-tile"><div class="n skel">0</div><div class="l">Members</div></div>
@@ -617,15 +637,6 @@
       <div class="field"><label>Tax %</label><input id="adminTax" type="text" /></div></div>
       <div class="field"><label>Payout channel (@username or chat id)</label><input id="adminPayoutCh" type="text" /></div>
       <button class="btn neon" id="saveSettingsBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></span> Save settings</button>
-    </div>
-
-    <div class="card">
-      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>Channel access check</h3>
-      <p style="font-size:11.5px; color:var(--text-soft); margin:0 0 12px; line-height:1.5;">
-        If users say "join channel" never clears even after joining, run this. It shows exactly what the bot sees for <b>your own</b> account on each required channel.
-      </p>
-      <button class="btn ghost" id="checkChannelsBtn">Check my channel access</button>
-      <div id="channelCheckList" style="margin-top:12px;"></div>
     </div>
 
     <div class="card">
@@ -1419,26 +1430,29 @@
 
   $('checkChannelsBtn').addEventListener('click', async () => {
     const btn = $('checkChannelsBtn'); btn.disabled = true; btn.textContent = 'Checking…';
+    $('channelDiagList').innerHTML = '<div class="skel" style="height:80px;"></div>';
     try{
       const r = await callApi('admin_check_channels');
       const rows = r.channels || [];
       if (!rows.length){
-        $('channelCheckList').innerHTML = '<p style="color:var(--text-soft); font-size:12.5px;">No join-channels are configured for this bot.</p>';
+        $('channelDiagList').innerHTML = '<p style="font-size:12.5px; color:var(--text-soft);">No required channels configured.</p>';
       } else {
-        $('channelCheckList').innerHTML = rows.map(c => `
-          <div class="list-row">
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:800; font-size:13px;">${escapeHtml(c.name)}</div>
-              <div class="mono" style="font-size:10.5px; color:var(--text-soft); word-break:break-all;">chat_id: ${escapeHtml(c.chat_id)}</div>
-              <div class="mono" style="font-size:10.5px; color:var(--text-soft); word-break:break-all;">${escapeHtml(c.link)}</div>
-              ${c.error ? `<div style="font-size:10.5px; color:#ffb3bf; margin-top:2px;">Error: ${escapeHtml(c.error)}</div>` : ''}
-            </div>
-            <span class="badge ${c.ok ? 'on' : 'off'}">${escapeHtml(c.your_status)}</span>
-          </div>`).join('');
+        $('channelDiagList').innerHTML = `<p style="font-size:11px; color:var(--text-soft); margin-bottom:10px;">Checked as your ID: <code>${escapeHtml(r.your_id)}</code></p>` +
+          rows.map(c => `
+            <div class="diag-row ${c.ok ? 'ok' : 'bad'}">
+              <div class="diag-dot"></div>
+              <div class="diag-body">
+                <div class="diag-name">${escapeHtml(c.name)}</div>
+                <div class="diag-meta">
+                  Chat ID: <code>${escapeHtml(c.chat_id)}</code><br/>
+                  Your status: <code>${escapeHtml(c.your_status)}</code>${c.error ? ` — ${escapeHtml(c.error)}` : ''}<br/>
+                  Link: <span style="word-break:break-all;">${escapeHtml(c.link)}</span>
+                </div>
+              </div>
+            </div>`).join('');
       }
-      toast(`Checked as your ID ${r.your_id}`);
-    } catch(e){ toast(e.message || 'Check failed', true); $('channelCheckList').innerHTML = ''; }
-    finally { btn.disabled = false; btn.textContent = 'Check my channel access'; }
+    } catch(e){ $('channelDiagList').innerHTML = `<p style="font-size:12.5px; color:#ffb3bf;">${escapeHtml(e.message || 'Check failed')}</p>`; }
+    finally { btn.disabled = false; btn.textContent = 'Check my channel status'; }
   });
 
   $('createGiftBtn').addEventListener('click', async () => {
