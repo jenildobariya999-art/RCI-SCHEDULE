@@ -305,6 +305,38 @@
   .sheet.show{ transform:translateY(0); }
   .sheet .handle{ width:36px; height:4px; background:var(--border); border-radius:3px; margin:0 auto 16px; }
   .sheet h3{ font-size:15px; font-weight:800; margin:0 0 14px; }
+  .sheet.sheet-lg{ padding:24px 20px calc(28px + env(safe-area-inset-bottom)); max-height:88vh; min-height:52vh; }
+  .sheet.sheet-lg .handle{ width:42px; margin-bottom:18px; }
+  .sheet.sheet-lg h3{ font-size:18px; margin-bottom:18px; }
+
+  .wd-summary{
+    background: linear-gradient(160deg, var(--bg2), var(--bg1) 80%); border:1px solid var(--border);
+    border-radius:18px; padding:18px; text-align:center; margin-bottom:18px;
+  }
+  .wd-summary .l{ font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-soft); font-weight:800; }
+  .wd-summary .v{ font-size:30px; font-weight:900; color:var(--neon); margin:6px 0 10px; letter-spacing:-.01em; }
+  .wd-summary .w{ font-size:12.5px; color:var(--text-soft); font-family:'IBM Plex Mono',monospace; }
+
+  .gw-label{ font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800; margin-bottom:10px; display:block; }
+  .gw-option{
+    display:flex; align-items:center; gap:13px; padding:14px 15px; border-radius:16px; background:var(--bg2);
+    border:1.5px solid var(--border); margin-bottom:10px; cursor:pointer;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .gw-option:active{ transform: scale(.98); }
+  .gw-option.selected{ border-color:var(--neon); background: linear-gradient(160deg, rgba(29,232,147,.14), rgba(29,232,147,.03)); }
+  .gw-option .gw-ic{
+    width:42px; height:42px; border-radius:13px; background:var(--bg3); color:var(--neon); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; letter-spacing:-.02em;
+  }
+  .gw-option .gw-name{ flex:1; font-weight:700; font-size:14.5px; }
+  .gw-option .gw-check{
+    width:23px; height:23px; border-radius:50%; border:1.5px solid var(--border); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; transition: background .15s ease, border-color .15s ease;
+  }
+  .gw-option.selected .gw-check{ background:var(--neon); border-color:var(--neon); }
+  .gw-option .gw-check svg{ width:13px; height:13px; stroke:#04150c; opacity:0; transition:opacity .1s ease; }
+  .gw-option.selected .gw-check svg{ opacity:1; }
 
   .toast{
     position:fixed; left:16px; right:16px; top:18px; background:var(--bg2); border:1px solid var(--border);
@@ -623,20 +655,22 @@
 
 <!-- Withdraw sheet -->
 <div class="sheet-overlay" id="withdrawOverlay"></div>
-<div class="sheet" id="withdrawSheet">
+<div class="sheet sheet-lg" id="withdrawSheet">
   <div class="handle"></div>
   <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>Withdraw</h3>
   <div id="withdrawStepAmount">
     <div class="field"><label>Amount (₹)</label><input id="withdrawAmt" type="number" placeholder="Enter amount" /></div>
-    <button class="btn neon" id="withdrawQuoteBtn">Continue</button>
+    <button class="btn neon big" id="withdrawQuoteBtn">Continue</button>
   </div>
   <div id="withdrawStepGateway" style="display:none;">
-    <div class="rules-line"><span class="k">You'll receive</span><span class="v" id="wNet">—</span></div>
-    <div class="rules-line"><span class="k">Wallet</span><span class="v" id="wWallet">—</span></div>
-    <div class="field" style="margin-top:12px;"><label>Choose a gateway</label>
-      <div id="gatewayList"></div>
+    <div class="wd-summary">
+      <div class="l">You'll receive</div>
+      <div class="v" id="wNet">—</div>
+      <div class="w" id="wWallet">—</div>
     </div>
-    <button class="btn neon" id="withdrawExecuteBtn">Confirm withdrawal</button>
+    <span class="gw-label">Choose a payment gateway</span>
+    <div id="gatewayList"></div>
+    <button class="btn neon big" id="withdrawExecuteBtn" style="margin-top:8px;">Confirm withdrawal</button>
   </div>
 </div>
 
@@ -1225,14 +1259,18 @@
     try{
       const q = await callApi('withdraw_quote', { amount });
       $('wNet').textContent = '₹' + q.net_amount;
-      $('wWallet').textContent = q.wallet;
+      $('wWallet').textContent = 'To wallet: ' + q.wallet;
       $('gatewayList').innerHTML = (q.gateways||[]).map(gw => `
-        <button class="chip-btn" data-gw="${gw.key}" style="margin:4px 6px 0 0;">${escapeHtml(gw.name)}</button>`).join('');
+        <div class="gw-option" data-gw="${gw.key}">
+          <div class="gw-ic">${escapeHtml((gw.name||'?').trim().slice(0,2).toUpperCase())}</div>
+          <div class="gw-name">${escapeHtml(gw.name)}</div>
+          <div class="gw-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        </div>`).join('');
       let selectedGw = null;
-      document.querySelectorAll('#gatewayList [data-gw]').forEach(b => {
+      document.querySelectorAll('#gatewayList .gw-option').forEach(b => {
         b.addEventListener('click', () => {
-          document.querySelectorAll('#gatewayList [data-gw]').forEach(x=>x.style.borderColor='var(--border)');
-          b.style.borderColor = 'var(--neon)';
+          document.querySelectorAll('#gatewayList .gw-option').forEach(x=>x.classList.remove('selected'));
+          b.classList.add('selected');
           selectedGw = b.getAttribute('data-gw');
         });
       });
