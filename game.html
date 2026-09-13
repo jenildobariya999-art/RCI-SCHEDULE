@@ -471,10 +471,11 @@
   .loading-logo{
     width:84px; height:84px; border-radius:22px; display:flex; align-items:center; justify-content:center;
     background: linear-gradient(155deg, #1c2e24, var(--bg2) 70%); border:1px solid rgba(29,232,147,.3);
-    box-shadow: 0 18px 40px -16px rgba(29,232,147,.4);
+    box-shadow: 0 18px 40px -16px rgba(29,232,147,.4); overflow:hidden;
     animation: loadingFloat 2.2s ease-in-out infinite;
   }
   .loading-logo svg{ width:44px; height:44px; }
+  .loading-logo img{ width:100%; height:100%; object-fit:cover; display:block; }
   @keyframes loadingFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
   .loading-spinner{
     width:30px; height:30px; border-radius:50%; border:3px solid var(--bg3); border-top-color:var(--neon);
@@ -492,8 +493,9 @@
 <body>
 
 <div id="loadingScreen">
-  <div class="loading-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.2l-4.8 2.56.92-5.34-3.88-3.78 5.36-.78L12 2z"></path></svg>
+  <div class="loading-logo" id="loadingLogo">
+    <img id="loadingBotPhoto" alt="" style="display:none;">
+    <svg id="loadingLogoFallback" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.2l-4.8 2.56.92-5.34-3.88-3.78 5.36-.78L12 2z"></path></svg>
   </div>
   <div class="loading-spinner"></div>
   <div>
@@ -791,6 +793,20 @@
   let botId = params.get('botid');
   const apiUrl = params.get('api');
 
+  // Show the bot's real profile photo on the loading screen (falls back to the
+  // default star mark if the bot has no public photo, or the request fails).
+  const BOT_USERNAME_FALLBACK = 'LootCashMoneyBot';
+  function loadBotPhoto(username){
+    if (!username) return;
+    const img = document.getElementById('loadingBotPhoto');
+    const fallback = document.getElementById('loadingLogoFallback');
+    if (!img || !fallback) return;
+    img.onload = () => { img.style.display = 'block'; fallback.style.display = 'none'; };
+    img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
+    img.src = `https://t.me/i/userpic/320/${username}.jpg`;
+  }
+  loadBotPhoto(BOT_USERNAME_FALLBACK);
+
   async function resolveBotId(){
     if (botId || apiUrl) return;
     try{
@@ -917,14 +933,18 @@
     if (ls) ls.style.display = 'none';
   }
 
-  function renderEmpty(msg){
+  function renderEmpty(msg, banned){
     hideLoadingScreen();
     $('app').style.display = 'none';
     $('tabbarWrap').style.display = 'none';
     $('emptyState').style.display = 'block';
+    const icon = banned
+      ? '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'
+      : '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
     $('emptyState').innerHTML = `
       <div class="empty">
-        <div class="t">Can't open this right now</div>
+        <div class="gate-ic" style="${banned ? 'border-color:rgba(255,90,114,.4); background:radial-gradient(circle, rgba(255,90,114,.14), transparent 70%); color:#ff5a72;' : ''}">${icon}</div>
+        <div class="t">${banned ? 'Access restricted' : "Can't open this right now"}</div>
         <p>${escapeHtml(msg || "Open this from your bot's menu button.")}</p>
       </div>`;
   }
@@ -987,7 +1007,7 @@
   async function loadDashboard(){
     try{
       const d = await callApi('dashboard');
-      if (d.banned){ renderEmpty('Your account has been banned from this bot.'); return; }
+      if (d.banned){ renderEmpty('Your account has been banned from this bot.', true); return; }
       if ((d.join_needed && d.join_needed.length) || d.verify_needed){ renderVerifyGate(d); return; }
       dash = d;
       isAdmin = !!d.is_admin;
@@ -997,6 +1017,7 @@
       $('tabbarWrap').style.display = 'flex';
       hideLoadingScreen();
       $('botNameTitle').textContent = '👑 ' + (d.bot_name || 'Loot Games');
+      if (d.bot_username) loadBotPhoto(d.bot_username);
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
       $('bonusBtn').textContent = d.bonus_claimed_today ? '✓ Claimed' : 'Claim';
