@@ -126,6 +126,7 @@
   .game-chip:active{ transform: scale(.96); }
   .game-chip.active{ border-color:var(--neon); background: linear-gradient(160deg, rgba(29,232,147,.14), rgba(29,232,147,.03)); box-shadow: 0 0 0 1px var(--neon) inset; }
   .game-chip .ic{ font-size:27px; display:block; }
+  .game-chip .ic svg{ width:27px; height:27px; stroke:currentColor; margin:0 auto; display:block; }
   .game-chip .nm{ font-size:10.5px; font-weight:700; margin-top:6px; white-space:nowrap; }
   .game-chip .mx{ font-size:9px; color:var(--text-soft); margin-top:2px; }
 
@@ -142,6 +143,14 @@
     30%{ transform:translateX(9px) rotate(10deg); } 45%{ transform:translateX(-8px) rotate(-9deg); }
     60%{ transform:translateX(7px) rotate(7deg); } 75%{ transform:translateX(-4px) rotate(-4deg); } 90%{ transform:translateX(2px) rotate(2deg); }
   }
+  .coin-face{
+    width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(155deg,#ffe8a3,#e0a020 55%,#b87a12); box-shadow: 0 12px 26px -10px rgba(224,160,32,.55), inset 0 2px 4px rgba(255,255,255,.4);
+    border: 2px solid #f5cf7a;
+  }
+  .coin-face svg{ width:38px; height:38px; stroke:#5c3d05; }
+  .win-glow{ animation: winPulse .7s ease; }
+  @keyframes winPulse{ 0%,100%{ filter:none; transform:scale(1); } 40%{ filter:drop-shadow(0 0 18px var(--neon)); transform:scale(1.08); } }
   .die-face{
     width:78px; height:78px; border-radius:20px; background:linear-gradient(160deg,#fff,#dfe9e2);
     display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:#0d1811;
@@ -163,7 +172,9 @@
     display:flex; align-items:center; justify-content:center; font-size:30px;
     box-shadow: 0 10px 30px -10px rgba(0,0,0,.55); transition: transform 1.4s cubic-bezier(.15,.65,.15,1);
   }
-  .wheel-pointer{ position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:20px; }
+  .wheel-disc svg{ width:26px; height:26px; fill:#fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+  .wheel-pointer{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); z-index:2; }
+  .wheel-pointer svg{ width:20px; height:20px; fill:var(--danger); filter: drop-shadow(0 3px 4px rgba(0,0,0,.4)); }
 
   .result-pill{
     text-align:center; font-size:13.5px; font-weight:800; padding:10px 14px; border-radius:13px;
@@ -451,10 +462,45 @@
     background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite; border-radius:8px; color:transparent !important;
   }
   @keyframes skel-shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+  /* ---------- initial loading screen (shown instantly, before any API call resolves) ---------- */
+  #loadingScreen{
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; z-index:200; background:var(--bg0);
+  }
+  .loading-logo{
+    width:84px; height:84px; border-radius:22px; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(155deg, #1c2e24, var(--bg2) 70%); border:1px solid rgba(29,232,147,.3);
+    box-shadow: 0 18px 40px -16px rgba(29,232,147,.4);
+    animation: loadingFloat 2.2s ease-in-out infinite;
+  }
+  .loading-logo svg{ width:44px; height:44px; }
+  @keyframes loadingFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+  .loading-spinner{
+    width:30px; height:30px; border-radius:50%; border:3px solid var(--bg3); border-top-color:var(--neon);
+    animation: loadingSpin .8s linear infinite;
+  }
+  @keyframes loadingSpin{ to{ transform:rotate(360deg); } }
+  .loading-name{ font-size:19px; font-weight:900; letter-spacing:-.01em; text-align:center; }
+  .loading-name .w1{ color:var(--text); }
+  .loading-name .w2{ color:var(--neon); }
+  .loading-caption{ font-size:11px; font-weight:700; letter-spacing:.22em; color:var(--text-faint); text-transform:uppercase; }
+
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 </style>
 </head>
 <body>
+
+<div id="loadingScreen">
+  <div class="loading-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.2l-4.8 2.56.92-5.34-3.88-3.78 5.36-.78L12 2z"></path></svg>
+  </div>
+  <div class="loading-spinner"></div>
+  <div>
+    <div class="loading-name" id="loadingBotName"><span class="w1">Loot</span> <span class="w2">Games</span></div>
+    <div class="loading-caption">Loading…</div>
+  </div>
+</div>
 
 <div id="app" style="display:none;">
   <header class="app-head">
@@ -515,7 +561,7 @@
       <div class="game-picker" id="gamePicker"></div>
       <div class="stage" id="stage">
         <div class="stage-ring" id="stageRing"></div>
-        <div class="piece" id="piece">🏛️</div>
+        <div class="piece coin-face" id="piece"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v9M14.5 9.8c0-1.3-1.3-2.1-2.5-2.1s-2.5.7-2.5 2 1.3 1.7 2.5 2.1 2.5.8 2.5 2.1-1.3 2-2.5 2-2.5-.8-2.5-2.1"></path></svg></div>
       </div>
       <div class="result-pill" id="resultPill"></div>
 
@@ -532,7 +578,7 @@
         <button class="chip-btn" data-chip="10">₹10</button>
         <button class="chip-btn" data-chip="25">₹25</button>
       </div>
-      <div style="margin-top:14px;"><button class="btn neon" id="playBtn">▶️ Play</button></div>
+      <div style="margin-top:14px;"><button class="btn neon" id="playBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"></polygon></svg></span> Play</button></div>
     </div>
 
     <div class="card">
@@ -605,12 +651,6 @@
 
   <!-- ===== ADMIN VIEW (admin only) ===== -->
   <div class="view" id="view-admin">
-    <div class="card">
-      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span>Channel diagnostics</h3>
-      <p style="font-size:12px; color:var(--text-soft); margin:0 0 12px; line-height:1.5;">Checks each required channel against your own account — shows the exact status Telegram reports, and any error (e.g. bot not admin).</p>
-      <button class="btn ghost" id="checkChannelsBtn">Check my channel status</button>
-      <div id="channelDiagList" style="margin-top:14px;"></div>
-    </div>
     <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
       <div class="stat-grid" id="adminStats">
@@ -872,7 +912,13 @@
   $('celebrateCloseBtn').addEventListener('click', () => $('celebrateOverlay').classList.remove('show'));
   $('celebrateOverlay').addEventListener('click', (e) => { if (e.target === $('celebrateOverlay')) $('celebrateOverlay').classList.remove('show'); });
 
+  function hideLoadingScreen(){
+    const ls = $('loadingScreen');
+    if (ls) ls.style.display = 'none';
+  }
+
   function renderEmpty(msg){
+    hideLoadingScreen();
     $('app').style.display = 'none';
     $('tabbarWrap').style.display = 'none';
     $('emptyState').style.display = 'block';
@@ -894,6 +940,7 @@
   }
 
   function renderVerifyGate(d){
+    hideLoadingScreen();
     $('app').style.display = 'none';
     $('tabbarWrap').style.display = 'none';
     $('emptyState').style.display = 'block';
@@ -948,6 +995,7 @@
       $('emptyState').style.display = 'none';
       $('app').style.display = 'block';
       $('tabbarWrap').style.display = 'flex';
+      hideLoadingScreen();
       $('botNameTitle').textContent = '👑 ' + (d.bot_name || 'Loot Games');
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
@@ -973,6 +1021,7 @@
       await loadGames();
     } catch(e){
       if (e.message === 'no-api'){ renderEmpty(); return; }
+      hideLoadingScreen();
       toast(e.message || "Couldn't load", true);
     }
   }
@@ -990,7 +1039,7 @@
         $('playBtn').textContent = 'No games available right now';
       } else {
         $('playBtn').disabled = false;
-        $('playBtn').textContent = '▶️ Play';
+        $('playBtn').innerHTML = '<span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"></polygon></svg></span> Play';
       }
     } catch(e){ toast(e.message || "Couldn't load games", true); }
   }
@@ -998,7 +1047,7 @@
   function renderGamePicker(){
     $('gamePicker').innerHTML = games.map(g => `
       <div class="game-chip ${g.id===activeGameId?'active':''}" data-game="${g.id}">
-        <span class="ic">${g.emoji}</span>
+        <span class="ic">${gameIcon(g.id)}</span>
         <div class="nm">${escapeHtml(g.name)}</div>
         <div class="mx">${g.multiplier}x</div>
       </div>`).join('');
@@ -1023,6 +1072,15 @@
 
   const SLOT_SYMS = ['🍒','🍋','🍇','⭐','💎','7️⃣'];
 
+  const GAME_ICONS = {
+    flip: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v9M14.5 9.8c0-1.3-1.3-2.1-2.5-2.1s-2.5.7-2.5 2 1.3 1.7 2.5 2.1 2.5.8 2.5 2.1-1.3 2-2.5 2-2.5-.8-2.5-2.1"></path></svg>',
+    dice: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"></circle></svg>',
+    scratch: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a2.5 2.5 0 010 5V17a1 1 0 001 1h18a1 1 0 001-1v-2.5a2.5 2.5 0 010-5V7a1 1 0 00-1-1H3a1 1 0 00-1 1z"></path><line x1="9.5" y1="4" x2="9.5" y2="20" stroke-dasharray="2.2 2.2"></line></svg>',
+    slots: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><line x1="15" y1="4" x2="15" y2="20"></line><circle cx="19" cy="7.5" r="1" fill="currentColor" stroke="none"></circle></svg>',
+    wheel: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.2"></circle><line x1="12" y1="3" x2="12" y2="7.5"></line><line x1="12" y1="16.5" x2="12" y2="21"></line><line x1="3" y1="12" x2="7.5" y2="12"></line><line x1="16.5" y1="12" x2="21" y2="12"></line></svg>'
+  };
+  function gameIcon(id){ return GAME_ICONS[id] || GAME_ICONS.flip; }
+
   function renderStageForGame(){
     const stage = $('stage');
     const g = games.find(x=>x.id===activeGameId);
@@ -1041,12 +1099,12 @@
     } else if (gid === 'wheel'){
       const wrap = document.createElement('div');
       wrap.className = 'wheel-wrap'; wrap.id = 'piece';
-      wrap.innerHTML = `<div class="wheel-pointer">🔻</div><div class="wheel-disc" id="wheelDisc">🎡</div>`;
+      wrap.innerHTML = `<div class="wheel-pointer"><svg viewBox="0 0 24 24"><path d="M12 21L4 8h16z"></path></svg></div><div class="wheel-disc" id="wheelDisc"><svg viewBox="0 0 24 24"><path d="M12 2l1.9 4.2L18 8l-4.1 1.8L12 14l-1.9-4.2L6 8l4.1-1.8z"></path></svg></div>`;
       stage.appendChild(wrap);
     } else {
       const el = document.createElement('div');
-      el.className = 'piece'; el.id = 'piece';
-      el.textContent = g ? g.emoji : '🏛️';
+      el.className = 'piece coin-face'; el.id = 'piece';
+      el.innerHTML = gameIcon(gid);
       stage.appendChild(el);
     }
   }
@@ -1098,7 +1156,8 @@
   function showStageResult(gid, win, emoji){
     const el = $('piece');
     if (gid === 'dice'){
-      el.textContent = win ? '🎯' : String(1 + Math.floor(Math.random()*6));
+      el.textContent = String(1 + Math.floor(Math.random()*6));
+      el.classList.toggle('win-glow', win);
     } else if (gid === 'slots'){
       const reels = document.querySelectorAll('#piece .reel .sym');
       if (win){ reels.forEach(r => r.textContent = '7️⃣'); }
@@ -1106,7 +1165,7 @@
     } else if (gid === 'wheel'){
       if (!win) el.animate([{transform:'scale(1)'},{transform:'scale(0.97)'},{transform:'scale(1)'}], {duration:250});
     } else {
-      el.textContent = win ? '🎉' : emoji;
+      el.classList.toggle('win-glow', win);
       if (!win){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
     }
   }
@@ -1137,12 +1196,12 @@
       const pill = $('resultPill');
       if (r.win){
         pill.className = 'result-pill win show';
-        pill.textContent = `🎉 You won ₹${Number(r.profit).toFixed(2)}!`;
+        pill.textContent = `You won ₹${Number(r.profit).toFixed(2)}!`;
         celebrate();
         tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success');
       } else {
         pill.className = 'result-pill lose show';
-        pill.textContent = `😬 You lost ₹${Math.abs(Number(r.profit)).toFixed(2)}`;
+        pill.textContent = `You lost ₹${Math.abs(Number(r.profit)).toFixed(2)}`;
         playChime(false);
         tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error');
       }
@@ -1426,33 +1485,6 @@
     try{ await callApi('admin_save_settings', payload); toast('Settings saved'); }
     catch(e){ toast(e.message || 'Save failed', true); }
     finally { btn.disabled = false; }
-  });
-
-  $('checkChannelsBtn').addEventListener('click', async () => {
-    const btn = $('checkChannelsBtn'); btn.disabled = true; btn.textContent = 'Checking…';
-    $('channelDiagList').innerHTML = '<div class="skel" style="height:80px;"></div>';
-    try{
-      const r = await callApi('admin_check_channels');
-      const rows = r.channels || [];
-      if (!rows.length){
-        $('channelDiagList').innerHTML = '<p style="font-size:12.5px; color:var(--text-soft);">No required channels configured.</p>';
-      } else {
-        $('channelDiagList').innerHTML = `<p style="font-size:11px; color:var(--text-soft); margin-bottom:10px;">Checked as your ID: <code>${escapeHtml(r.your_id)}</code></p>` +
-          rows.map(c => `
-            <div class="diag-row ${c.ok ? 'ok' : 'bad'}">
-              <div class="diag-dot"></div>
-              <div class="diag-body">
-                <div class="diag-name">${escapeHtml(c.name)}</div>
-                <div class="diag-meta">
-                  Chat ID: <code>${escapeHtml(c.chat_id)}</code><br/>
-                  Your status: <code>${escapeHtml(c.your_status)}</code>${c.error ? ` — ${escapeHtml(c.error)}` : ''}<br/>
-                  Link: <span style="word-break:break-all;">${escapeHtml(c.link)}</span>
-                </div>
-              </div>
-            </div>`).join('');
-      }
-    } catch(e){ $('channelDiagList').innerHTML = `<p style="font-size:12.5px; color:#ffb3bf;">${escapeHtml(e.message || 'Check failed')}</p>`; }
-    finally { btn.disabled = false; btn.textContent = 'Check my channel status'; }
   });
 
   $('createGiftBtn').addEventListener('click', async () => {
