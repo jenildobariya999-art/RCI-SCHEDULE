@@ -620,6 +620,15 @@
     </div>
 
     <div class="card">
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>Channel access check</h3>
+      <p style="font-size:11.5px; color:var(--text-soft); margin:0 0 12px; line-height:1.5;">
+        If users say "join channel" never clears even after joining, run this. It shows exactly what the bot sees for <b>your own</b> account on each required channel.
+      </p>
+      <button class="btn ghost" id="checkChannelsBtn">Check my channel access</button>
+      <div id="channelCheckList" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span>Gift codes</h3>
       <div class="row2">
         <div class="field"><label>Amount (₹)</label><input id="giftAmt" type="number" /></div>
@@ -1406,6 +1415,30 @@
     try{ await callApi('admin_save_settings', payload); toast('Settings saved'); }
     catch(e){ toast(e.message || 'Save failed', true); }
     finally { btn.disabled = false; }
+  });
+
+  $('checkChannelsBtn').addEventListener('click', async () => {
+    const btn = $('checkChannelsBtn'); btn.disabled = true; btn.textContent = 'Checking…';
+    try{
+      const r = await callApi('admin_check_channels');
+      const rows = r.channels || [];
+      if (!rows.length){
+        $('channelCheckList').innerHTML = '<p style="color:var(--text-soft); font-size:12.5px;">No join-channels are configured for this bot.</p>';
+      } else {
+        $('channelCheckList').innerHTML = rows.map(c => `
+          <div class="list-row">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:800; font-size:13px;">${escapeHtml(c.name)}</div>
+              <div class="mono" style="font-size:10.5px; color:var(--text-soft); word-break:break-all;">chat_id: ${escapeHtml(c.chat_id)}</div>
+              <div class="mono" style="font-size:10.5px; color:var(--text-soft); word-break:break-all;">${escapeHtml(c.link)}</div>
+              ${c.error ? `<div style="font-size:10.5px; color:#ffb3bf; margin-top:2px;">Error: ${escapeHtml(c.error)}</div>` : ''}
+            </div>
+            <span class="badge ${c.ok ? 'on' : 'off'}">${escapeHtml(c.your_status)}</span>
+          </div>`).join('');
+      }
+      toast(`Checked as your ID ${r.your_id}`);
+    } catch(e){ toast(e.message || 'Check failed', true); $('channelCheckList').innerHTML = ''; }
+    finally { btn.disabled = false; btn.textContent = 'Check my channel access'; }
   });
 
   $('createGiftBtn').addEventListener('click', async () => {
