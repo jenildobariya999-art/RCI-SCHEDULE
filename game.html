@@ -53,6 +53,10 @@
   }
   @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
   .card h3{ margin:0 0 10px; font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-soft); font-weight:800; display:flex; align-items:center; gap:6px; }
+  .hdr-ic{ display:inline-flex; width:15px; height:15px; flex-shrink:0; }
+  .hdr-ic svg{ width:15px; height:15px; stroke:currentColor; }
+  .btn .hdr-ic, .pill-btn .hdr-ic, .chip-btn .hdr-ic{ width:14px; height:14px; margin-right:1px; }
+  .btn .hdr-ic svg, .pill-btn .hdr-ic svg, .chip-btn .hdr-ic svg{ width:14px; height:14px; }
 
   /* ---------- HERO BALANCE ---------- */
   .bal-hero{ text-align:center; position:relative; overflow:hidden; padding:24px 18px 22px; }
@@ -76,8 +80,28 @@
   .bal-huge .cur{ color:var(--neon); font-size:28px; margin-right:4px; vertical-align:4px; }
   .btn.big{ padding:17px; font-size:15px; letter-spacing:.02em; }
 
-  .wallet-row{ display:flex; align-items:center; gap:12px; }
-  .wallet-ic{
+  /* ---------- earn hero ---------- */
+  .earn-avatar{
+    width:76px; height:76px; margin:0 auto 18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid rgba(29,232,147,.4); background: radial-gradient(circle, rgba(29,232,147,.14), transparent 70%);
+  }
+  .earn-avatar svg{ width:34px; height:34px; stroke:var(--neon); }
+  .earn-pill{
+    display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.06em;
+    background:rgba(29,232,147,.12); color:var(--neon); border:1px solid rgba(29,232,147,.3);
+    border-radius:999px; padding:6px 14px; margin-top:16px; text-transform:uppercase;
+  }
+  .ref-link-row{ display:flex; align-items:stretch; gap:9px; }
+  .ref-link-row .ref-link-box{ flex:1; margin:0; }
+  .copy-ic-btn{
+    width:46px; flex-shrink:0; border-radius:14px; background:var(--bg3); border:1px solid var(--border); color:var(--text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition: transform .12s cubic-bezier(.3,.8,.3,1), border-color .15s ease;
+  }
+  .copy-ic-btn:active{ transform: scale(.9); }
+  .copy-ic-btn svg{ width:18px; height:18px; stroke:currentColor; }
+
+  .wallet-row{ display:flex; align-items:center; gap:12px; }  .wallet-ic{
     width:44px; height:44px; border-radius:13px; background:#fff; color:#0d1811; display:flex;
     align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
   }
@@ -365,7 +389,7 @@
 
     <div class="card">
       <div class="wallet-row">
-        <div class="wallet-ic">💳</div>
+        <div class="wallet-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
         <div class="wallet-info">
           <div class="l">Linked Wallet</div>
           <div class="v" id="walletStatusText">Not linked yet</div>
@@ -375,7 +399,7 @@
     </div>
 
     <div class="card">
-      <div class="fund-head"><span>💼 Bot Fund</span><span id="fundPct">— left</span></div>
+      <div class="fund-head"><span style="display:flex; align-items:center; gap:6px;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>Bot Fund</span><span id="fundPct">— left</span></div>
       <div class="fund-bar"><div class="fund-bar-fill" id="fundBarFill" style="width:0%"></div></div>
       <div class="fund-foot"><span>Available <b id="fundLive">₹0</b></span><span>Distributed <b id="fundTotal">₹0</b></span></div>
     </div>
@@ -383,11 +407,16 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div class="lbl" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800;">🎁 Daily Bonus</div>
+          <div class="lbl" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></span>Daily Bonus</div>
           <div style="font-size:12px; color:var(--text-soft); margin-top:4px;">Come back every day for free credit</div>
         </div>
         <button class="pill-btn neon" id="bonusBtn" style="background:linear-gradient(135deg,var(--neon),var(--neon-deep)); color:#04150c; border:none; border-radius:11px; padding:10px 16px; font-weight:800; font-size:12px; cursor:pointer;">Claim</button>
       </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span>Transaction history</h3>
+      <div id="historyList"><div class="skel" style="height:220px;"></div></div>
     </div>
   </div>
 
@@ -418,7 +447,7 @@
     </div>
 
     <div class="card">
-      <h3>💰 Payout</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15.5 9.5c0-1.5-1.6-2.5-3.5-2.5s-3.5 1-3.5 2.5 1.6 2 3.5 2.5 3.5 1 3.5 2.5-1.6 2.5-3.5 2.5-3.5-1-3.5-2.5"></path></svg></span>Payout</h3>
       <div class="rules-line"><span class="k">Minimum bet</span><span class="v" id="ruleMin">—</span></div>
       <div class="rules-line"><span class="k">Maximum bet</span><span class="v" id="ruleMax">—</span></div>
       <div class="rules-line"><span class="k">Win multiplier</span><span class="v" id="ruleMulti">—</span></div>
@@ -430,21 +459,30 @@
 
   <!-- ===== EARN VIEW ===== -->
   <div class="view" id="view-earn">
-    <div class="card">
-      <h3>👥 Your referral link</h3>
-      <div class="ref-link-box" id="refLinkBox">—</div>
-      <div style="display:flex; gap:10px; margin-top:12px;">
-        <button class="btn ghost" id="copyRefBtn" style="flex:1;">📋 Copy</button>
-        <button class="btn neon" id="shareRefBtn" style="flex:1;">📤 Share</button>
-      </div>
+    <div class="card" style="text-align:center;">
+      <div class="earn-avatar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+      <div class="bal-huge" style="margin:0;"><span class="mono" id="statPerRefer">₹0</span></div>
+      <span class="earn-pill">Per valid invite</span>
     </div>
+
     <div class="card">
-      <h3>📊 Your stats</h3>
+      <h3 style="margin-bottom:12px;">Your referral link</h3>
+      <div class="ref-link-row">
+        <div class="ref-link-box" id="refLinkBox">—</div>
+        <button class="copy-ic-btn" id="copyRefBtn" title="Copy link"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+      </div>
+      <button class="btn neon big" id="shareRefBtn" style="margin-top:12px; display:flex; align-items:center; justify-content:center; gap:9px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Share on Telegram
+      </button>
+    </div>
+
+    <div class="card">
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>Your stats</h3>
       <div class="stat-grid">
         <div class="stat-tile"><div class="n" id="statStarted">0</div><div class="l">Started</div></div>
         <div class="stat-tile"><div class="n" id="statVerified">0</div><div class="l">Verified</div></div>
-        <div class="stat-tile"><div class="n" id="statPerRefer">₹0</div><div class="l">Per Refer</div></div>
-        <div class="stat-tile"><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
+        <div class="stat-tile" style="grid-column:span 2;"><div class="n" id="statTier">—</div><div class="l">Tier</div></div>
       </div>
     </div>
   </div>
@@ -452,7 +490,7 @@
   <!-- ===== GIFT VIEW ===== -->
   <div class="view" id="view-gift">
     <div class="card gift-hero">
-      <div class="gift-icon-wrap">🎁</div>
+      <div class="gift-icon-wrap"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></div>
       <div class="gt">Redeem Gift Code</div>
       <p class="gs">Enter your code below to get instant cash in your account</p>
       <div class="field" style="text-align:left;"><label>Gift Code</label><input id="giftCodeInput" type="text" placeholder="e.g. LOOTGIFT" style="text-transform:uppercase;" /></div>
@@ -463,14 +501,6 @@
       <div class="step-row"><div class="step-num">1</div><div>Get a gift code from our Telegram channel or special events</div></div>
       <div class="step-row"><div class="step-num">2</div><div>Enter the code above and tap <b>CLAIM</b></div></div>
       <div class="step-row"><div class="step-num">3</div><div>Cash is instantly added to your account — withdraw anytime!</div></div>
-    </div>
-  </div>
-
-  <!-- ===== HISTORY VIEW ===== -->
-  <div class="view" id="view-history">
-    <div class="card">
-      <h3>Transaction history</h3>
-      <div id="historyList"><div class="skel" style="height:220px;"></div></div>
     </div>
   </div>
 
@@ -487,7 +517,7 @@
   <!-- ===== ADMIN VIEW (admin only) ===== -->
   <div class="view" id="view-admin">
     <div class="card">
-      <h3>📈 Bot stats</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
       <div class="stat-grid" id="adminStats">
         <div class="stat-tile"><div class="n skel">0</div><div class="l">Members</div></div>
         <div class="stat-tile"><div class="n skel">0</div><div class="l">Verified</div></div>
@@ -497,13 +527,13 @@
     </div>
 
     <div class="card">
-      <h3>🎮 Games — on/off &amp; payout settings</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span>Games — on/off &amp; payout settings</h3>
       <div id="adminGamesList"></div>
-      <button class="btn neon" id="saveGamesBtn" style="margin-top:6px;">💾 Save game settings</button>
+      <button class="btn neon" id="saveGamesBtn" style="margin-top:6px;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></span> Save game settings</button>
     </div>
 
     <div class="card">
-      <h3>⚙️ Quick settings</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>Quick settings</h3>
       <div class="row2"><div class="field"><label>Per refer (₹)</label><input id="adminPerRefer" type="text" /></div>
       <div class="field"><label>Daily bonus (₹)</label><input id="adminDailyBonus" type="text" /></div></div>
       <div class="row2"><div class="field"><label>Min withdraw</label><input id="adminMinWith" type="text" /></div>
@@ -511,37 +541,37 @@
       <div class="row2"><div class="field"><label>Min referrals</label><input id="adminMinRef" type="text" /></div>
       <div class="field"><label>Tax %</label><input id="adminTax" type="text" /></div></div>
       <div class="field"><label>Payout channel (@username or chat id)</label><input id="adminPayoutCh" type="text" /></div>
-      <button class="btn neon" id="saveSettingsBtn">💾 Save settings</button>
+      <button class="btn neon" id="saveSettingsBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></span> Save settings</button>
     </div>
 
     <div class="card">
-      <h3>🎟️ Gift codes</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span>Gift codes</h3>
       <div class="row2">
         <div class="field"><label>Amount (₹)</label><input id="giftAmt" type="number" /></div>
         <div class="field"><label>Max claims</label><input id="giftMax" type="number" /></div>
       </div>
       <div class="field"><label>Min referrals to claim</label><input id="giftMinRef" type="number" value="0" /></div>
-      <button class="btn ghost" id="createGiftBtn">➕ Create gift code</button>
+      <button class="btn ghost" id="createGiftBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Create gift code</button>
       <div id="giftCodesList" style="margin-top:12px;"></div>
     </div>
 
     <div class="card">
-      <h3>🚫 Ban / unban a user</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg></span>Ban / unban a user</h3>
       <div class="field"><label>Telegram user ID</label><input id="banUserId" type="text" /></div>
       <div style="display:flex; gap:10px;">
-        <button class="btn danger" id="banBtn" style="flex:1;">🚫 Ban</button>
-        <button class="btn ghost" id="unbanBtn" style="flex:1;">✅ Unban</button>
+        <button class="btn danger" id="banBtn" style="flex:1;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg></span> Ban</button>
+        <button class="btn ghost" id="unbanBtn" style="flex:1;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span> Unban</button>
       </div>
     </div>
 
     <div class="card">
-      <h3>📢 Broadcast</h3>
+      <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"></path></svg></span>Broadcast</h3>
       <div class="field"><textarea id="bcText" rows="3" placeholder="Message to send to all users (HTML allowed)"></textarea></div>
       <div class="row2">
         <div class="field"><label>Button text (optional)</label><input id="bcBtnText" type="text" /></div>
         <div class="field"><label>Button URL (optional)</label><input id="bcBtnUrl" type="text" /></div>
       </div>
-      <button class="btn neon" id="bcSendBtn">📢 Send broadcast</button>
+      <button class="btn neon" id="bcSendBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"></path></svg></span> Send broadcast</button>
     </div>
   </div>
 </div>
@@ -552,7 +582,7 @@
 <div class="sheet-overlay" id="withdrawOverlay"></div>
 <div class="sheet" id="withdrawSheet">
   <div class="handle"></div>
-  <h3>💸 Withdraw</h3>
+  <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>Withdraw</h3>
   <div id="withdrawStepAmount">
     <div class="field"><label>Amount (₹)</label><input id="withdrawAmt" type="number" placeholder="Enter amount" /></div>
     <button class="btn neon" id="withdrawQuoteBtn">Continue</button>
@@ -571,7 +601,7 @@
 <div class="sheet-overlay" id="walletOverlay"></div>
 <div class="sheet" id="walletSheet">
   <div class="handle"></div>
-  <h3>🔗 Link your wallet</h3>
+  <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span>Link your wallet</h3>
   <div class="field"><label>10-digit wallet number</label><input id="walletInput" type="text" inputmode="numeric" /></div>
   <button class="btn neon" id="walletSaveBtn">Save wallet</button>
 </div>
@@ -591,9 +621,6 @@
     </button>
     <button class="tab" data-view="gift">
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></span>Gift
-    </button>
-    <button class="tab" data-view="history">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></span>History
     </button>
     <button class="tab" data-view="rank">
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></span>Rank
@@ -754,7 +781,7 @@
       $('botNameTitle').textContent = '👑 ' + (d.bot_name || 'Loot Games');
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
-      $('bonusBtn').textContent = d.bonus_claimed_today ? '✅ Claimed' : 'Claim';
+      $('bonusBtn').textContent = d.bonus_claimed_today ? '✓ Claimed' : 'Claim';
 
       $('walletStatusText').textContent = d.wallet && d.wallet !== 'Not Linked' ? d.wallet : 'Not linked yet';
 
@@ -966,7 +993,7 @@
       const r = await callApi('bonus');
       dash.balance = Number(r.balance || 0);
       countUp($('balanceAmt'), dash.balance);
-      $('bonusBtn').textContent = '✅ Claimed';
+      $('bonusBtn').textContent = '✓ Claimed';
       toast(r.message || 'Bonus claimed!');
       celebrate();
     } catch(e){
@@ -1275,6 +1302,7 @@
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     $('view-' + view).classList.add('active');
     window.scrollTo(0,0);
+    if (view === 'wallet') { loadDashboard(); loadHistory(); }
     if (view === 'rank') loadLeaderboard();
     if (view === 'admin') loadAdmin();
   }
@@ -1282,7 +1310,7 @@
 
   $('backBtn').addEventListener('click', () => { if (tg && tg.close) tg.close(); else history.back(); });
 
-  (async () => { await resolveBotId(); await loadDashboard(); })();
+  (async () => { await resolveBotId(); await loadDashboard(); loadHistory(); })();
 })();
 </script>
 </body>
