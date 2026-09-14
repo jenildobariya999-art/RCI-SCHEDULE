@@ -482,9 +482,7 @@
     animation: loadingSpin .8s linear infinite;
   }
   @keyframes loadingSpin{ to{ transform:rotate(360deg); } }
-  .loading-name{ font-size:19px; font-weight:900; letter-spacing:-.01em; text-align:center; }
-  .loading-name .w1{ color:var(--text); }
-  .loading-name .w2{ color:var(--neon); }
+  .loading-name{ font-size:18px; font-weight:900; letter-spacing:-.01em; text-align:center; color:var(--text); }
   .loading-caption{ font-size:11px; font-weight:700; letter-spacing:.22em; color:var(--text-faint); text-transform:uppercase; }
 
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
@@ -499,7 +497,7 @@
   </div>
   <div class="loading-spinner"></div>
   <div>
-    <div class="loading-name" id="loadingBotName"><span class="w1">Loot</span> <span class="w2">Games</span></div>
+    <div class="loading-name" id="loadingBotName">Loot Games</div>
     <div class="loading-caption">Loading…</div>
   </div>
 </div>
@@ -542,13 +540,14 @@
     </div>
 
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="hdr-ic" style="width:36px; height:36px; background:rgba(29,232,147,.14); border-radius:11px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></div>
         <div>
-          <div class="lbl" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800;"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></span>Daily Bonus</div>
-          <div style="font-size:12px; color:var(--text-soft); margin-top:4px;">Come back every day for free credit</div>
+          <div class="lbl" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800;">Daily Bonus</div>
+          <div style="font-size:12px; color:var(--text-soft); margin-top:2px;">Come back every day for free credit</div>
         </div>
-        <button class="pill-btn neon" id="bonusBtn" style="background:linear-gradient(135deg,var(--neon),var(--neon-deep)); color:#04150c; border:none; border-radius:11px; padding:10px 16px; font-weight:800; font-size:12px; cursor:pointer;">Claim</button>
       </div>
+      <button class="btn neon big" id="bonusBtn" style="margin-top:14px; font-size:15px;">Claim ₹0 Bonus</button>
     </div>
 
     <div class="card">
@@ -678,6 +677,8 @@
       <div class="row2"><div class="field"><label>Min referrals</label><input id="adminMinRef" type="text" /></div>
       <div class="field"><label>Tax %</label><input id="adminTax" type="text" /></div></div>
       <div class="field"><label>Payout channel (@username or chat id)</label><input id="adminPayoutCh" type="text" /></div>
+      <div class="row2"><div class="field"><label>Live fund (₹)</label><input id="adminLiveFund" type="text" /></div>
+      <div class="field"><label>Total fund (₹)</label><input id="adminTotalFund" type="text" /></div></div>
       <button class="btn neon" id="saveSettingsBtn"><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></span> Save settings</button>
     </div>
 
@@ -820,6 +821,17 @@
   const $ = (id) => document.getElementById(id);
   const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+  function getDeviceId(){
+    try{
+      let id = localStorage.getItem('lg_device_id');
+      if (!id){
+        id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+        localStorage.setItem('lg_device_id', id);
+      }
+      return id;
+    } catch(e){ return ''; }
+  }
+
   const toast = (msg, isErr) => {
     const el = $('toast');
     el.textContent = msg;
@@ -847,6 +859,17 @@
       throw err;
     }
     return inner;
+  }
+
+  async function loadBotInfoQuick(){
+    try{
+      await resolveBotId();
+      const info = await callApi('bot_info');
+      if (info && info.bot_username){
+        $('loadingBotName').textContent = info.bot_name || info.bot_username;
+        loadBotPhoto(info.bot_username);
+      }
+    } catch(e){}
   }
 
   let audioCtx = null;
@@ -1020,7 +1043,7 @@
       if (d.bot_username) loadBotPhoto(d.bot_username);
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
-      $('bonusBtn').textContent = d.bonus_claimed_today ? '✓ Claimed' : 'Claim';
+      $('bonusBtn').textContent = d.bonus_claimed_today ? '✓ Bonus Claimed' : `Claim ₹${Number(d.daily_bonus_amount || 0).toFixed(0)} Bonus`;
 
       $('walletStatusText').textContent = d.wallet && d.wallet !== 'Not Linked' ? d.wallet : 'Not linked yet';
 
@@ -1236,10 +1259,10 @@
   $('bonusBtn').addEventListener('click', async () => {
     $('bonusBtn').disabled = true;
     try{
-      const r = await callApi('bonus');
+      const r = await callApi('bonus', { device_id: getDeviceId() });
       dash.balance = Number(r.balance || 0);
       countUp($('balanceAmt'), dash.balance);
-      $('bonusBtn').textContent = '✓ Claimed';
+      $('bonusBtn').textContent = '✓ Bonus Claimed';
       toast(r.message || 'Bonus claimed!');
       celebrate();
     } catch(e){
@@ -1415,6 +1438,8 @@
       $('adminMaxWith').value = s.max_withdraw ?? '';
       $('adminMinRef').value = s.min_ref ?? '';
       $('adminTax').value = s.tax_percent ?? '';
+      $('adminLiveFund').value = s.live_fund ?? '';
+      $('adminTotalFund').value = s.total_fund ?? '';
 
       $('adminGamesList').innerHTML = (s.games||[]).map(g => `
         <div class="admin-game-row" data-gid="${g.id}">
@@ -1447,9 +1472,13 @@
       const stats = await callApi('admin_stats');
       $('adminStats').innerHTML = `
         <div class="stat-tile"><div class="n">${stats.total_members}</div><div class="l">Members</div></div>
-        <div class="stat-tile"><div class="n">${stats.total_verified}</div><div class="l">Verified</div></div>
+        <div class="stat-tile"><div class="n">₹${stats.total_balance}</div><div class="l">Total balance</div></div>
         <div class="stat-tile"><div class="n">₹${stats.total_payouts_success}</div><div class="l">Payouts</div></div>
-        <div class="stat-tile"><div class="n">${stats.total_bonus_claimers}</div><div class="l">Bonus claimers</div></div>`;
+        <div class="stat-tile"><div class="n">${stats.total_bonus_claimers}</div><div class="l">Bonus claimers</div></div>
+        <div class="stat-tile"><div class="n">${stats.with_refer}</div><div class="l">With refer</div></div>
+        <div class="stat-tile"><div class="n">${stats.without_refer}</div><div class="l">Without refer</div></div>
+        <div class="stat-tile"><div class="n">${stats.verified_count}</div><div class="l">Verified</div></div>
+        <div class="stat-tile"><div class="n">${stats.failed_count}</div><div class="l">Not verified</div></div>`;
 
       renderGiftCodes(s.gift_codes || []);
     } catch(e){ toast(e.message || "Couldn't load admin settings", true); }
@@ -1500,7 +1529,9 @@
       max_withdraw: $('adminMaxWith').value.trim(),
       min_ref: $('adminMinRef').value.trim(),
       tax_percent: $('adminTax').value.trim(),
-      payout_channel: $('adminPayoutCh').value.trim()
+      payout_channel: $('adminPayoutCh').value.trim(),
+      live_fund: $('adminLiveFund').value.trim(),
+      total_fund: $('adminTotalFund').value.trim()
     };
     const btn = $('saveSettingsBtn'); btn.disabled = true;
     try{ await callApi('admin_save_settings', payload); toast('Settings saved'); }
@@ -1560,7 +1591,7 @@
 
   $('backBtn').addEventListener('click', () => { if (tg && tg.close) tg.close(); else history.back(); });
 
-  (async () => { await resolveBotId(); await loadDashboard(); loadHistory(); })();
+  (async () => { loadBotInfoQuick(); await resolveBotId(); await loadDashboard(); loadHistory(); })();
 })();
 </script>
 </body>
