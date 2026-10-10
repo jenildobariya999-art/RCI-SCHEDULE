@@ -718,9 +718,7 @@
   html[data-theme="vegas"] .loading-logo svg{ width:100%; height:100%; }
   html[data-theme="vegas"] .loading-logo img{ border-radius:50%; }
   html[data-theme="vegas"] .loading-name{ font-family:'Cinzel',serif; color:#ffd84d; }
-  html[data-theme="neon"]{--text:#e9f9ff;--text-soft:#7fb3d9;--bg0:#05010f;--k-bg:linear-gradient(rgba(0,240,255,.1) 1px,transparent 1px) 0 0/100% 36px,linear-gradient(90deg,rgba(255,43,214,.09) 1px,transparent 1px) 0 0/36px 100%,radial-gradient(ellipse at 50% 0%,#2a0a55,#05010f 70%);--k-card:#0a0620;--k-card2:#13093f;--k-bd:#00f0ff;--k-bw:1.5px;--k-acc:#00f0ff;--k-acc2:#ff2bd6;--k-txt:#e9f9ff;--k-soft:#7fb3d9;--k-r:6px;--k-br:4px;--k-lr:8px;--k-font:'Inter',sans-serif;--k-hfont:'Orbitron',sans-serif;--k-hc:#00f0ff;--k-glow:0 0 16px rgba(0,240,255,.7);--k-sh:0 0 22px -6px rgba(0,240,255,.6),inset 0 0 18px rgba(0,240,255,.08);--k-tglow:0 0 14px #ff2bd6;--k-btn:linear-gradient(90deg,#00f0ff,#8a2bff 60%,#ff2bd6);--k-btnc:#05010f;--k-bsh:0 0 24px rgba(138,43,255,.8);--k-bal:#05010f;--k-balc:#00f0ff;--k-stage:radial-gradient(ellipse at 50% 30%,#3a0a6a,#0a0220 80%);--k-strip:linear-gradient(90deg,#00f0ff,#ff2bd6,#8a2bff,#00f0ff);--k-tt:uppercase}
   html[data-theme="royal"]{--text:#f4efe2;--text-soft:#a9b8ad;--bg0:#06100d;--k-bg:radial-gradient(ellipse at 50% -10%,#14543f,#06100d 65%);--k-card:#0b1a15;--k-card2:#10261f;--k-bd:#b89b5e;--k-bw:1px;--k-acc:#d4b46a;--k-acc2:#f3e2b3;--k-txt:#f4efe2;--k-soft:#a9b8ad;--k-r:14px;--k-br:10px;--k-lr:50%;--k-font:'Inter',sans-serif;--k-hfont:'Cinzel',serif;--k-hc:#f3e2b3;--k-glow:0 0 0 2px rgba(212,180,106,.45);--k-sh:0 12px 30px -16px #000;--k-tglow:none;--k-btn:linear-gradient(180deg,#f3e2b3,#d4b46a 55%,#a98a45);--k-btnc:#1a1405;--k-bsh:0 6px 16px -6px rgba(212,180,106,.6);--k-bal:linear-gradient(160deg,#10261f,#06100d);--k-balc:#f3e2b3;--k-stage:radial-gradient(ellipse at 50% 35%,#146b4c,#0a3a2a 70%,#05231a);--k-strip:linear-gradient(90deg,#a98a45,#f3e2b3,#a98a45);--k-hdir:column;--k-hal:center}
-  html[data-theme="pop"]{--text:#111;--text-soft:#5c4a1e;--bg0:#ffe9a8;--k-bg:radial-gradient(rgba(0,0,0,.09) 1.5px,transparent 2px) 0 0/18px 18px,#ffe9a8;--k-card:#fff;--k-card2:#fff6dc;--k-bd:#111;--k-bw:3px;--k-acc:#ff3d81;--k-acc2:#1b4dff;--k-txt:#111;--k-soft:#5c4a1e;--k-r:14px;--k-br:12px;--k-lr:14px;--k-font:'Inter',sans-serif;--k-hfont:'Bebas Neue',sans-serif;--k-hc:#111;--k-glow:3px 3px 0 #111;--k-sh:5px 5px 0 #111;--k-tglow:3px 3px 0 #111;--k-btn:#ffd400;--k-btnc:#111;--k-bsh:4px 4px 0 #111;--k-bal:#ff3d81;--k-balc:#fff;--k-stage:#2ec27e;--k-strip:repeating-linear-gradient(90deg,#111 0 10px,#ffd400 10px 20px);--k-tt:uppercase}
   html:not([data-theme="vegas"]) body{background:var(--k-bg);color:var(--k-txt);font-family:var(--k-font)}
   html:not([data-theme="vegas"]) body::before{background:var(--k-strip);height:5px;box-shadow:none;animation:none}
   html:not([data-theme="vegas"]) header.app-head{background:var(--k-head,var(--k-card));border:var(--k-bw) solid var(--k-bd);border-radius:var(--k-r);box-shadow:var(--k-sh);flex-direction:var(--k-hdir,row);text-align:var(--k-hal,left);padding:12px;gap:12px}
@@ -757,9 +755,6 @@
   html:not([data-theme="vegas"]) .loading-logo img,html:not([data-theme="vegas"]) .loading-logo svg{border-radius:calc(var(--k-lr) - 4px)}
   html:not([data-theme="vegas"]) .loading-name{color:var(--k-hc);font-family:var(--k-hfont);text-shadow:none}
   html:not([data-theme="vegas"]) .sheet{background:var(--k-card);border-top:var(--k-bw) solid var(--k-bd)}
-  html[data-theme="pop"] .bal-label,html[data-theme="pop"] .bal-huge{color:#fff !important}
-  html[data-theme="pop"] .btn{font-size:17px}
-  html[data-theme="neon"] .brand-logo{clip-path:polygon(25% 0,100% 0,100% 75%,75% 100%,0 100%,0 25%)}
   .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .theme-opt{border:2px solid var(--border);border-radius:14px;padding:10px;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;text-align:left;font:700 12px 'Inter',sans-serif}
   .theme-opt.on{border-color:#2ee27a;box-shadow:0 0 0 2px #2ee27a}
@@ -774,18 +769,6 @@
   html[data-theme="vegas"] header.app-head{ flex-direction:row; justify-content:center; padding:12px; }
 
   /* NEON — terminal/HUD: slim top bar, 2-col game grid, docked full-width nav, angled corners */
-  html[data-theme="neon"] header.app-head{ border-radius:0; border-width:0 0 2px 0; background:transparent; box-shadow:0 10px 24px -14px #00f0ff; padding:8px 2px 10px; }
-  html[data-theme="neon"] .card, html[data-theme="neon"] .jackpot, html[data-theme="neon"] .bal-hero, html[data-theme="neon"] .stage{
-    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px)); border-radius:0 !important; }
-  html[data-theme="neon"] .card{ border-left:4px solid #ff2bd6; }
-  html[data-theme="neon"] .game-picker{ display:grid !important; grid-template-columns:1fr 1fr; gap:10px; overflow:visible !important; }
-  html[data-theme="neon"] .game-chip{ min-width:0; clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%); }
-  html[data-theme="neon"] .btn{ transform:skewX(-8deg); letter-spacing:.14em; }
-  html[data-theme="neon"] .bal-huge{ text-align:left; letter-spacing:.02em; }
-  html[data-theme="neon"] .tabbar-wrap{ left:0 !important; right:0 !important; bottom:0 !important; padding:0 !important; }
-  html[data-theme="neon"] .tabbar{ border-radius:0 !important; border-width:2px 0 0 0 !important; width:100% !important; max-width:none !important; }
-  html[data-theme="neon"] .jackpot{ flex-direction:column; align-items:flex-start; gap:2px; }
-
   /* ROYAL — boutique: borderless airy header, centred serif headings, 3-up game tiles, slim underline nav */
   html[data-theme="royal"] header.app-head{ flex-direction:column; background:transparent; border:0; border-bottom:1px solid #b89b5e; border-radius:0; box-shadow:none; padding:6px 0 14px; margin-bottom:18px; }
   html[data-theme="royal"] .card{ padding:24px 20px; }
@@ -800,18 +783,21 @@
   html[data-theme="royal"] .tabbar{ width:auto !important; max-width:92% !important; margin:0 auto; }
 
   /* POP — sticker book: tilted cards, chunky stacked games, big offset-shadow buttons, sticky header badge */
-  html[data-theme="pop"] header.app-head{ transform:rotate(-1deg); background:#ffd400; }
-  html[data-theme="pop"] .card:nth-of-type(odd){ transform:rotate(-.6deg); }
-  html[data-theme="pop"] .card:nth-of-type(even){ transform:rotate(.6deg); }
-  html[data-theme="pop"] .bal-hero{ transform:rotate(-1.2deg); }
-  html[data-theme="pop"] .bal-huge{ font-size:68px !important; -webkit-text-stroke:3px #111; }
-  html[data-theme="pop"] .game-picker{ display:flex !important; flex-direction:column; gap:10px; overflow:visible !important; }
-  html[data-theme="pop"] .game-chip{ width:100%; min-width:0; flex-direction:row; justify-content:flex-start; gap:12px; padding:12px 14px; box-shadow:4px 4px 0 #111; }
-  html[data-theme="pop"] .btn{ padding-top:16px; padding-bottom:16px; border-radius:999px; }
-  html[data-theme="pop"] .btn:active{ transform:translate(4px,4px); box-shadow:0 0 0 #111 !important; }
-  html[data-theme="pop"] .tabbar{ border-radius:999px !important; background:#ff3d81 !important; }
-  html[data-theme="pop"] .tabbar button, html[data-theme="pop"] .tabbar .tab{ color:#fff; }
-  html[data-theme="pop"] .tabbar button.active, html[data-theme="pop"] .tabbar .tab.active{ color:#ffd400 !important; }
+  
+  /* ===== CUSTOM (design-from-image) defaults — colours are set from the picture ===== */
+  html[data-theme="custom"]{ --k-bw:1.5px; --k-r:16px; --k-br:12px; --k-lr:10px; --k-font:'Inter',sans-serif; --k-hfont:'Inter',sans-serif;
+    --k-glow:0 0 0 2px var(--k-acc); --k-sh:0 12px 28px -16px #000; --k-tglow:none; --k-bsh:0 6px 16px -8px var(--k-acc); --k-tt:none; }
+  .theme-opt.on{ border-color:#2ee27a; }
+  .img-drop{ display:block; padding:16px; border:2px dashed var(--border); border-radius:14px; text-align:center; font:700 12px 'Inter',sans-serif; color:var(--text-soft); cursor:pointer; }
+  .sw-row{ display:flex; gap:6px; margin:12px 0; }
+  .sw-row i{ flex:1; height:26px; border-radius:8px; border:1px solid rgba(255,255,255,.25); }
+
+  /* ===== same logo in EVERY theme + bordered LIVE pill ===== */
+  html[data-theme] .brand-logo{ width:36px; height:36px; padding:0; border-radius:10px; background:transparent; border:2px solid rgba(255,255,255,.45); animation:none; box-shadow:none; clip-path:none; }
+  html[data-theme] .brand-logo .av{ border-radius:8px; background:#12020a; color:#ffd84d; }
+  html[data-theme] .loading-logo{ width:54px; height:54px; padding:0; border-radius:14px; border:2px solid rgba(255,255,255,.45); background:#12020a; animation:none; box-shadow:none; }
+  html[data-theme] .loading-logo img, html[data-theme] .loading-logo svg{ border-radius:12px; }
+  html[data-theme] .jp-s, html[data-theme] .live-badge{ border:1.5px solid currentColor !important; padding:3px 10px; border-radius:999px; }
 </style>
 </head>
 <body>
@@ -986,10 +972,13 @@
     <div class="card"><h3>App Theme</h3>
       <div class="theme-grid" id="themeGrid">
         <button class="theme-opt" data-t="vegas"><i style="background:linear-gradient(90deg,#9b1230,#ffd84d)"></i>Vegas Velvet</button>
-        <button class="theme-opt" data-t="neon"><i style="background:linear-gradient(90deg,#00f0ff,#ff2bd6)"></i>Neon Arcade</button>
         <button class="theme-opt" data-t="royal"><i style="background:linear-gradient(90deg,#0b1a15,#d4b46a)"></i>Royal Emerald</button>
-        <button class="theme-opt" data-t="pop"><i style="background:linear-gradient(90deg,#ffd400,#ff3d81)"></i>Pop Slots</button>
       </div>
+      <label class="img-drop" style="margin-top:12px;">📷 Send image — design becomes the same
+        <input type="file" id="themeImg" accept="image/*" style="display:none;">
+      </label>
+      <div class="sw-row" id="themeSw"></div>
+      <button class="btn neon" id="themeApplyBtn" style="display:none;">Apply for everyone ✅</button>
     </div>
     <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
@@ -1186,15 +1175,32 @@
   document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
 
 
-  // ---------- Themes (admin-selectable, stored on the bot) ----------
-  const THEMES = { vegas:'#12020a', neon:'#05010f', royal:'#06100d', pop:'#ffe9a8' };
-  let themeApi = null;
+  // ---------- Themes: Vegas / Royal / Custom (built from an image by the admin) ----------
+  const THEME_BG = { vegas:'#12020a', royal:'#06100d' };
+  let themeApi = null, pendingPalette = null;
   try{ const tu = new URL(params.get('tapi') || ''); if (tu.protocol === 'https:' && !tu.username && !tu.password) themeApi = tu.href; }catch(e){}
-  function applyTheme(t){
-    if (!THEMES[t]) t = 'vegas';
-    document.documentElement.setAttribute('data-theme', t);
-    try{ localStorage.setItem('lg_theme', t); }catch(e){}
-    try{ tg && tg.setHeaderColor && tg.setHeaderColor(THEMES[t]); tg && tg.setBackgroundColor && tg.setBackgroundColor(THEMES[t]); }catch(e){}
+  const HEX = /^#[0-9a-fA-F]{6}$/;
+  const PKEYS = ['bg','card','card2','bd','acc','acc2','txt','soft','btnc'];
+  function validPalette(p){ return p && typeof p === 'object' && PKEYS.every(k => HEX.test(String(p[k] || ''))); }
+  function applyTheme(t, p){
+    const root = document.documentElement;
+    PKEYS.concat(['bgv']).forEach(() => {});
+    ['--k-bg','--k-card','--k-card2','--k-bd','--k-acc','--k-acc2','--k-txt','--k-soft','--k-hc','--k-btn','--k-btnc','--k-bal','--k-balc','--k-stage','--k-strip','--text','--text-soft','--bg0']
+      .forEach(v => root.style.removeProperty(v));
+    let hdr = THEME_BG[t];
+    if (t === 'custom' && validPalette(p)){
+      const set = (k, v) => root.style.setProperty(k, v);
+      set('--k-bg', `radial-gradient(ellipse at 50% -10%, ${p.card2}, ${p.bg} 70%)`); set('--bg0', p.bg);
+      set('--k-card', p.card); set('--k-card2', p.card2); set('--k-bd', p.bd); set('--k-acc', p.acc); set('--k-acc2', p.acc2);
+      set('--k-txt', p.txt); set('--text', p.txt); set('--k-soft', p.soft); set('--text-soft', p.soft); set('--k-hc', p.txt);
+      set('--k-btn', `linear-gradient(135deg, ${p.acc}, ${p.acc2})`); set('--k-btnc', p.btnc);
+      set('--k-bal', `linear-gradient(160deg, ${p.card2}, ${p.bg})`); set('--k-balc', p.acc);
+      set('--k-stage', `radial-gradient(ellipse at 50% 35%, ${p.card2}, ${p.bg})`); set('--k-strip', `linear-gradient(90deg, ${p.acc}, ${p.acc2}, ${p.acc})`);
+      hdr = p.bg;
+    } else if (!THEME_BG[t]){ t = 'vegas'; hdr = THEME_BG.vegas; }
+    root.setAttribute('data-theme', t);
+    try{ localStorage.setItem('lg_theme', t); localStorage.setItem('lg_palette', JSON.stringify(t === 'custom' ? p : null)); }catch(e){}
+    try{ tg && tg.setHeaderColor && tg.setHeaderColor(hdr); tg && tg.setBackgroundColor && tg.setBackgroundColor(hdr); }catch(e){}
     document.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('on', b.dataset.t === t));
   }
   async function themeCall(action, extra){
@@ -1204,15 +1210,72 @@
     const d = await r.json();
     return (d && d.result !== undefined) ? d.result : d;
   }
-  async function initTheme(){ try{ const r = await themeCall('get_theme'); if (r && r.ok) applyTheme(r.theme); }catch(e){} }
+  async function initTheme(){ try{ const r = await themeCall('get_theme'); if (r && r.ok) applyTheme(r.theme, r.palette); }catch(e){} }
+
+  // ---- colour helpers + palette from an image ----
+  const toHex = (r,g,b) => '#' + [r,g,b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2,'0')).join('');
+  const lum = c => (0.299*c.r + 0.587*c.g + 0.114*c.b) / 255;
+  const mix = (a, b, t) => ({ r: a.r + (b.r-a.r)*t, g: a.g + (b.g-a.g)*t, b: a.b + (b.b-a.b)*t });
+  const sat = c => { const mx = Math.max(c.r,c.g,c.b), mn = Math.min(c.r,c.g,c.b); return mx ? (mx-mn)/mx : 0; };
+  const dist = (a, b) => Math.hypot(a.r-b.r, a.g-b.g, a.b-b.b);
+  async function paletteFromFile(file){
+    const url = URL.createObjectURL(file);
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const cv = document.createElement('canvas'); cv.width = 56; cv.height = 56;
+    const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, 56, 56); URL.revokeObjectURL(url);
+    const d = cx.getImageData(0, 0, 56, 56).data, bins = {};
+    for (let i = 0; i < d.length; i += 4){
+      if (d[i+3] < 128) continue;
+      const k = (d[i]>>5)*64 + (d[i+1]>>5)*8 + (d[i+2]>>5);
+      const o = bins[k] || (bins[k] = { n:0, r:0, g:0, b:0 });
+      o.n++; o.r += d[i]; o.g += d[i+1]; o.b += d[i+2];
+    }
+    const cols = Object.values(bins).map(o => ({ n:o.n, r:o.r/o.n, g:o.g/o.n, b:o.b/o.n })).sort((a,b) => b.n - a.n);
+    if (!cols.length) throw new Error('Could not read this image');
+    const bg = cols[0], dark = lum(bg) < 0.5;
+    const W = { r:255, g:255, b:255 }, K = { r:0, g:0, b:0 };
+    const pool = cols.slice(0, 14).filter(c => dist(c, bg) > 60);
+    const score = c => sat(c) * 2 + Math.log(c.n + 1) * 0.15 + dist(c, bg) / 441;
+    pool.sort((a,b) => score(b) - score(a));
+    const acc = pool[0] || (dark ? { r:255, g:200, b:60 } : { r:200, g:30, b:60 });
+    const acc2 = pool.find(c => dist(c, acc) > 90) || mix(acc, dark ? W : K, 0.35);
+    const txt = dark ? { r:245, g:245, b:245 } : { r:17, g:17, b:17 };
+    const card = mix(bg, dark ? W : K, 0.07), card2 = mix(bg, dark ? W : K, 0.13);
+    return { bg:toHex(bg.r,bg.g,bg.b), card:toHex(card.r,card.g,card.b), card2:toHex(card2.r,card2.g,card2.b),
+      bd:toHex(...Object.values(mix(bg, acc, 0.55))), acc:toHex(acc.r,acc.g,acc.b), acc2:toHex(acc2.r,acc2.g,acc2.b),
+      txt:toHex(txt.r,txt.g,txt.b), soft:toHex(...Object.values(mix(txt, bg, 0.45))), btnc: lum(acc) > 0.55 ? '#111111' : '#ffffff' };
+  }
+
   document.querySelectorAll('.theme-opt').forEach(b => b.addEventListener('click', async () => {
     try{
       const r = await themeCall('set_theme', { theme: b.dataset.t });
       if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save theme');
-      applyTheme(r.theme); toast('Theme saved for everyone');
+      applyTheme(r.theme, r.palette); toast('Theme saved for everyone');
     }catch(e){ toast(e.message || 'Could not save theme'); }
   }));
-  try{ applyTheme(localStorage.getItem('lg_theme') || 'vegas'); }catch(e){ applyTheme('vegas'); }
+  const imgIn = document.getElementById('themeImg');
+  if (imgIn) imgIn.addEventListener('change', async () => {
+    const f = imgIn.files && imgIn.files[0]; if (!f) return;
+    try{
+      pendingPalette = await paletteFromFile(f);
+      applyTheme('custom', pendingPalette);                       // live preview
+      document.getElementById('themeSw').innerHTML = ['bg','card','acc','acc2','txt'].map(k => `<i style="background:${pendingPalette[k]}"></i>`).join('');
+      document.getElementById('themeApplyBtn').style.display = 'block';
+    }catch(e){ toast(e.message || 'Could not read image'); }
+  });
+  const applyBtn = document.getElementById('themeApplyBtn');
+  if (applyBtn) applyBtn.addEventListener('click', async () => {
+    if (!pendingPalette) return;
+    try{
+      const r = await themeCall('set_theme', { theme:'custom', palette:pendingPalette });
+      if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save theme');
+      applyTheme('custom', r.palette); toast('Design applied for everyone ✅');
+    }catch(e){ toast(e.message || 'Could not save theme'); }
+  });
+  try{
+    let cp = null; try{ cp = JSON.parse(localStorage.getItem('lg_palette') || 'null'); }catch(e){}
+    applyTheme(localStorage.getItem('lg_theme') || 'vegas', cp);
+  }catch(e){ applyTheme('vegas'); }
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
   // (No manual bot registration, and no public bot-list lookup anymore.)
