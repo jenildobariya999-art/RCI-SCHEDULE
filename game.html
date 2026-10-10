@@ -8,23 +8,23 @@
 <meta http-equiv="Expires" content="0" />
 <meta name="referrer" content="no-referrer" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
-<title>Wallet App</title>
+<title>Loot Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
-    --bg0:#07060f; --bg1:#0e0b20; --bg2:#151133; --bg3:#1e1944; --border: rgba(255,255,255,.09);
-    --neon:#9d7bff; --neon-deep:#6a45f5; --neon-glow: rgba(157,123,255,.4);
-    --gold:#ffc857; --danger:#ff5d8f; --info:#5fb0ff; --purple:#b98bff;
-    --text:#f4fbf6; --text-soft:#9a93c4; --text-faint:#6a6396; --radius:22px;
+    --bg0:#040a06; --bg1:#0a1610; --bg2:#0f1f17; --bg3:#152c20; --border: rgba(255,255,255,.09);
+    --neon:#1de893; --neon-deep:#0aa864; --neon-glow: rgba(29,232,147,.4);
+    --gold:#ffcf4d; --danger:#ff5a72; --info:#5fb0ff; --purple:#b98bff;
+    --text:#f4fbf6; --text-soft:#7fa090; --radius:22px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(ellipse 90% 40% at 50% -6%, rgba(157,123,255,.16), transparent 55%),
+      radial-gradient(ellipse 90% 40% at 50% -6%, rgba(29,232,147,.16), transparent 55%),
       var(--bg0);
     color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh; padding:16px 14px 110px;
     -webkit-font-smoothing:antialiased;
@@ -70,7 +70,7 @@
   .bal-hero > *{ position:relative; z-index:1; }
   .live-badge{
     display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.06em;
-    background:rgba(157,123,255,.12); color:var(--neon); border:1px solid rgba(157,123,255,.3);
+    background:rgba(29,232,147,.12); color:var(--neon); border:1px solid rgba(29,232,147,.3);
     border-radius:999px; padding:5px 12px; margin-bottom:16px;
   }
   .live-dot{ width:6px; height:6px; border-radius:50%; background:var(--neon); animation: dotPulse 1.6s ease-in-out infinite; }
@@ -85,12 +85,12 @@
   /* ---------- earn hero ---------- */
   .earn-avatar{
     width:76px; height:76px; margin:0 auto 18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    border:1.5px solid rgba(157,123,255,.4); background: radial-gradient(circle, rgba(157,123,255,.14), transparent 70%);
+    border:1.5px solid rgba(29,232,147,.4); background: radial-gradient(circle, rgba(29,232,147,.14), transparent 70%);
   }
   .earn-avatar svg{ width:34px; height:34px; stroke:var(--neon); }
   .earn-pill{
     display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.06em;
-    background:rgba(157,123,255,.12); color:var(--neon); border:1px solid rgba(157,123,255,.3);
+    background:rgba(29,232,147,.12); color:var(--neon); border:1px solid rgba(29,232,147,.3);
     border-radius:999px; padding:6px 14px; margin-top:16px; text-transform:uppercase;
   }
   .ref-link-row{ display:flex; align-items:stretch; gap:9px; }
@@ -104,7 +104,7 @@
   .copy-ic-btn svg{ width:18px; height:18px; stroke:currentColor; }
 
   .wallet-row{ display:flex; align-items:center; gap:12px; }  .wallet-ic{
-    width:44px; height:44px; border-radius:13px; background:#fff; color:#120e2b; display:flex;
+    width:44px; height:44px; border-radius:13px; background:#fff; color:#0d1811; display:flex;
     align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
   }
   .wallet-info{ flex:1; min-width:0; }
@@ -126,7 +126,7 @@
     transition: border-color .18s ease, background .18s ease, transform .12s cubic-bezier(.3,.8,.3,1);
   }
   .game-chip:active{ transform: scale(.96); }
-  .game-chip.active{ border-color:var(--neon); background: linear-gradient(160deg, rgba(157,123,255,.14), rgba(157,123,255,.03)); box-shadow: 0 0 0 1px var(--neon) inset; }
+  .game-chip.active{ border-color:var(--neon); background: linear-gradient(160deg, rgba(29,232,147,.14), rgba(29,232,147,.03)); box-shadow: 0 0 0 1px var(--neon) inset; }
   .game-chip .ic{ font-size:27px; display:block; }
   .game-chip .ic svg{ width:27px; height:27px; stroke:currentColor; margin:0 auto; display:block; }
   .game-chip .nm{ font-size:10.5px; font-weight:700; margin-top:6px; white-space:nowrap; }
@@ -155,7 +155,7 @@
   @keyframes winPulse{ 0%,100%{ filter:none; transform:scale(1); } 40%{ filter:drop-shadow(0 0 18px var(--neon)); transform:scale(1.08); } }
   .die-face{
     width:78px; height:78px; border-radius:20px; background:linear-gradient(160deg,#fff,#dfe9e2);
-    display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:#120e2b;
+    display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:#0d1811;
     box-shadow: 0 10px 24px -10px rgba(0,0,0,.55);
   }
   .die-face.rolling{ animation: dieRoll .9s cubic-bezier(.3,.7,.3,1); }
@@ -184,7 +184,7 @@
     transition: opacity .25s ease, transform .25s ease;
   }
   .result-pill.show{ display:block; opacity:1; transform:translateY(0); }
-  .result-pill.win{ background:rgba(157,123,255,.13); color:var(--neon); border:1px solid rgba(157,123,255,.35); }
+  .result-pill.win{ background:rgba(29,232,147,.13); color:var(--neon); border:1px solid rgba(29,232,147,.35); }
   .result-pill.lose{ background:rgba(255,90,114,.13); color:#ffb3bf; border:1px solid rgba(255,90,114,.35); }
 
   .bet-row{ display:flex; align-items:center; gap:10px; margin-top:14px; }
@@ -214,7 +214,7 @@
     transition: transform .13s cubic-bezier(.3,.8,.3,1), opacity .12s ease, filter .12s ease;
   }
   .btn:active{ transform: scale(.965); }
-  .btn.neon{ background: linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#ffffff; box-shadow: 0 12px 26px -12px var(--neon-glow); }
+  .btn.neon{ background: linear-gradient(135deg, var(--neon), var(--neon-deep)); color:#04150c; box-shadow: 0 12px 26px -12px var(--neon-glow); }
   .btn.ghost{ background:var(--bg3); color:var(--text); border:1px solid var(--border); }
   .btn.danger{ background:rgba(255,90,114,.13); color:#ffb3bf; border:1px solid rgba(255,90,114,.3); }
   .btn:disabled{ opacity:.5; cursor:default; transform:none; }
@@ -250,9 +250,9 @@
   .list-row{ display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); }
   .list-row:last-child{ border-bottom:none; }
   .list-row .rank{ width:26px; text-align:center; font-weight:800; color:var(--text-soft); }
-  .list-row.you{ background:rgba(157,123,255,.07); border-radius:10px; padding-left:6px; }
+  .list-row.you{ background:rgba(29,232,147,.07); border-radius:10px; padding-left:6px; }
   .badge{ font-size:9.5px; font-weight:800; padding:3px 8px; border-radius:8px; }
-  .badge.on{ background:rgba(157,123,255,.16); color:var(--neon); }
+  .badge.on{ background:rgba(29,232,147,.16); color:var(--neon); }
   .badge.off{ background:rgba(255,90,114,.16); color:#ffb3bf; }
 
   /* ---------- Hall of Fame podium ---------- */
@@ -263,7 +263,7 @@
   .p-slot{ text-align:center; flex:1; max-width:110px; }
   .p-avatar{
     width:64px; height:64px; border-radius:20px; margin:0 auto 8px; display:flex; align-items:center; justify-content:center;
-    font-size:24px; font-weight:900; color:#ffffff; position:relative;
+    font-size:24px; font-weight:900; color:#04150c; position:relative;
   }
   .p-slot.gold .p-avatar{ width:78px; height:78px; font-size:28px; background:linear-gradient(160deg,#5cf0b0,var(--neon-deep)); box-shadow:0 10px 26px -8px var(--neon-glow); }
   .p-slot.silver .p-avatar{ background:linear-gradient(160deg,#7fd4ff,var(--info)); box-shadow:0 8px 20px -8px rgba(95,176,255,.5); }
@@ -283,13 +283,13 @@
   .gift-hero{ text-align:center; }
   .gift-icon-wrap{
     width:72px; height:72px; border-radius:50%; margin:4px auto 16px; display:flex; align-items:center; justify-content:center;
-    font-size:30px; background:rgba(157,123,255,.1); border:1.5px solid rgba(157,123,255,.35);
+    font-size:30px; background:rgba(29,232,147,.1); border:1.5px solid rgba(29,232,147,.35);
   }
   .gift-hero .gt{ font-size:22px; font-weight:900; }
   .gift-hero .gs{ font-size:12.5px; color:var(--text-soft); margin:8px 0 20px; line-height:1.5; }
   .step-row{ display:flex; gap:12px; padding:10px 0; align-items:flex-start; }
   .step-num{
-    width:24px; height:24px; border-radius:50%; background:rgba(157,123,255,.14); color:var(--neon);
+    width:24px; height:24px; border-radius:50%; background:rgba(29,232,147,.14); color:var(--neon);
     display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:900; flex-shrink:0; margin-top:1px;
   }
   .step-row div:last-child{ font-size:13px; color:var(--text-soft); line-height:1.5; }
@@ -335,10 +335,10 @@
     display:flex; align-items:flex-start; gap:11px; padding:12px 13px; border-radius:14px; background:var(--bg2);
     border:1px solid var(--border); margin-bottom:9px;
   }
-  .diag-row.ok{ border-color:rgba(157,123,255,.35); }
+  .diag-row.ok{ border-color:rgba(29,232,147,.35); }
   .diag-row.bad{ border-color:rgba(255,90,114,.4); }
   .diag-row .diag-dot{ width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
-  .diag-row.ok .diag-dot{ background:var(--neon); box-shadow:0 0 0 3px rgba(157,123,255,.2); }
+  .diag-row.ok .diag-dot{ background:var(--neon); box-shadow:0 0 0 3px rgba(29,232,147,.2); }
   .diag-row.bad .diag-dot{ background:#ff5a72; box-shadow:0 0 0 3px rgba(255,90,114,.2); }
   .diag-row .diag-body{ flex:1; min-width:0; }
   .diag-row .diag-name{ font-weight:700; font-size:13px; word-break:break-word; }
@@ -351,7 +351,7 @@
     transition: border-color .15s ease, background .15s ease, transform .1s ease;
   }
   .gw-option:active{ transform: scale(.98); }
-  .gw-option.selected{ border-color:var(--neon); background: linear-gradient(160deg, rgba(157,123,255,.14), rgba(157,123,255,.03)); }
+  .gw-option.selected{ border-color:var(--neon); background: linear-gradient(160deg, rgba(29,232,147,.14), rgba(29,232,147,.03)); }
   .gw-option .gw-ic{
     width:42px; height:42px; border-radius:13px; background:var(--bg3); color:var(--neon); flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; letter-spacing:-.02em;
@@ -362,7 +362,7 @@
     display:flex; align-items:center; justify-content:center; transition: background .15s ease, border-color .15s ease;
   }
   .gw-option.selected .gw-check{ background:var(--neon); border-color:var(--neon); }
-  .gw-option .gw-check svg{ width:13px; height:13px; stroke:#ffffff; opacity:0; transition:opacity .1s ease; }
+  .gw-option .gw-check svg{ width:13px; height:13px; stroke:#04150c; opacity:0; transition:opacity .1s ease; }
   .gw-option.selected .gw-check svg{ opacity:1; }
 
   .toast{
@@ -376,13 +376,13 @@
 
   /* ---------- withdrawal celebration ---------- */
   .celebrate-overlay{
-    position:fixed; inset:0; background:rgba(7,6,15,.88); backdrop-filter: blur(7px); z-index:150;
+    position:fixed; inset:0; background:rgba(3,8,5,.86); backdrop-filter: blur(7px); z-index:150;
     display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none;
     transition: opacity .3s ease; padding:20px;
   }
   .celebrate-overlay.show{ opacity:1; pointer-events:auto; }
   .celebrate-card{
-    background: linear-gradient(165deg, var(--bg2), var(--bg1) 80%); border:1px solid rgba(157,123,255,.3);
+    background: linear-gradient(165deg, var(--bg2), var(--bg1) 80%); border:1px solid rgba(29,232,147,.3);
     border-radius:28px; padding:38px 26px 28px; max-width:320px; width:100%; text-align:center;
     position:relative; overflow:hidden; transform:scale(.8); transition: transform .4s cubic-bezier(.34,1.56,.64,1);
     box-shadow: 0 30px 70px -20px rgba(0,0,0,.75);
@@ -395,7 +395,7 @@
   .celebrate-card > *{ position:relative; z-index:1; }
   .celebrate-check{
     width:88px; height:88px; margin:0 auto 20px; border-radius:50%; position:relative;
-    background: radial-gradient(circle, rgba(157,123,255,.22), transparent 70%);
+    background: radial-gradient(circle, rgba(29,232,147,.22), transparent 70%);
     display:flex; align-items:center; justify-content:center;
   }
   .celebrate-check .ring{
@@ -416,7 +416,7 @@
   /* ---------- floating pill tabbar ---------- */
   .tabbar-wrap{ position:fixed; left:0; right:0; bottom:calc(14px + env(safe-area-inset-bottom)); display:flex; justify-content:center; z-index:60; padding:0 10px; }
   .tabbar{
-    display:flex; gap:1px; background: rgba(14,11,32,.88); backdrop-filter: blur(14px);
+    display:flex; gap:1px; background: rgba(10,20,15,.9); backdrop-filter: blur(14px);
     border:1px solid var(--border); border-radius:999px; padding:7px; box-shadow: 0 20px 44px -18px rgba(0,0,0,.75);
     max-width:100%; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;
   }
@@ -429,7 +429,7 @@
   .tab:active{ transform: scale(.92); }
   .tab .ic{ width:18px; height:18px; display:flex; align-items:center; justify-content:center; transition: transform .15s cubic-bezier(.3,.8,.3,1); }
   .tab .ic svg{ width:18px; height:18px; stroke:currentColor; }
-  .tab.active{ color:var(--neon); background: rgba(157,123,255,.1); }
+  .tab.active{ color:var(--neon); background: rgba(29,232,147,.1); }
   .tab.active .ic{ transform: translateY(-1px); }
 
   /* ---------- transaction history ---------- */
@@ -456,8 +456,55 @@
   .empty p{ color:var(--text-soft); font-size:13.5px; line-height:1.5; }
   .gate-ic{
     width:64px; height:64px; margin:0 auto 18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    border:1.5px solid rgba(157,123,255,.4); background: radial-gradient(circle, rgba(157,123,255,.14), transparent 70%); color:var(--neon);
+    border:1.5px solid rgba(29,232,147,.4); background: radial-gradient(circle, rgba(29,232,147,.14), transparent 70%); color:var(--neon);
   }
+
+  /* ---------- "not joined" gate ---------- */
+  .jg{ min-height:78vh; display:flex; align-items:center; justify-content:center; padding:10px 2px; }
+  .jg-card{
+    width:100%; max-width:380px; text-align:center; position:relative; overflow:hidden;
+    background: linear-gradient(165deg, var(--bg2), var(--bg1) 80%);
+    border:1px solid var(--border); border-radius:28px; padding:30px 22px 22px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 28px 60px -28px rgba(0,0,0,.8);
+    animation: cardIn .4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .jg-card::before{
+    content:''; position:absolute; left:50%; top:-90px; width:260px; height:200px; transform:translateX(-50%);
+    background: radial-gradient(circle, rgba(255,90,114,.22), transparent 70%); pointer-events:none;
+  }
+  .jg-avatar{
+    position:relative; width:84px; height:84px; margin:0 auto 14px; border-radius:24px; overflow:visible;
+  }
+  .jg-avatar .av{
+    width:100%; height:100%; border-radius:24px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(155deg, var(--neon), var(--neon-deep)); color:#04150c; font-weight:900; font-size:36px;
+    border:1px solid rgba(255,255,255,.12); box-shadow:0 18px 40px -18px var(--neon-glow);
+  }
+  .jg-avatar .av img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .jg-lock{
+    position:absolute; right:-8px; bottom:-8px; width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; background:var(--danger); color:#fff;
+    border:3px solid var(--bg1); box-shadow:0 8px 18px -6px rgba(255,90,114,.7);
+  }
+  .jg-name{ font-size:17px; font-weight:900; letter-spacing:-.01em; }
+  .jg-handle{ font-size:12px; color:var(--text-soft); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .jg-title{ font-size:20px; font-weight:900; letter-spacing:-.02em; margin:20px 0 6px; color:var(--text); }
+  .jg-sub{ font-size:13.5px; line-height:1.55; color:var(--text-soft); margin:0 6px; }
+  .jg-chs{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:14px 0 2px; }
+  .jg-chip{
+    font-size:11.5px; font-weight:700; padding:6px 11px; border-radius:999px; color:#ffc2cc;
+    background:rgba(255,90,114,.1); border:1px solid rgba(255,90,114,.28);
+  }
+  .jg-steps{ text-align:left; margin:20px 0 18px; display:flex; flex-direction:column; gap:10px; }
+  .jg-step{
+    display:flex; align-items:center; gap:12px; padding:11px 13px; border-radius:15px;
+    background:rgba(255,255,255,.035); border:1px solid var(--border); font-size:13px; font-weight:600;
+  }
+  .jg-step i{
+    width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-style:normal; font-size:12px; font-weight:900; color:#04150c; background:var(--neon);
+  }
+  .jg-actions{ display:flex; flex-direction:column; gap:10px; }
 
   .skel{
     background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 37%, var(--bg3) 63%);
@@ -472,8 +519,8 @@
   }
   .loading-logo{
     width:84px; height:84px; border-radius:22px; display:flex; align-items:center; justify-content:center;
-    background: linear-gradient(155deg, #251d52, var(--bg2) 70%); border:1px solid rgba(157,123,255,.3);
-    box-shadow: 0 18px 40px -16px rgba(157,123,255,.4); overflow:hidden;
+    background: linear-gradient(155deg, #1c2e24, var(--bg2) 70%); border:1px solid rgba(29,232,147,.3);
+    box-shadow: 0 18px 40px -16px rgba(29,232,147,.4); overflow:hidden;
     animation: loadingFloat 2.2s ease-in-out infinite;
   }
   .loading-logo svg{ width:44px; height:44px; }
@@ -487,151 +534,6 @@
   .loading-name{ font-size:18px; font-weight:900; letter-spacing:-.01em; text-align:center; color:var(--text); }
   .loading-caption{ font-size:11px; font-weight:700; letter-spacing:.22em; color:var(--text-faint); text-transform:uppercase; }
 
-
-  /* ---------- JOIN GATE: "Vault" design ---------- */
-  .jg-wrap{ min-height:calc(100vh - 40px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px 4px 26px; }
-  .jg-wrap.shake{ animation: pieceShake .6s cubic-bezier(.36,.07,.19,.97); }
-  .jg-emblem{ position:relative; width:128px; height:128px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
-  .jg-ring{ position:absolute; inset:0; border-radius:50%; border:2px solid transparent; border-top-color:var(--neon); border-right-color:rgba(157,123,255,.35); animation: ringSpin 2.4s linear infinite; }
-  .jg-ring.r2{ inset:12px; border-top-color:transparent; border-bottom-color:var(--gold); border-left-color:rgba(255,207,77,.3); animation-duration:3.4s; animation-direction:reverse; }
-  .jg-lock{
-    width:78px; height:78px; border-radius:26px; display:flex; align-items:center; justify-content:center; color:var(--neon);
-    background: linear-gradient(155deg, #251d52, var(--bg2) 70%); border:1px solid rgba(157,123,255,.35);
-    box-shadow: 0 0 40px -6px var(--neon-glow), inset 0 1px 0 rgba(255,255,255,.08);
-    animation: loadingFloat 2.8s ease-in-out infinite;
-  }
-  .jg-lock svg{ width:36px; height:36px; }
-  .jg-kicker{ font-size:10.5px; letter-spacing:.34em; font-weight:800; color:var(--gold); }
-  .jg-title{ margin:8px 0 6px; font-size:27px; font-weight:900; letter-spacing:-.02em; }
-  .jg-title span{ background: linear-gradient(90deg, var(--neon), var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .jg-sub{ margin:0 auto 18px; max-width:300px; font-size:13px; line-height:1.55; color:var(--text-soft); }
-  .jg-progress{ display:flex; align-items:center; gap:10px; width:100%; max-width:340px; margin-bottom:16px; font-size:11px; font-weight:800; letter-spacing:.08em; color:var(--text-soft); text-transform:uppercase; }
-  .jg-bar{ flex:1; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden; border:1px solid var(--border); }
-  .jg-bar i{ display:block; width:35%; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); animation: jgSweep 1.8s ease-in-out infinite; }
-  @keyframes jgSweep{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(300%);} }
-  .jg-list{ width:100%; max-width:340px; display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
-  .jg-card{
-    position:relative; display:flex; align-items:center; gap:11px; text-align:left; padding:12px 12px 12px 14px;
-    border-radius:18px; border:1px solid var(--border); overflow:hidden;
-    background: linear-gradient(165deg, var(--bg2), var(--bg1) 80%);
-    animation: cardIn .4s cubic-bezier(.2,.8,.2,1) both;
-  }
-  .jg-card::before{ content:''; position:absolute; left:0; top:12%; bottom:12%; width:3px; border-radius:0 3px 3px 0; background:var(--c); box-shadow:0 0 12px var(--c); }
-  .jg-num{ font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--text-soft); width:14px; }
-  .jg-av{
-    width:42px; height:42px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-    font-weight:900; font-size:17px; color:#ffffff; background: linear-gradient(150deg, var(--c), rgba(255,255,255,.25));
-  }
-  .jg-info{ flex:1; min-width:0; }
-  .jg-name{ font-weight:800; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .jg-state{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-soft); margin-top:3px; }
-  .jg-dot{ width:6px; height:6px; border-radius:50%; background:var(--danger); box-shadow:0 0 0 3px rgba(255,90,114,.18); }
-  .jg-join{
-    border:none; cursor:pointer; padding:10px 18px; border-radius:12px; font-family:inherit; font-weight:800; font-size:12.5px;
-    color:#ffffff; background: linear-gradient(135deg, var(--neon), var(--neon-deep)); box-shadow:0 8px 18px -10px var(--neon-glow);
-    transition: transform .12s cubic-bezier(.3,.8,.3,1);
-  }
-  .jg-join:active{ transform:scale(.92); }
-  .jg-verify{ max-width:340px; position:relative; overflow:hidden; }
-  .jg-verify::after{ content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); animation: jgShine 2.8s ease-in-out infinite; }
-  @keyframes jgShine{ 0%{ left:-60%; } 60%,100%{ left:130%; } }
-  .jg-spin{ display:none; width:15px; height:15px; border-radius:50%; border:2.5px solid rgba(4,21,12,.3); border-top-color:#ffffff; animation: loadingSpin .7s linear infinite; }
-  .jg-verify.busy .jg-spin{ display:inline-block; }
-  .jg-auto{ display:flex; align-items:center; gap:7px; margin-top:14px; font-size:11px; color:var(--text-soft); }
-
-
-  /* =====================================================================
-     AURORA UI — full restyle layer (overrides everything above)
-     ===================================================================== */
-  body{
-    font-family:'Sora','Inter',system-ui,sans-serif;
-    background:
-      radial-gradient(520px 340px at 105% -4%, rgba(255,111,181,.20), transparent 70%),
-      radial-gradient(560px 380px at -10% 8%, rgba(157,123,255,.26), transparent 70%),
-      radial-gradient(500px 420px at 50% 112%, rgba(255,200,87,.10), transparent 70%),
-      var(--bg0);
-    background-attachment:fixed;
-  }
-  body::before{
-    content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
-    background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-    background-size:34px 34px; -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%); mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
-  }
-  #app,#emptyState{ position:relative; z-index:1; }
-
-  /* header */
-  .hd-logo{ width:44px; height:44px; border-radius:15px 15px 15px 5px; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(145deg,#2a2060,#151133); border:1px solid rgba(157,123,255,.45); box-shadow:0 8px 22px -8px rgba(157,123,255,.7); color:var(--neon); }
-  .hd-logo img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .hd-logo svg{ width:22px; height:22px; }
-  .back-btn{ border-radius:14px 14px 14px 5px; background:rgba(255,255,255,.04); backdrop-filter:blur(8px); }
-  .app-head .titles .name{ font-family:'Sora',sans-serif; font-weight:800; font-size:16px; background:linear-gradient(90deg,#fff,#cdbfff 60%,#ffb4dd); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-
-  /* cards: glass with a cut corner + gradient hairline */
-  .card{
-    position:relative; border:none; border-radius:26px 26px 26px 8px; padding:20px;
-    background: linear-gradient(160deg, rgba(40,32,96,.55), rgba(16,12,38,.78) 70%); backdrop-filter:blur(12px);
-    box-shadow: 0 22px 40px -24px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.08);
-  }
-  .card::after{ content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
-    background:linear-gradient(150deg, rgba(190,170,255,.55), rgba(255,255,255,.04) 40%, rgba(255,111,181,.35));
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
-  .card h3{ font-family:'Sora',sans-serif; letter-spacing:.16em; color:#b9b0e6; }
-  .card h3::after{ content:''; flex:1; height:1px; margin-left:6px; background:linear-gradient(90deg, rgba(185,176,230,.35), transparent); }
-
-  /* balance = boarding-pass ticket */
-  .bal-hero{ padding:26px 18px 24px; border-radius:30px 30px 30px 8px;
-    background: radial-gradient(120% 90% at 0% 0%, rgba(157,123,255,.38), transparent 60%), radial-gradient(90% 80% at 100% 100%, rgba(255,111,181,.28), transparent 60%), linear-gradient(160deg,#1d1745,#0e0b20); }
-  .bal-hero::before{ opacity:.22; }
-  .bal-huge{ font-family:'Sora',sans-serif; font-size:48px; font-weight:800; letter-spacing:-.04em;
-    background:linear-gradient(180deg,#fff,#cbbfff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .bal-huge .cur{ -webkit-text-fill-color:var(--gold); color:var(--gold); font-size:26px; }
-  .bal-label{ letter-spacing:.3em; }
-  .live-badge,.earn-pill{ background:rgba(255,200,87,.12); color:var(--gold); border-color:rgba(255,200,87,.35); }
-  .live-dot{ background:var(--gold); }
-
-  /* buttons */
-  .btn{ border-radius:18px 18px 18px 6px; font-family:'Sora',sans-serif; letter-spacing:.01em; }
-  .btn.neon{ color:#fff; background:linear-gradient(120deg,#8a6bff,#c15bff 55%,#ff6fb5); box-shadow:0 16px 30px -14px rgba(193,91,255,.8), inset 0 1px 0 rgba(255,255,255,.35); text-shadow:0 1px 2px rgba(0,0,0,.25); }
-  .btn.ghost{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }
-  .chip-btn{ border-radius:12px 12px 12px 4px; background:rgba(255,255,255,.05); }
-  .jg-join{ color:#fff; background:linear-gradient(120deg,#8a6bff,#ff6fb5); }
-
-  /* inputs */
-  .bet-input-wrap,.field input,.field textarea,.ref-link-box{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.1); border-radius:16px 16px 16px 5px; }
-  .bet-input-wrap .cur{ color:var(--gold); }
-
-  /* game tiles */
-  .game-chip{ border-radius:18px 18px 18px 6px; background:rgba(255,255,255,.04); }
-  .game-chip.active{ background:linear-gradient(160deg, rgba(157,123,255,.28), rgba(255,111,181,.10)); border-color:#b79cff; box-shadow:0 10px 24px -12px rgba(157,123,255,.8), 0 0 0 1px #b79cff inset; }
-  .stage{ border-radius:22px; background:radial-gradient(circle at 50% 55%, rgba(157,123,255,.16), transparent 65%); }
-  .stat-tile{ border-radius:16px 16px 16px 5px; background:rgba(255,255,255,.04); }
-  .stat-tile .n{ font-family:'Sora',sans-serif; }
-  .fund-bar-fill{ background:linear-gradient(90deg,#8a6bff,#ff6fb5,#ffc857); box-shadow:0 0 14px rgba(255,111,181,.55); }
-  .list-row.you{ background:rgba(157,123,255,.12); }
-
-  /* floating dock tab bar */
-  .tabbar{ background:rgba(16,12,40,.82); backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.1); border-radius:26px 26px 26px 8px; padding:6px; gap:2px; box-shadow:0 24px 46px -16px rgba(0,0,0,.9), 0 0 0 1px rgba(157,123,255,.12); }
-  .tab{ border-radius:20px 20px 20px 6px; position:relative; font-family:'Sora',sans-serif; font-size:8.5px; padding:9px 11px 8px; }
-  .tab.active{ color:#fff; background:linear-gradient(140deg, rgba(138,107,255,.55), rgba(255,111,181,.35)); box-shadow:0 10px 22px -10px rgba(193,91,255,.9), inset 0 1px 0 rgba(255,255,255,.25); }
-  .tab.active::after{ content:''; position:absolute; bottom:3px; left:50%; width:4px; height:4px; margin-left:-2px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); }
-
-  /* loading screen */
-  #loadingScreen{ background: radial-gradient(420px 320px at 50% 38%, rgba(157,123,255,.28), transparent 70%), var(--bg0); }
-  .loading-logo{ width:96px; height:96px; border-radius:30px 30px 30px 9px; border:1px solid rgba(190,170,255,.5); background:linear-gradient(150deg,#2a2060,#151133); box-shadow:0 22px 50px -16px rgba(157,123,255,.8), 0 0 0 8px rgba(157,123,255,.08); position:relative; color:var(--neon); }
-  .loading-spinner{ border-color:rgba(255,255,255,.08); border-top-color:#c15bff; border-right-color:#ff6fb5; }
-  .loading-name{ font-family:'Sora',sans-serif; background:linear-gradient(90deg,#fff,#cdbfff,#ffb4dd); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .gate-ic{ color:var(--neon); }
-
-  /* join gate accents */
-  .jg-ring{ border-top-color:#c15bff; border-right-color:rgba(255,111,181,.4); }
-  .jg-ring.r2{ border-bottom-color:var(--gold); }
-  .jg-card{ border:none; border-radius:22px 22px 22px 7px; background:linear-gradient(160deg, rgba(40,32,96,.6), rgba(16,12,38,.85)); box-shadow:inset 0 1px 0 rgba(255,255,255,.08); }
-  .jg-verify{ border-radius:20px 20px 20px 7px; }
-  .jg-title{ font-family:'Sora',sans-serif; }
-  .jg-bar i{ background:linear-gradient(90deg,#8a6bff,#ff6fb5); }
-  .jg-av{ color:#120e2b; }
-
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 </style>
 </head>
@@ -644,7 +546,7 @@
   </div>
   <div class="loading-spinner"></div>
   <div>
-    <div class="loading-name" id="loadingBotName">&nbsp;</div>
+    <div class="loading-name" id="loadingBotName">Loot Games</div>
     <div class="loading-caption">Loading…</div>
   </div>
 </div>
@@ -654,10 +556,9 @@
     <button class="back-btn" id="backBtn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
     </button>
-    <div class="hd-logo"><img id="hdrLogo" alt="" style="display:none;"><span id="hdrLogoFb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.2l-4.8 2.56.92-5.34-3.88-3.78 5.36-.78L12 2z"></path></svg></span></div>
     <div class="titles">
-      <div class="name" id="botNameTitle">&nbsp;</div>
-      <div class="sub" id="botSubTitle">Home · Games · Refer · Gift · Rank</div>
+      <div class="name" id="botNameTitle">👑 Loot Games</div>
+      <div class="sub">Home · Games · Refer · Gift · Rank</div>
     </div>
   </header>
 
@@ -689,7 +590,7 @@
 
     <div class="card">
       <div style="display:flex; align-items:center; gap:12px;">
-        <div class="hdr-ic" style="width:36px; height:36px; background:rgba(157,123,255,.14); border-radius:11px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></div>
+        <div class="hdr-ic" style="width:36px; height:36px; background:rgba(29,232,147,.14); border-radius:11px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg></div>
         <div>
           <div class="lbl" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-soft); font-weight:800;">Daily Bonus</div>
           <div style="font-size:12px; color:var(--text-soft); margin-top:2px;">Come back every day for free credit</div>
@@ -939,59 +840,56 @@
 <script>
 (function(){
   const tg = window.Telegram ? window.Telegram.WebApp : null;
-  if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#07060f'); tg.setBackgroundColor && tg.setBackgroundColor('#07060f'); }catch(e){} }
+  if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0a1610'); }catch(e){} }
 
   const params = new URLSearchParams(location.search);
   let botId = params.get('botid');
   let apiUrl = params.get('api');
 
   // --- Sanitize routing params (never trust the query string) ---
-  // ==== AUTO-CONNECT CONFIG ====
-  // Yeh app ab khud bot se connect ho jata hai. Agar link mein ?api= / ?botid= na ho
-  // to neeche wala DEFAULT_BOT_ID use hota hai. Bot badalna ho to sirf yeh ek value badlo.
-  const DEFAULT_BOT_ID = '63493096';
-
-  const cleanApi = (v) => {
-    if (!v) return null;
-    try{
-      const u = new URL(v);
-      return (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null;
-    } catch(e){ return null; }
-  };
   if (botId && !/^\d{4,15}$/.test(botId)) botId = null;
-  apiUrl = cleanApi(apiUrl);
-
-  // Last working route yaad rakho (menu button / Open App se aaya link)
-  try{
-    if (apiUrl) localStorage.setItem('lg_api', apiUrl);
-    else if (!botId){ apiUrl = cleanApi(localStorage.getItem('lg_api')); }
-  } catch(e){}
-  // Kuch bhi na mile to default bot se auto-connect
-  if (!apiUrl && !botId) botId = DEFAULT_BOT_ID;
-
-  // Show the bot's real profile photo on the loading screen (falls back to the
-  // default star mark if the bot has no public photo, or the request fails).
-  // Is bot ka username (sirf pehle frame ke liye). Asli username bot_info / dashboard se aate hi replace ho jata hai.
-  const BOT_USERNAME_FALLBACK = 'Testkaru2krbot';
-  let photoFor = '';
-  function loadBotPhoto(username){
-    username = String(username || '').replace(/^@/, '');
-    if (!username || username === photoFor) return;
-    photoFor = username;
-    const url = 'https://t.me/i/userpic/320/' + encodeURIComponent(username) + '.jpg';
-    [['loadingBotPhoto','loadingLogoFallback'], ['hdrLogo','hdrLogoFb']].forEach(([iid, fid]) => {
-      const img = document.getElementById(iid), fb = document.getElementById(fid);
-      if (!img || !fb) return;
-      img.style.display = 'none'; fb.style.display = '';
-      img.onload = () => {
-        if (img.naturalWidth < 16){ img.style.display = 'none'; fb.style.display = ''; return; }
-        img.style.display = 'block'; fb.style.display = 'none';
-      };
-      img.onerror = () => { img.style.display = 'none'; fb.style.display = ''; };
-      img.src = url;
-    });
+  if (apiUrl){
+    try{
+      const u = new URL(apiUrl);
+      apiUrl = (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null;
+    } catch(e){ apiUrl = null; }
   }
-  loadBotPhoto(BOT_USERNAME_FALLBACK);
+
+  // ---------- Bot branding (logo + name + @handle) ----------
+  // The logo comes from Telegram's public userpic endpoint. If the bot has no public photo (or the
+  // request fails) we draw a clean initial-letter avatar instead of leaving a broken/empty box.
+  const brand = { username: '', name: '' };
+  function brandInitial(){ return (String(brand.name || brand.username || 'B').trim()[0] || 'B').toUpperCase(); }
+  function userpicUrl(u){ return 'https://t.me/i/userpic/320/' + encodeURIComponent(u) + '.jpg'; }
+
+  function paintLogo(box){          // box = element that should show the avatar
+    if (!box) return;
+    const letter = brandInitial();
+    box.textContent = letter;
+    if (!brand.username) return;
+    const img = new Image();
+    img.alt = '';
+    img.referrerPolicy = 'no-referrer';
+    img.onload = () => { box.textContent = ''; box.appendChild(img); };
+    img.onerror = () => { box.textContent = letter; };
+    img.src = userpicUrl(brand.username);
+  }
+
+  function loadBotPhoto(username, name){
+    if (username && /^[A-Za-z0-9_]{3,64}$/.test(String(username))) brand.username = String(username);
+    if (name) brand.name = String(name);
+    const img = document.getElementById('loadingBotPhoto');
+    const fallback = document.getElementById('loadingLogoFallback');
+    if (img && fallback && brand.username){
+      img.onload = () => { img.style.display = 'block'; fallback.style.display = 'none'; };
+      img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
+      img.referrerPolicy = 'no-referrer';
+      img.src = userpicUrl(brand.username);
+    }
+    document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
+    document.querySelectorAll('[data-brand-name]').forEach(el => { el.textContent = brand.name || brand.username || 'Bot'; });
+    document.querySelectorAll('[data-brand-handle]').forEach(el => { el.textContent = brand.username ? '@' + brand.username : ''; });
+  }
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
   // (No manual bot registration, and no public bot-list lookup anymore.)
@@ -1040,52 +938,29 @@
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), 30000);
     try{
-      const send = async (routeParams) => {
-        const res = await fetch('/api/proxy', {
+      const routeParams = botId ? { botid: botId } : { api: apiUrl };
+      let res;
+      try{
+        res = await fetch('/api/proxy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'omit',
           signal: ctrl.signal,
-          body: JSON.stringify(Object.assign({}, routeParams, { action, init_data: initData }, extra || {}))
+          body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
         });
-        let data;
-        try{ data = await res.json(); }
-        catch(parseErr){ const e = new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); e.badResponse = true; throw e; }
-        return data;
-      };
-      const primary = apiUrl ? { api: apiUrl } : { botid: botId };
-      const canRetry = !MUTATING_ACTIONS.has(action);
-      let data;
-      let attempt = 0;
-      while (true){
-        try{
-          try{ data = await send(primary); }
-          catch(e1){
-            // Saved/old api link kharab ho to default bot se auto-reconnect
-            if (e1.badResponse && apiUrl && DEFAULT_BOT_ID && canRetry){
-              data = await send({ botid: DEFAULT_BOT_ID });
-              apiUrl = null; botId = DEFAULT_BOT_ID;
-              try{ localStorage.removeItem('lg_api'); }catch(_){}
-            } else throw e1;
-          }
-          break;
-        } catch(netErr){
-          if (netErr && netErr.badResponse) throw netErr;
-          if (canRetry && attempt < 2 && !(netErr && netErr.name === 'AbortError')){
-            attempt++; await new Promise(r => setTimeout(r, 700 * attempt)); continue;
-          }
-          throw new Error(netErr && netErr.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Check your connection.');
-        }
+      } catch(netErr){
+        throw new Error(netErr && netErr.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Check your connection.');
       }
+      let data;
+      try{ data = await res.json(); }
+      catch(parseErr){ throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); }
       const inner = (data && data.result !== undefined) ? data.result : data;
       if (inner && inner.ok === false) {
         const err = new Error(inner.error || 'Something went wrong');
         err.extra = inner;
         // Server-side channel gate (popup instead of a page).
         if (Array.isArray(inner.join_needed) && inner.join_needed.length){
-          const jl = inner.join_needed.map(normalizeChannel);
-          renderJoinGate(jl);
-          showJoinPopup();
+          showJoinPopup(inner.join_needed.map(normalizeChannel), false);
         }
         throw err;
       }
@@ -1096,26 +971,13 @@
     }
   }
 
-  // Same as callApi but never re-opens the join gate (used by the gate's own auto-check)
-  async function callApiQuiet(action, extra){
-    const initData = (tg && tg.initData) ? tg.initData : '';
-    if (!initData) throw new Error('no-telegram');
-    const route = apiUrl ? { api: apiUrl } : { botid: botId };
-    const res = await fetch('/api/proxy', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit',
-      body: JSON.stringify(Object.assign({}, route, { action, init_data: initData }, extra || {}))
-    });
-    let data; try{ data = await res.json(); } catch(e){ throw new Error('Server returned an invalid response.'); }
-    return (data && data.result !== undefined) ? data.result : data;
-  }
-
   async function loadBotInfoQuick(){
     try{
       await resolveBotId();
       const info = await callApi('bot_info');
       if (info && info.bot_username){
         $('loadingBotName').textContent = info.bot_name || info.bot_username;
-        loadBotPhoto(info.bot_username);
+        loadBotPhoto(info.bot_username, info.bot_name || info.bot_username);
       }
     } catch(e){}
   }
@@ -1150,7 +1012,7 @@
   }
   function celebrate(){
     playChime(true);
-    const colors = ['#9d7bff','#ffcf4d','#5fb0ff','#b98bff'];
+    const colors = ['#1de893','#ffcf4d','#5fb0ff','#b98bff'];
     for (let i=0;i<20;i++){
       const p = document.createElement('div');
       const size = 6 + Math.random()*5;
@@ -1180,7 +1042,7 @@
   function celebrateWithdrawal(amount, msg){
     const card = $('celebrateCard');
     card.querySelectorAll('.confetti').forEach(el => el.remove());
-    const colors = ['#9d7bff', '#ffcf4d', '#5fb0ff', '#b98bff', '#ff5a72'];
+    const colors = ['#1de893', '#ffcf4d', '#5fb0ff', '#b98bff', '#ff5a72'];
     for (let i = 0; i < 22; i++){
       const c = document.createElement('span');
       c.className = 'confetti';
@@ -1220,14 +1082,82 @@
       </div>`;
   }
 
+  // Safe for every kind of channel entry (public @username, private/"request to join" links like
+  // t.me/+AbCd..., plain strings, objects, null) — it can never throw.
   function normalizeChannel(c){
-    if (typeof c === 'string'){
-      const handle = c.replace(/^@/, '');
-      return { name: c, url: c.startsWith('http') ? c : `https://t.me/${handle}` };
+    try{
+      let name = '', url = '';
+      if (typeof c === 'string'){ name = c; url = c; }
+      else if (c && typeof c === 'object'){
+        name = c.name || c.title || c.username || '';
+        url = c.url || c.link || '';
+      }
+      name = (typeof name === 'string' || typeof name === 'number') ? String(name).trim() : '';
+      url = (typeof url === 'string') ? url.trim() : '';
+      const looksLikeLink = /^https?:\/\//i.test(name) || /t\.me\//i.test(name) || /^\+/.test(name.replace(/^@/, ''));
+      if (!name || name === 'None' || name === 'null' || name === 'undefined' || looksLikeLink) name = 'Private channel';
+      if (name.length > 40) name = name.slice(0, 37) + '…';
+      if (!/^https:\/\//i.test(url)) url = '';
+      return { name, url };
+    } catch(e){
+      return { name: 'Private channel', url: '' };
     }
-    const name = c.name || c.title || c.username || 'Channel';
-    const url = c.url || c.link || (c.username ? `https://t.me/${String(c.username).replace(/^@/, '')}` : '#');
-    return { name, url };
+  }
+
+  // On-page message when channels are not joined (shown together with the Telegram popup).
+  function renderJoinGate(channels){
+    try{
+      hideLoadingScreen();
+      $('app').style.display = 'none';
+      $('tabbarWrap').style.display = 'none';
+      $('emptyState').style.display = 'block';
+      const list = (channels || []).slice(0, 4);
+      const named = list.filter(c => c && c.name && c.name !== 'Private channel');
+      const chips = (named.length ? named : list).map(c => `<span class="jg-chip">${escapeHtml(c.name)}</span>`).join('');
+      const plural = (channels || []).length > 1;
+      $('emptyState').innerHTML = `
+        <div class="jg">
+          <div class="jg-card">
+            <div class="jg-avatar">
+              <div class="av" data-brand-avatar></div>
+              <div class="jg-lock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            </div>
+            <div class="jg-name" data-brand-name></div>
+            <div class="jg-handle" data-brand-handle></div>
+
+            <div class="jg-title">You have not joined channel</div>
+            <p class="jg-sub">Join our channel${plural ? 's' : ''} to unlock the app, then come back and check again.</p>
+            ${chips ? `<div class="jg-chs">${chips}</div>` : ''}
+
+            <div class="jg-steps">
+              <div class="jg-step"><i>1</i>Open the bot chat &amp; join the channel${plural ? 's' : ''}</div>
+              <div class="jg-step"><i>2</i>Come back here and tap Check Again</div>
+            </div>
+
+            <div class="jg-actions">
+              <button class="btn neon" id="joinRefreshBtn">Check Again</button>
+              <button class="btn ghost" id="joinChatBtn">Open Bot Chat</button>
+            </div>
+          </div>
+        </div>`;
+      loadBotPhoto(brand.username, brand.name);
+      $('joinRefreshBtn').addEventListener('click', () => {
+        const b = $('joinRefreshBtn'); b.disabled = true; b.textContent = 'Checking…';
+        loadDashboard();
+      });
+      $('joinChatBtn').addEventListener('click', () => {
+        try{
+          if (tg && tg.close) tg.close();
+        } catch(e){}
+      });
+    } catch(e){
+      // Last-resort fallback so the page never ends up blank.
+      try{
+        hideLoadingScreen();
+        $('emptyState').style.display = 'block';
+        $('emptyState').innerHTML = '<div class="empty"><div class="t">You have not joined channel</div><p>Join our channel from the bot chat, then reopen the app.</p></div>';
+      } catch(_){}
+    }
   }
 
   // Only used for the contact/captcha verification step now.
@@ -1250,123 +1180,37 @@
     });
   }
 
-  // ---------- Join gate: native popup (screenshot jaisa) + unique "Vault" screen ----------
+  // ---------- Native Telegram popup when channels are not joined ----------
   let joinPopupOpen = false;
-  let gateTimer = null, gateBusy = false, gateSig = '';
-
-  function showJoinPopup(){
+  function showJoinPopup(channels, lockApp){
     if (joinPopupOpen) return;
     joinPopupOpen = true;
-    const title = 'Join Channels';
-    const msg = 'You must join all required channels to access the dashboard.';
-    const done = () => { joinPopupOpen = false; };
-    const okVer = !tg || !tg.isVersionAtLeast || tg.isVersionAtLeast('6.2');
-    try{
-      if (tg && tg.showPopup && okVer){
-        tg.showPopup({ title, message: msg, buttons: [{ id: 'close', type: 'close' }] }, done);
-      } else if (tg && tg.showAlert && okVer){
-        tg.showAlert(msg, done);
-      } else { window.alert(msg); done(); }
-    } catch(e){ joinPopupOpen = false; }
-  }
-
-  function openChannel(url){
-    if (!url || url === '#') return;
-    try{
-      if (tg && /^https:\/\/t\.me\//i.test(url) && tg.openTelegramLink) tg.openTelegramLink(url);
-      else if (tg && tg.openLink) tg.openLink(url);
-      else window.open(url, '_blank');
-    } catch(e){ window.open(url, '_blank'); }
-  }
-
-  function stopGatePoll(){ if (gateTimer){ clearInterval(gateTimer); gateTimer = null; } }
-  function startGatePoll(){
-    if (gateTimer) return;
-    gateTimer = setInterval(() => { if (!document.hidden) gateVerify(false); }, 5000);
-  }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && gateTimer) gateVerify(false); });
-  window.addEventListener('focus', () => { if (gateTimer) gateVerify(false); });
-
-  const CH_COLORS = ['#9d7bff', '#5fd4ff', '#ff6fb5', '#ffc857', '#5ff0b8'];
-
-  function renderJoinGate(channels){
-    hideLoadingScreen();
-    $('app').style.display = 'none';
-    $('tabbarWrap').style.display = 'none';
-    const el = $('emptyState');
-    el.style.display = 'block';
-    const list = (channels || []).filter(Boolean);
-    const sig = list.map(c => c.url + '|' + c.name).join(',');
-    gateSig = sig;
-    const n = list.length;
-    const rows = list.map((c, i) => {
-      const nm = String(c.name || 'Channel');
-      const letter = escapeHtml((nm.replace(/^@/, '')[0] || 'C').toUpperCase());
-      const col = CH_COLORS[i % CH_COLORS.length];
-      return `
-        <div class="jg-card" style="--c:${col}; animation-delay:${i * 70}ms">
-          <div class="jg-num">${i + 1}</div>
-          <div class="jg-av" style="--c:${col}">${letter}</div>
-          <div class="jg-info">
-            <div class="jg-name">${escapeHtml(nm)}</div>
-            <div class="jg-state"><span class="jg-dot"></span>Not joined</div>
-          </div>
-          <button class="jg-join" data-url="${escapeHtml(c.url || '')}">Join</button>
-        </div>`;
-    }).join('');
-    el.innerHTML = `
-      <div class="jg-wrap">
-        <div class="jg-emblem">
-          <div class="jg-ring"></div><div class="jg-ring r2"></div>
-          <div class="jg-lock">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"></rect><path d="M8 11V7.5a4 4 0 0 1 8 0V11"></path><circle cx="12" cy="16" r="1.3" fill="currentColor" stroke="none"></circle></svg>
-          </div>
-        </div>
-        <div class="jg-kicker">ACCESS LOCKED</div>
-        <h2 class="jg-title">Unlock your <span>vault</span></h2>
-        <p class="jg-sub">Join ${n > 1 ? 'these ' + n + ' channels' : 'this channel'} to enter the dashboard. We detect it automatically the moment you join.</p>
-        <div class="jg-progress"><div class="jg-bar"><i></i></div><span>${n} left</span></div>
-        <div class="jg-list">${rows}</div>
-        <button class="btn neon jg-verify" id="jgVerify">
-          <span class="jg-spin"></span><span id="jgVerifyTxt">I've joined — Verify</span>
-        </button>
-        <div class="jg-auto"><span class="live-dot"></span>Auto-checking every few seconds</div>
-      </div>`;
-    el.querySelectorAll('.jg-join').forEach(b => b.addEventListener('click', () => openChannel(b.getAttribute('data-url'))));
-    $('jgVerify').addEventListener('click', () => gateVerify(true));
-    startGatePoll();
-  }
-
-  async function gateVerify(manual){
-    if (gateBusy) return;
-    gateBusy = true;
-    const btn = $('jgVerify');
-    if (manual && btn){ btn.classList.add('busy'); btn.disabled = true; $('jgVerifyTxt').textContent = 'Checking…'; }
-    try{
-      const d = await callApiQuiet('dashboard');
-      const left = (d && d.join_needed || []).map(normalizeChannel);
-      if (left.length){
-        const sig = left.map(c => c.url + '|' + c.name).join(',');
-        if (sig !== gateSig) renderJoinGate(left);   // kuch channels join ho gaye -> list update
-        if (manual){
-          try{ tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error'); }catch(e){}
-          const w = document.querySelector('.jg-wrap'); if (w){ w.classList.remove('shake'); void w.offsetWidth; w.classList.add('shake'); }
-          toast(`Abhi ${left.length} channel join karna baaki hai`, true);
-          showJoinPopup();
-        }
-      } else {
-        stopGatePoll();
-        try{ tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); }catch(e){}
-        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
-        await loadDashboard();
+    const names = (channels || []).map(c => c && c.name).filter(n => n && n !== 'Channel' && n !== 'Private channel').slice(0, 3).join(', ');
+    const plural = (channels || []).length > 1;
+    const msg = ('You have not joined our channel' + (plural ? 's' : '') + (names ? ' (' + names + ')' : '') +
+      '. Join from the bot chat, then tap Check Again.').slice(0, 250);
+    const finish = (id) => {
+      joinPopupOpen = false;
+      if (id === 'retry'){
+        loadDashboard();
+      } else if (lockApp && tg && tg.close){
+        try{ tg.close(); }catch(e){}
       }
-    } catch(e){
-      if (manual) toast(e.message || 'Check failed', true);
-    } finally {
-      gateBusy = false;
-      const b2 = $('jgVerify');
-      if (b2){ b2.classList.remove('busy'); b2.disabled = false; const t = $('jgVerifyTxt'); if (t) t.textContent = "I've joined — Verify"; }
-    }
+    };
+    const canPopup = tg && tg.showPopup && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'));
+    try{
+      if (canPopup){
+        tg.showPopup({
+          title: 'Channel not joined',
+          message: msg,
+          buttons: [{ id: 'retry', type: 'default', text: 'Check Again' }, { id: 'close', type: 'close' }]
+        }, finish);
+      } else if (tg && tg.showAlert && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'))){
+        tg.showAlert(msg, () => finish('close'));
+      } else {
+        window.alert(msg); finish('close');
+      }
+    } catch(e){ joinPopupOpen = false; }
   }
 
   let dash = null;
@@ -1394,12 +1238,12 @@
       if (d.banned){ renderEmpty('Your account has been banned from this bot.', true); return; }
       const joinList = (d.join_needed || []).map(normalizeChannel);
       if (joinList.length){
-        // Native popup (screenshot jaisa) + unique Vault gate screen
+        // Lock the UI behind the loading screen and show ONLY Telegram's native popup.
+        if (d.bot_username) { brand.username = String(d.bot_username); if (d.bot_name) brand.name = String(d.bot_name); }
         renderJoinGate(joinList);
-        showJoinPopup();
+        showJoinPopup(joinList, false);
         return;
       }
-      stopGatePoll();
       if (d.verify_needed){ renderVerifyGate(d); return; }
       dash = d;
       isAdmin = !!d.is_admin;
@@ -1408,9 +1252,8 @@
       $('app').style.display = 'block';
       $('tabbarWrap').style.display = 'flex';
       hideLoadingScreen();
-      $('botNameTitle').textContent = d.bot_name || d.bot_username || 'Wallet';
-      if (d.first_name) $('botSubTitle').textContent = 'Hey ' + d.first_name + ' · let\'s earn';
-      if (d.bot_username) loadBotPhoto(d.bot_username);
+      $('botNameTitle').textContent = '👑 ' + (d.bot_name || 'Loot Games');
+      if (d.bot_username) loadBotPhoto(d.bot_username, d.bot_name);
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
       $('bonusBtnText').textContent = d.bonus_claimed_today ? 'Bonus Claimed' : `Claim ₹${Number(d.daily_bonus_amount || 0).toFixed(0)} Bonus`;
@@ -1436,27 +1279,9 @@
     } catch(e){
       if (e.message === 'no-api'){ renderEmpty(); return; }
       if (e.message === 'no-telegram'){ renderEmpty('Please open this app from Telegram using the bot\'s button.'); return; }
-      renderConnectError(e.message || "Couldn't connect");
+      hideLoadingScreen();
+      toast(e.message || "Couldn't load", true);
     }
-  }
-
-  function renderConnectError(msg){
-    hideLoadingScreen();
-    $('app').style.display = 'none'; $('tabbarWrap').style.display = 'none';
-    const el = $('emptyState'); el.style.display = 'block';
-    el.innerHTML = `
-      <div class="empty">
-        <div class="gate-ic" style="border-color:rgba(255,207,77,.4); background:radial-gradient(circle, rgba(255,207,77,.14), transparent 70%); color:var(--gold);">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-        </div>
-        <div class="t">Connecting to bot…</div>
-        <p>${escapeHtml(msg)}</p>
-        <button class="btn neon" id="reconnectBtn" style="margin-top:18px;">Reconnect</button>
-      </div>`;
-    $('reconnectBtn').addEventListener('click', () => {
-      const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
-      loadDashboard();
-    });
   }
 
   async function loadGames(){
