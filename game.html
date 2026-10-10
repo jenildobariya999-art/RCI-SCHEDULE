@@ -11,7 +11,7 @@
 <title>Loot Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Bebas+Neue&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
@@ -651,6 +651,79 @@
   .loading-name{ font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#ffe27a; text-shadow:0 0 18px rgba(255,196,46,.7); }
   .loading-caption{ color:#c9a6ff; }
   .sheet{ background:linear-gradient(180deg,#2a1048,#150724); border-top:2px solid #ffd84d; }
+
+  /* ================= VEGAS v2 — real casino look ================= */
+  :root{ --bg0:#12020a; --bg1:#2a050f; --bg2:#3a0814; --bg3:#52101e; --border:rgba(255,215,0,.28); --neon:#ffd84d; --neon-glow:rgba(255,216,77,.45); }
+  body{
+    background:
+      radial-gradient(ellipse 90% 45% at 50% -5%, #9b1230 0%, rgba(155,18,48,0) 70%),
+      repeating-linear-gradient(45deg, rgba(255,215,0,.055) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(-45deg, rgba(255,215,0,.055) 0 1px, transparent 1px 24px),
+      radial-gradient(ellipse at 50% 120%, #000 0%, #12020a 60%);
+    font-family:'Inter',system-ui,sans-serif;
+  }
+  body::before{ height:6px; background:repeating-linear-gradient(90deg,#fff6c2 0 6px,#ffb000 6px 12px,#c1121f 12px 18px); background-size:36px 6px; }
+
+  header.app-head{
+    flex-direction:column; text-align:center; gap:8px; padding:20px 12px 16px; border-radius:26px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,.18), transparent 65%), linear-gradient(180deg,#4a0b19,#1f040b);
+    border:3px solid #d9a441; box-shadow:0 0 0 2px #5b2f12, 0 0 0 4px rgba(255,215,0,.35), 0 18px 40px -16px rgba(0,0,0,.9), inset 0 0 40px rgba(0,0,0,.55);
+  }
+  .brand-logo{
+    width:96px; height:96px; padding:7px; border-radius:50%; animation:bulbs 1s steps(1) infinite;
+    background:#1a0207; border:5px dotted #ffe27a; box-shadow:0 0 28px rgba(255,200,60,.7), inset 0 0 16px #000;
+  }
+  @keyframes bulbs{ 0%{ border-color:#ffe27a; } 50%{ border-color:#ff5a3c; } }
+  .brand-logo .av{ border-radius:50%; background:#12020a; color:#ffd84d; }
+  .brand-logo .av svg, .jg-avatar .av svg{ width:100%; height:100%; display:block; }
+  .app-head .titles{ flex:none; }
+  .app-head .titles .name{ font-family:'Cinzel',serif; font-size:24px; letter-spacing:.06em; background:linear-gradient(180deg,#fff6c2,#ffd84d 50%,#c98a1b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 0 #4a2a00); }
+  .app-head .titles .sub{ color:#e9b86a; font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+
+  .jackpot{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 16px; padding:10px 14px; border-radius:16px;
+    background:#050000; border:2px solid #d9a441; box-shadow:0 0 22px -4px rgba(255,60,60,.6), inset 0 0 18px rgba(255,0,0,.25);
+  }
+  .jp-l{ font-family:'Cinzel',serif; font-weight:900; font-size:11px; color:#ffd84d; letter-spacing:.08em; }
+  .jackpot b{ font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:.04em; color:#ff3b3b; text-shadow:0 0 14px #ff1a1a, 0 0 2px #fff; }
+  .jp-s{ font-size:10px; font-weight:800; color:#fff; display:flex; align-items:center; gap:5px; }
+  .jp-s i{ width:8px; height:8px; border-radius:50%; background:#3dff7a; box-shadow:0 0 10px #3dff7a; animation:bulbs2 1s infinite; }
+  @keyframes bulbs2{ 50%{ opacity:.25; } }
+
+  .card{
+    background:linear-gradient(170deg,#3f0a17,#22040c 85%); border:2px solid #b8832f; border-radius:20px;
+    outline:1px solid rgba(255,215,0,.3); outline-offset:-7px; box-shadow:0 14px 30px -16px #000;
+  }
+  .card h3{ font-family:'Cinzel',serif; color:#ffd84d; letter-spacing:.14em; }
+
+  .bal-hero{
+    background:linear-gradient(180deg,#0a0000,#1a0306) !important; border:3px solid #d9a441 !important; border-radius:22px !important;
+    box-shadow:0 0 0 2px #5b2f12, 0 0 34px -8px rgba(255,176,0,.55), inset 0 0 40px rgba(0,0,0,.9) !important;
+  }
+  .bal-label{ font-family:'Cinzel',serif; color:#e9b86a !important; }
+  .bal-huge{ font-family:'Bebas Neue',sans-serif !important; font-size:60px !important; color:#ffb000 !important; letter-spacing:.04em; text-shadow:0 0 18px #ff8a00, 0 0 3px #fff3b0 !important; }
+
+  .btn{ font-family:'Cinzel',serif; font-weight:900; letter-spacing:.1em; border-radius:14px; }
+  .btn.neon{ background:linear-gradient(180deg,#fff0a0,#ffc42e 40%,#c98a1b 100%); border:2px solid #fff3b0; color:#3a1a00; box-shadow:0 6px 0 #6b3d00, 0 0 24px -4px rgba(255,176,0,.8); }
+  .btn.danger{ background:linear-gradient(180deg,#ff5d5d,#c1121f 60%,#7a0a12); }
+
+  .stage{
+    background:radial-gradient(ellipse at 50% 35%, #1ea35f 0%, #0f6e3f 50%, #07351d 100%) !important;
+    border:12px solid #5b2f12 !important; border-radius:30px !important;
+    box-shadow:0 0 0 3px #d9a441, 0 0 0 6px #3a1a08, 0 18px 40px -12px #000, inset 0 0 60px rgba(0,0,0,.65), inset 0 0 0 2px rgba(255,215,0,.5) !important;
+  }
+  .game-chip{ background:linear-gradient(170deg,#4a0b19,#22040c); border:2px solid #8a5f1e; border-radius:16px; }
+  .game-chip.active{ border-color:#ffd84d !important; box-shadow:0 0 0 2px #5b2f12, 0 0 24px -2px rgba(255,200,60,.8) !important; }
+  .bet-input-wrap{ background:#050000; border:2px solid #d9a441; }
+  .bet-input-wrap input{ font-family:'Bebas Neue',sans-serif; font-size:26px; color:#ffb000; text-shadow:0 0 10px #ff8a00; }
+  .fund-bar-fill{ background:repeating-linear-gradient(45deg,#ffd84d 0 9px,#c1121f 9px 18px) !important; }
+
+  .tabbar{ background:linear-gradient(180deg,#4a2410,#22100a) !important; border:2px solid #d9a441 !important; border-radius:22px !important; box-shadow:0 -6px 30px -8px rgba(255,60,60,.5) !important; }
+  #loadingScreen{ background:radial-gradient(ellipse at 50% 30%, #7a0f1f 0%, #2a050f 55%, #12020a 100%); }
+  .loading-logo{ width:112px; height:112px; border-radius:50%; padding:6px; background:#12020a; border:5px dotted #ffe27a; animation:bulbs 1s steps(1) infinite; box-shadow:0 0 40px rgba(255,200,60,.7); }
+  .loading-logo svg{ width:100%; height:100%; }
+  .loading-logo img{ border-radius:50%; }
+  .loading-name{ font-family:'Cinzel',serif; color:#ffd84d; }
 </style>
 </head>
 <body>
@@ -658,7 +731,7 @@
 <div id="loadingScreen">
   <div class="loading-logo" id="loadingLogo">
     <img id="loadingBotPhoto" alt="" style="display:none;">
-    <svg id="loadingLogoFallback" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.2l-4.8 2.56.92-5.34-3.88-3.78 5.36-.78L12 2z"></path></svg>
+    <svg id="loadingLogoFallback" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#7a0f1f" stroke="#ffd84d" stroke-width="3"/><circle cx="32" cy="32" r="23" fill="none" stroke="#ffd84d" stroke-width="1.5" stroke-dasharray="3 4"/><path d="M32 15c-6 8-14 11-14 18 0 5 4 8 8 8 2 0 4-1 5-3-.3 4-1.5 7-4 9h10c-2.5-2-3.7-5-4-9 1 2 3 3 5 3 4 0 8-3 8-8 0-7-8-10-14-18z" fill="#ffd84d"/></svg>
   </div>
   <div class="loading-spinner"></div>
   <div>
@@ -678,6 +751,7 @@
       <div class="sub" data-brand-handle>Play · Win · Withdraw</div>
     </div>
   </header>
+  <div class="jackpot"><span class="jp-l">★ MEGA JACKPOT ★</span><b id="jpAmt">₹ 0</b><span class="jp-s"><i></i> LIVE</span></div>
 
   <!-- ===== HOME VIEW ===== -->
   <div class="view active" id="view-wallet">
@@ -979,17 +1053,22 @@
   function brandInitial(){ return (String(brand.name || brand.username || 'B').trim()[0] || 'B').toUpperCase(); }
   function userpicUrl(u){ return 'https://t.me/i/userpic/320/' + encodeURIComponent(u) + '.jpg'; }
 
-  function paintLogo(box){          // box = element that should show the avatar
+  const EMBLEM = '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#7a0f1f" stroke="#ffd84d" stroke-width="3"/><circle cx="32" cy="32" r="23" fill="none" stroke="#ffd84d" stroke-width="1.5" stroke-dasharray="3 4"/><path d="M32 15c-6 8-14 11-14 18 0 5 4 8 8 8 2 0 4-1 5-3-.3 4-1.5 7-4 9h10c-2.5-2-3.7-5-4-9 1 2 3 3 5 3 4 0 8-3 8-8 0-7-8-10-14-18z" fill="#ffd84d"/></svg>';
+  function paintLogo(box){
     if (!box) return;
-    const letter = brandInitial();
-    box.textContent = letter;
-    if (!brand.username) return;
-    const img = new Image();
-    img.alt = '';
-    img.referrerPolicy = 'no-referrer';
-    img.onload = () => { box.textContent = ''; box.appendChild(img); };
-    img.onerror = () => { box.textContent = letter; };
-    img.src = userpicUrl(brand.username);
+    box.innerHTML = EMBLEM;                       // default logo: always visible, nothing to set up
+    const u = brand.username;
+    if (!u) return;
+    const srcs = [userpicUrl(u), 'https://telegram.me/i/userpic/320/' + encodeURIComponent(u) + '.jpg'];
+    const tryNext = (i) => {
+      if (i >= srcs.length) return;
+      const img = new Image();
+      img.alt = ''; img.referrerPolicy = 'no-referrer';
+      img.onload = () => { if (img.naturalWidth > 8){ box.innerHTML = ''; box.appendChild(img); } else tryNext(i + 1); };
+      img.onerror = () => tryNext(i + 1);
+      img.src = srcs[i];
+    };
+    tryNext(0);
   }
 
   function loadBotPhoto(username, name){
@@ -1007,6 +1086,8 @@
     document.querySelectorAll('[data-brand-name]').forEach(el => { el.textContent = brand.name || brand.username || 'Bot'; });
     document.querySelectorAll('[data-brand-handle]').forEach(el => { el.textContent = brand.username ? '@' + brand.username : ''; });
   }
+
+  document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
   // (No manual bot registration, and no public bot-list lookup anymore.)
@@ -1852,6 +1933,11 @@
 
   (async () => { loadBotInfoQuick(); await resolveBotId(); await loadDashboard(); loadHistory(); })();
 })();
+</script>
+<script>
+  (function(){ var el=document.getElementById('jpAmt'); if(!el) return; var v=250000+Math.floor(Math.random()*500000);
+    function f(n){ return '₹ '+n.toLocaleString('en-IN'); } el.textContent=f(v);
+    setInterval(function(){ v+=Math.floor(Math.random()*37)+3; el.textContent=f(v); },900); })();
 </script>
 </body>
 </html>
