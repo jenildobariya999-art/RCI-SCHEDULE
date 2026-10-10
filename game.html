@@ -18,7 +18,7 @@
     --bg0:#040a06; --bg1:#0a1610; --bg2:#0f1f17; --bg3:#152c20; --border: rgba(255,255,255,.09);
     --neon:#1de893; --neon-deep:#0aa864; --neon-glow: rgba(29,232,147,.4);
     --gold:#ffcf4d; --danger:#ff5a72; --info:#5fb0ff; --purple:#b98bff;
-    --text:#f4fbf6; --text-soft:#7fa090; --radius:22px;
+    --text:#f4fbf6; --text-soft:#7fa090; --text-faint:#56705f; --radius:22px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -487,6 +487,58 @@
   .loading-name{ font-size:18px; font-weight:900; letter-spacing:-.01em; text-align:center; color:var(--text); }
   .loading-caption{ font-size:11px; font-weight:700; letter-spacing:.22em; color:var(--text-faint); text-transform:uppercase; }
 
+
+  /* ---------- JOIN GATE: "Vault" design ---------- */
+  .jg-wrap{ min-height:calc(100vh - 40px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px 4px 26px; }
+  .jg-wrap.shake{ animation: pieceShake .6s cubic-bezier(.36,.07,.19,.97); }
+  .jg-emblem{ position:relative; width:128px; height:128px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+  .jg-ring{ position:absolute; inset:0; border-radius:50%; border:2px solid transparent; border-top-color:var(--neon); border-right-color:rgba(29,232,147,.35); animation: ringSpin 2.4s linear infinite; }
+  .jg-ring.r2{ inset:12px; border-top-color:transparent; border-bottom-color:var(--gold); border-left-color:rgba(255,207,77,.3); animation-duration:3.4s; animation-direction:reverse; }
+  .jg-lock{
+    width:78px; height:78px; border-radius:26px; display:flex; align-items:center; justify-content:center; color:var(--neon);
+    background: linear-gradient(155deg, #1c2e24, var(--bg2) 70%); border:1px solid rgba(29,232,147,.35);
+    box-shadow: 0 0 40px -6px var(--neon-glow), inset 0 1px 0 rgba(255,255,255,.08);
+    animation: loadingFloat 2.8s ease-in-out infinite;
+  }
+  .jg-lock svg{ width:36px; height:36px; }
+  .jg-kicker{ font-size:10.5px; letter-spacing:.34em; font-weight:800; color:var(--gold); }
+  .jg-title{ margin:8px 0 6px; font-size:27px; font-weight:900; letter-spacing:-.02em; }
+  .jg-title span{ background: linear-gradient(90deg, var(--neon), var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .jg-sub{ margin:0 auto 18px; max-width:300px; font-size:13px; line-height:1.55; color:var(--text-soft); }
+  .jg-progress{ display:flex; align-items:center; gap:10px; width:100%; max-width:340px; margin-bottom:16px; font-size:11px; font-weight:800; letter-spacing:.08em; color:var(--text-soft); text-transform:uppercase; }
+  .jg-bar{ flex:1; height:6px; border-radius:99px; background:var(--bg3); overflow:hidden; border:1px solid var(--border); }
+  .jg-bar i{ display:block; width:35%; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--neon-deep),var(--neon)); animation: jgSweep 1.8s ease-in-out infinite; }
+  @keyframes jgSweep{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(300%);} }
+  .jg-list{ width:100%; max-width:340px; display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .jg-card{
+    position:relative; display:flex; align-items:center; gap:11px; text-align:left; padding:12px 12px 12px 14px;
+    border-radius:18px; border:1px solid var(--border); overflow:hidden;
+    background: linear-gradient(165deg, var(--bg2), var(--bg1) 80%);
+    animation: cardIn .4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .jg-card::before{ content:''; position:absolute; left:0; top:12%; bottom:12%; width:3px; border-radius:0 3px 3px 0; background:var(--c); box-shadow:0 0 12px var(--c); }
+  .jg-num{ font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--text-soft); width:14px; }
+  .jg-av{
+    width:42px; height:42px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:17px; color:#04150c; background: linear-gradient(150deg, var(--c), rgba(255,255,255,.25));
+  }
+  .jg-info{ flex:1; min-width:0; }
+  .jg-name{ font-weight:800; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .jg-state{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-soft); margin-top:3px; }
+  .jg-dot{ width:6px; height:6px; border-radius:50%; background:var(--danger); box-shadow:0 0 0 3px rgba(255,90,114,.18); }
+  .jg-join{
+    border:none; cursor:pointer; padding:10px 18px; border-radius:12px; font-family:inherit; font-weight:800; font-size:12.5px;
+    color:#04150c; background: linear-gradient(135deg, var(--neon), var(--neon-deep)); box-shadow:0 8px 18px -10px var(--neon-glow);
+    transition: transform .12s cubic-bezier(.3,.8,.3,1);
+  }
+  .jg-join:active{ transform:scale(.92); }
+  .jg-verify{ max-width:340px; position:relative; overflow:hidden; }
+  .jg-verify::after{ content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); animation: jgShine 2.8s ease-in-out infinite; }
+  @keyframes jgShine{ 0%{ left:-60%; } 60%,100%{ left:130%; } }
+  .jg-spin{ display:none; width:15px; height:15px; border-radius:50%; border:2.5px solid rgba(4,21,12,.3); border-top-color:#04150c; animation: loadingSpin .7s linear infinite; }
+  .jg-verify.busy .jg-spin{ display:inline-block; }
+  .jg-auto{ display:flex; align-items:center; gap:7px; margin-top:14px; font-size:11px; color:var(--text-soft); }
+
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 </style>
 </head>
@@ -800,13 +852,28 @@
   let apiUrl = params.get('api');
 
   // --- Sanitize routing params (never trust the query string) ---
-  if (botId && !/^\d{4,15}$/.test(botId)) botId = null;
-  if (apiUrl){
+  // ==== AUTO-CONNECT CONFIG ====
+  // Yeh app ab khud bot se connect ho jata hai. Agar link mein ?api= / ?botid= na ho
+  // to neeche wala DEFAULT_BOT_ID use hota hai. Bot badalna ho to sirf yeh ek value badlo.
+  const DEFAULT_BOT_ID = '63493096';
+
+  const cleanApi = (v) => {
+    if (!v) return null;
     try{
-      const u = new URL(apiUrl);
-      apiUrl = (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null;
-    } catch(e){ apiUrl = null; }
-  }
+      const u = new URL(v);
+      return (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null;
+    } catch(e){ return null; }
+  };
+  if (botId && !/^\d{4,15}$/.test(botId)) botId = null;
+  apiUrl = cleanApi(apiUrl);
+
+  // Last working route yaad rakho (menu button / Open App se aaya link)
+  try{
+    if (apiUrl) localStorage.setItem('lg_api', apiUrl);
+    else if (!botId){ apiUrl = cleanApi(localStorage.getItem('lg_api')); }
+  } catch(e){}
+  // Kuch bhi na mile to default bot se auto-connect
+  if (!apiUrl && !botId) botId = DEFAULT_BOT_ID;
 
   // Show the bot's real profile photo on the loading screen (falls back to the
   // default star mark if the bot has no public photo, or the request fails).
@@ -816,7 +883,7 @@
     const img = document.getElementById('loadingBotPhoto');
     const fallback = document.getElementById('loadingLogoFallback');
     if (!img || !fallback) return;
-    img.onload = () => { img.style.display = 'block'; fallback.style.display = 'none'; };
+    img.onload = () => { if (img.naturalWidth < 16){ img.style.display = 'none'; fallback.style.display = 'block'; return; } img.style.display = 'block'; fallback.style.display = 'none'; };
     img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
     img.src = `https://t.me/i/userpic/320/${username}.jpg`;
   }
@@ -869,29 +936,52 @@
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), 30000);
     try{
-      const routeParams = botId ? { botid: botId } : { api: apiUrl };
-      let res;
-      try{
-        res = await fetch('/api/proxy', {
+      const send = async (routeParams) => {
+        const res = await fetch('/api/proxy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'omit',
           signal: ctrl.signal,
-          body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
+          body: JSON.stringify(Object.assign({}, routeParams, { action, init_data: initData }, extra || {}))
         });
-      } catch(netErr){
-        throw new Error(netErr && netErr.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Check your connection.');
-      }
+        let data;
+        try{ data = await res.json(); }
+        catch(parseErr){ const e = new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); e.badResponse = true; throw e; }
+        return data;
+      };
+      const primary = apiUrl ? { api: apiUrl } : { botid: botId };
+      const canRetry = !MUTATING_ACTIONS.has(action);
       let data;
-      try{ data = await res.json(); }
-      catch(parseErr){ throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); }
+      let attempt = 0;
+      while (true){
+        try{
+          try{ data = await send(primary); }
+          catch(e1){
+            // Saved/old api link kharab ho to default bot se auto-reconnect
+            if (e1.badResponse && apiUrl && DEFAULT_BOT_ID && canRetry){
+              data = await send({ botid: DEFAULT_BOT_ID });
+              apiUrl = null; botId = DEFAULT_BOT_ID;
+              try{ localStorage.removeItem('lg_api'); }catch(_){}
+            } else throw e1;
+          }
+          break;
+        } catch(netErr){
+          if (netErr && netErr.badResponse) throw netErr;
+          if (canRetry && attempt < 2 && !(netErr && netErr.name === 'AbortError')){
+            attempt++; await new Promise(r => setTimeout(r, 700 * attempt)); continue;
+          }
+          throw new Error(netErr && netErr.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Check your connection.');
+        }
+      }
       const inner = (data && data.result !== undefined) ? data.result : data;
       if (inner && inner.ok === false) {
         const err = new Error(inner.error || 'Something went wrong');
         err.extra = inner;
         // Server-side channel gate (popup instead of a page).
         if (Array.isArray(inner.join_needed) && inner.join_needed.length){
-          showJoinPopup(inner.join_needed.map(normalizeChannel), false);
+          const jl = inner.join_needed.map(normalizeChannel);
+          renderJoinGate(jl);
+          showJoinPopup();
         }
         throw err;
       }
@@ -900,6 +990,19 @@
       clearTimeout(to);
       inflight.delete(action);
     }
+  }
+
+  // Same as callApi but never re-opens the join gate (used by the gate's own auto-check)
+  async function callApiQuiet(action, extra){
+    const initData = (tg && tg.initData) ? tg.initData : '';
+    if (!initData) throw new Error('no-telegram');
+    const route = apiUrl ? { api: apiUrl } : { botid: botId };
+    const res = await fetch('/api/proxy', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit',
+      body: JSON.stringify(Object.assign({}, route, { action, init_data: initData }, extra || {}))
+    });
+    let data; try{ data = await res.json(); } catch(e){ throw new Error('Server returned an invalid response.'); }
+    return (data && data.result !== undefined) ? data.result : data;
   }
 
   async function loadBotInfoQuick(){
@@ -1043,38 +1146,123 @@
     });
   }
 
-  // ---------- Native Telegram popup when channels are not joined ----------
+  // ---------- Join gate: native popup (screenshot jaisa) + unique "Vault" screen ----------
   let joinPopupOpen = false;
-  function showJoinPopup(channels, lockApp){
+  let gateTimer = null, gateBusy = false, gateSig = '';
+
+  function showJoinPopup(){
     if (joinPopupOpen) return;
     joinPopupOpen = true;
-    const names = (channels || []).map(c => c && c.name).filter(n => n && n !== 'Channel').slice(0, 3).join(', ');
-    const plural = (channels || []).length > 1;
-    const msg = ('You have not joined our channel' + (plural ? 's' : '') + (names ? ' (' + names + ')' : '') +
-      '. Join from the bot chat, then tap Check Again.').slice(0, 250);
-    const finish = (id) => {
-      joinPopupOpen = false;
-      if (id === 'retry'){
-        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
-        loadDashboard();
-      } else if (lockApp && tg && tg.close){
-        try{ tg.close(); }catch(e){}
-      }
-    };
-    const canPopup = tg && tg.showPopup && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'));
+    const title = 'Join Channels';
+    const msg = 'You must join all required channels to access the dashboard.';
+    const done = () => { joinPopupOpen = false; };
+    const okVer = !tg || !tg.isVersionAtLeast || tg.isVersionAtLeast('6.2');
     try{
-      if (canPopup){
-        tg.showPopup({
-          title: 'Channel not joined',
-          message: msg,
-          buttons: [{ id: 'retry', type: 'default', text: 'Check Again' }, { id: 'close', type: 'close' }]
-        }, finish);
-      } else if (tg && tg.showAlert && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'))){
-        tg.showAlert(msg, () => finish('close'));
-      } else {
-        window.alert(msg); finish('close');
-      }
+      if (tg && tg.showPopup && okVer){
+        tg.showPopup({ title, message: msg, buttons: [{ id: 'close', type: 'close' }] }, done);
+      } else if (tg && tg.showAlert && okVer){
+        tg.showAlert(msg, done);
+      } else { window.alert(msg); done(); }
     } catch(e){ joinPopupOpen = false; }
+  }
+
+  function openChannel(url){
+    if (!url || url === '#') return;
+    try{
+      if (tg && /^https:\/\/t\.me\//i.test(url) && tg.openTelegramLink) tg.openTelegramLink(url);
+      else if (tg && tg.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
+    } catch(e){ window.open(url, '_blank'); }
+  }
+
+  function stopGatePoll(){ if (gateTimer){ clearInterval(gateTimer); gateTimer = null; } }
+  function startGatePoll(){
+    if (gateTimer) return;
+    gateTimer = setInterval(() => { if (!document.hidden) gateVerify(false); }, 5000);
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && gateTimer) gateVerify(false); });
+  window.addEventListener('focus', () => { if (gateTimer) gateVerify(false); });
+
+  const CH_COLORS = ['#1de893', '#5fb0ff', '#b98bff', '#ffcf4d', '#ff7aa8'];
+
+  function renderJoinGate(channels){
+    hideLoadingScreen();
+    $('app').style.display = 'none';
+    $('tabbarWrap').style.display = 'none';
+    const el = $('emptyState');
+    el.style.display = 'block';
+    const list = (channels || []).filter(Boolean);
+    const sig = list.map(c => c.url + '|' + c.name).join(',');
+    gateSig = sig;
+    const n = list.length;
+    const rows = list.map((c, i) => {
+      const nm = String(c.name || 'Channel');
+      const letter = escapeHtml((nm.replace(/^@/, '')[0] || 'C').toUpperCase());
+      const col = CH_COLORS[i % CH_COLORS.length];
+      return `
+        <div class="jg-card" style="--c:${col}; animation-delay:${i * 70}ms">
+          <div class="jg-num">${i + 1}</div>
+          <div class="jg-av" style="--c:${col}">${letter}</div>
+          <div class="jg-info">
+            <div class="jg-name">${escapeHtml(nm)}</div>
+            <div class="jg-state"><span class="jg-dot"></span>Not joined</div>
+          </div>
+          <button class="jg-join" data-url="${escapeHtml(c.url || '')}">Join</button>
+        </div>`;
+    }).join('');
+    el.innerHTML = `
+      <div class="jg-wrap">
+        <div class="jg-emblem">
+          <div class="jg-ring"></div><div class="jg-ring r2"></div>
+          <div class="jg-lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"></rect><path d="M8 11V7.5a4 4 0 0 1 8 0V11"></path><circle cx="12" cy="16" r="1.3" fill="currentColor" stroke="none"></circle></svg>
+          </div>
+        </div>
+        <div class="jg-kicker">ACCESS LOCKED</div>
+        <h2 class="jg-title">Unlock your <span>vault</span></h2>
+        <p class="jg-sub">Join ${n > 1 ? 'these ' + n + ' channels' : 'this channel'} to enter the dashboard. We detect it automatically the moment you join.</p>
+        <div class="jg-progress"><div class="jg-bar"><i></i></div><span>${n} left</span></div>
+        <div class="jg-list">${rows}</div>
+        <button class="btn neon jg-verify" id="jgVerify">
+          <span class="jg-spin"></span><span id="jgVerifyTxt">I've joined — Verify</span>
+        </button>
+        <div class="jg-auto"><span class="live-dot"></span>Auto-checking every few seconds</div>
+      </div>`;
+    el.querySelectorAll('.jg-join').forEach(b => b.addEventListener('click', () => openChannel(b.getAttribute('data-url'))));
+    $('jgVerify').addEventListener('click', () => gateVerify(true));
+    startGatePoll();
+  }
+
+  async function gateVerify(manual){
+    if (gateBusy) return;
+    gateBusy = true;
+    const btn = $('jgVerify');
+    if (manual && btn){ btn.classList.add('busy'); btn.disabled = true; $('jgVerifyTxt').textContent = 'Checking…'; }
+    try{
+      const d = await callApiQuiet('dashboard');
+      const left = (d && d.join_needed || []).map(normalizeChannel);
+      if (left.length){
+        const sig = left.map(c => c.url + '|' + c.name).join(',');
+        if (sig !== gateSig) renderJoinGate(left);   // kuch channels join ho gaye -> list update
+        if (manual){
+          try{ tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('error'); }catch(e){}
+          const w = document.querySelector('.jg-wrap'); if (w){ w.classList.remove('shake'); void w.offsetWidth; w.classList.add('shake'); }
+          toast(`Abhi ${left.length} channel join karna baaki hai`, true);
+          showJoinPopup();
+        }
+      } else {
+        stopGatePoll();
+        try{ tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); }catch(e){}
+        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
+        await loadDashboard();
+      }
+    } catch(e){
+      if (manual) toast(e.message || 'Check failed', true);
+    } finally {
+      gateBusy = false;
+      const b2 = $('jgVerify');
+      if (b2){ b2.classList.remove('busy'); b2.disabled = false; const t = $('jgVerifyTxt'); if (t) t.textContent = "I've joined — Verify"; }
+    }
   }
 
   let dash = null;
@@ -1102,12 +1290,12 @@
       if (d.banned){ renderEmpty('Your account has been banned from this bot.', true); return; }
       const joinList = (d.join_needed || []).map(normalizeChannel);
       if (joinList.length){
-        // Lock the UI behind the loading screen and show ONLY Telegram's native popup.
-        $('app').style.display = 'none'; $('tabbarWrap').style.display = 'none'; $('emptyState').style.display = 'none';
-        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
-        showJoinPopup(joinList, true);
+        // Native popup (screenshot jaisa) + unique Vault gate screen
+        renderJoinGate(joinList);
+        showJoinPopup();
         return;
       }
+      stopGatePoll();
       if (d.verify_needed){ renderVerifyGate(d); return; }
       dash = d;
       isAdmin = !!d.is_admin;
@@ -1143,9 +1331,27 @@
     } catch(e){
       if (e.message === 'no-api'){ renderEmpty(); return; }
       if (e.message === 'no-telegram'){ renderEmpty('Please open this app from Telegram using the bot\'s button.'); return; }
-      hideLoadingScreen();
-      toast(e.message || "Couldn't load", true);
+      renderConnectError(e.message || "Couldn't connect");
     }
+  }
+
+  function renderConnectError(msg){
+    hideLoadingScreen();
+    $('app').style.display = 'none'; $('tabbarWrap').style.display = 'none';
+    const el = $('emptyState'); el.style.display = 'block';
+    el.innerHTML = `
+      <div class="empty">
+        <div class="gate-ic" style="border-color:rgba(255,207,77,.4); background:radial-gradient(circle, rgba(255,207,77,.14), transparent 70%); color:var(--gold);">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        </div>
+        <div class="t">Connecting to bot…</div>
+        <p>${escapeHtml(msg)}</p>
+        <button class="btn neon" id="reconnectBtn" style="margin-top:18px;">Reconnect</button>
+      </div>`;
+    $('reconnectBtn').addEventListener('click', () => {
+      const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
+      loadDashboard();
+    });
   }
 
   async function loadGames(){
