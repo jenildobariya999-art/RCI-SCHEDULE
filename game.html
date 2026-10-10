@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="vegas">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -11,7 +11,7 @@
 <title>Loot Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Bebas+Neue&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Bebas+Neue&family=Cinzel:wght@700;900&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
@@ -652,9 +652,10 @@
   .loading-caption{ color:#c9a6ff; }
   .sheet{ background:linear-gradient(180deg,#2a1048,#150724); border-top:2px solid #ffd84d; }
 
-  /* ================= VEGAS v2 — real casino look ================= */
-  :root{ --bg0:#12020a; --bg1:#2a050f; --bg2:#3a0814; --bg3:#52101e; --border:rgba(255,215,0,.28); --neon:#ffd84d; --neon-glow:rgba(255,216,77,.45); }
-  body{
+
+  /* ===== THEMES ===== */
+  html[data-theme="vegas"]{ --bg0:#12020a; --bg1:#2a050f; --bg2:#3a0814; --bg3:#52101e; --border:rgba(255,215,0,.28); --neon:#ffd84d; --neon-glow:rgba(255,216,77,.45); }
+  html[data-theme="vegas"] body{
     background:
       radial-gradient(ellipse 90% 45% at 50% -5%, #9b1230 0%, rgba(155,18,48,0) 70%),
       repeating-linear-gradient(45deg, rgba(255,215,0,.055) 0 1px, transparent 1px 24px),
@@ -662,68 +663,107 @@
       radial-gradient(ellipse at 50% 120%, #000 0%, #12020a 60%);
     font-family:'Inter',system-ui,sans-serif;
   }
-  body::before{ height:6px; background:repeating-linear-gradient(90deg,#fff6c2 0 6px,#ffb000 6px 12px,#c1121f 12px 18px); background-size:36px 6px; }
-
-  header.app-head{
+  html[data-theme="vegas"] body::before{ height:6px; background:repeating-linear-gradient(90deg,#fff6c2 0 6px,#ffb000 6px 12px,#c1121f 12px 18px); background-size:36px 6px; }
+  html[data-theme="vegas"] header.app-head{
     flex-direction:column; text-align:center; gap:8px; padding:20px 12px 16px; border-radius:26px;
     background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,.18), transparent 65%), linear-gradient(180deg,#4a0b19,#1f040b);
     border:3px solid #d9a441; box-shadow:0 0 0 2px #5b2f12, 0 0 0 4px rgba(255,215,0,.35), 0 18px 40px -16px rgba(0,0,0,.9), inset 0 0 40px rgba(0,0,0,.55);
   }
-  .brand-logo{
-    width:96px; height:96px; padding:7px; border-radius:50%; animation:bulbs 1s steps(1) infinite;
-    background:#1a0207; border:5px dotted #ffe27a; box-shadow:0 0 28px rgba(255,200,60,.7), inset 0 0 16px #000;
+  html[data-theme="vegas"] .brand-logo{
+    width:56px; height:56px; padding:4px; border-radius:50%; animation:bulbs 1s steps(1) infinite;
+    background:#1a0207; border:3px dotted #ffe27a; box-shadow:0 0 18px rgba(255,200,60,.7), inset 0 0 16px #000;
   }
   @keyframes bulbs{ 0%{ border-color:#ffe27a; } 50%{ border-color:#ff5a3c; } }
-  .brand-logo .av{ border-radius:50%; background:#12020a; color:#ffd84d; }
-  .brand-logo .av svg, .jg-avatar .av svg{ width:100%; height:100%; display:block; }
-  .app-head .titles{ flex:none; }
-  .app-head .titles .name{ font-family:'Cinzel',serif; font-size:24px; letter-spacing:.06em; background:linear-gradient(180deg,#fff6c2,#ffd84d 50%,#c98a1b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 0 #4a2a00); }
-  .app-head .titles .sub{ color:#e9b86a; font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
-
-  .jackpot{
+  html[data-theme="vegas"] .brand-logo .av{ border-radius:50%; background:#12020a; color:#ffd84d; }
+  html[data-theme="vegas"] .brand-logo .av svg,html[data-theme="vegas"] .jg-avatar .av svg{ width:100%; height:100%; display:block; }
+  html[data-theme="vegas"] .app-head .titles{ flex:none; }
+  html[data-theme="vegas"] .app-head .titles .name{ font-family:'Cinzel',serif; font-size:24px; letter-spacing:.06em; background:linear-gradient(180deg,#fff6c2,#ffd84d 50%,#c98a1b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 0 #4a2a00); }
+  html[data-theme="vegas"] .app-head .titles .sub{ color:#e9b86a; font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+  html[data-theme="vegas"] .jackpot{
     display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 16px; padding:10px 14px; border-radius:16px;
     background:#050000; border:2px solid #d9a441; box-shadow:0 0 22px -4px rgba(255,60,60,.6), inset 0 0 18px rgba(255,0,0,.25);
   }
-  .jp-l{ font-family:'Cinzel',serif; font-weight:900; font-size:11px; color:#ffd84d; letter-spacing:.08em; }
-  .jackpot b{ font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:.04em; color:#ff3b3b; text-shadow:0 0 14px #ff1a1a, 0 0 2px #fff; }
-  .jp-s{ font-size:10px; font-weight:800; color:#fff; display:flex; align-items:center; gap:5px; }
-  .jp-s i{ width:8px; height:8px; border-radius:50%; background:#3dff7a; box-shadow:0 0 10px #3dff7a; animation:bulbs2 1s infinite; }
+  html[data-theme="vegas"] .jp-l{ font-family:'Cinzel',serif; font-weight:900; font-size:11px; color:#ffd84d; letter-spacing:.08em; }
+  html[data-theme="vegas"] .jackpot b{ font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:.04em; color:#ff3b3b; text-shadow:0 0 14px #ff1a1a, 0 0 2px #fff; }
+  html[data-theme="vegas"] .jp-s{ font-size:10px; font-weight:800; color:#fff; display:flex; align-items:center; gap:5px; }
+  html[data-theme="vegas"] .jp-s i{ width:8px; height:8px; border-radius:50%; background:#3dff7a; box-shadow:0 0 10px #3dff7a; animation:bulbs2 1s infinite; }
   @keyframes bulbs2{ 50%{ opacity:.25; } }
-
-  .card{
+  html[data-theme="vegas"] .card{
     background:linear-gradient(170deg,#3f0a17,#22040c 85%); border:2px solid #b8832f; border-radius:20px;
     outline:1px solid rgba(255,215,0,.3); outline-offset:-7px; box-shadow:0 14px 30px -16px #000;
   }
-  .card h3{ font-family:'Cinzel',serif; color:#ffd84d; letter-spacing:.14em; }
-
-  .bal-hero{
+  html[data-theme="vegas"] .card h3{ font-family:'Cinzel',serif; color:#ffd84d; letter-spacing:.14em; }
+  html[data-theme="vegas"] .bal-hero{
     background:linear-gradient(180deg,#0a0000,#1a0306) !important; border:3px solid #d9a441 !important; border-radius:22px !important;
     box-shadow:0 0 0 2px #5b2f12, 0 0 34px -8px rgba(255,176,0,.55), inset 0 0 40px rgba(0,0,0,.9) !important;
   }
-  .bal-label{ font-family:'Cinzel',serif; color:#e9b86a !important; }
-  .bal-huge{ font-family:'Bebas Neue',sans-serif !important; font-size:60px !important; color:#ffb000 !important; letter-spacing:.04em; text-shadow:0 0 18px #ff8a00, 0 0 3px #fff3b0 !important; }
-
-  .btn{ font-family:'Cinzel',serif; font-weight:900; letter-spacing:.1em; border-radius:14px; }
-  .btn.neon{ background:linear-gradient(180deg,#fff0a0,#ffc42e 40%,#c98a1b 100%); border:2px solid #fff3b0; color:#3a1a00; box-shadow:0 6px 0 #6b3d00, 0 0 24px -4px rgba(255,176,0,.8); }
-  .btn.danger{ background:linear-gradient(180deg,#ff5d5d,#c1121f 60%,#7a0a12); }
-
-  .stage{
+  html[data-theme="vegas"] .bal-label{ font-family:'Cinzel',serif; color:#e9b86a !important; }
+  html[data-theme="vegas"] .bal-huge{ font-family:'Bebas Neue',sans-serif !important; font-size:60px !important; color:#ffb000 !important; letter-spacing:.04em; text-shadow:0 0 18px #ff8a00, 0 0 3px #fff3b0 !important; }
+  html[data-theme="vegas"] .btn{ font-family:'Cinzel',serif; font-weight:900; letter-spacing:.1em; border-radius:14px; }
+  html[data-theme="vegas"] .btn.neon{ background:linear-gradient(180deg,#fff0a0,#ffc42e 40%,#c98a1b 100%); border:2px solid #fff3b0; color:#3a1a00; box-shadow:0 6px 0 #6b3d00, 0 0 24px -4px rgba(255,176,0,.8); }
+  html[data-theme="vegas"] .btn.danger{ background:linear-gradient(180deg,#ff5d5d,#c1121f 60%,#7a0a12); }
+  html[data-theme="vegas"] .stage{
     background:radial-gradient(ellipse at 50% 35%, #1ea35f 0%, #0f6e3f 50%, #07351d 100%) !important;
     border:12px solid #5b2f12 !important; border-radius:30px !important;
     box-shadow:0 0 0 3px #d9a441, 0 0 0 6px #3a1a08, 0 18px 40px -12px #000, inset 0 0 60px rgba(0,0,0,.65), inset 0 0 0 2px rgba(255,215,0,.5) !important;
   }
-  .game-chip{ background:linear-gradient(170deg,#4a0b19,#22040c); border:2px solid #8a5f1e; border-radius:16px; }
-  .game-chip.active{ border-color:#ffd84d !important; box-shadow:0 0 0 2px #5b2f12, 0 0 24px -2px rgba(255,200,60,.8) !important; }
-  .bet-input-wrap{ background:#050000; border:2px solid #d9a441; }
-  .bet-input-wrap input{ font-family:'Bebas Neue',sans-serif; font-size:26px; color:#ffb000; text-shadow:0 0 10px #ff8a00; }
-  .fund-bar-fill{ background:repeating-linear-gradient(45deg,#ffd84d 0 9px,#c1121f 9px 18px) !important; }
-
-  .tabbar{ background:linear-gradient(180deg,#4a2410,#22100a) !important; border:2px solid #d9a441 !important; border-radius:22px !important; box-shadow:0 -6px 30px -8px rgba(255,60,60,.5) !important; }
-  #loadingScreen{ background:radial-gradient(ellipse at 50% 30%, #7a0f1f 0%, #2a050f 55%, #12020a 100%); }
-  .loading-logo{ width:112px; height:112px; border-radius:50%; padding:6px; background:#12020a; border:5px dotted #ffe27a; animation:bulbs 1s steps(1) infinite; box-shadow:0 0 40px rgba(255,200,60,.7); }
-  .loading-logo svg{ width:100%; height:100%; }
-  .loading-logo img{ border-radius:50%; }
-  .loading-name{ font-family:'Cinzel',serif; color:#ffd84d; }
+  html[data-theme="vegas"] .game-chip{ background:linear-gradient(170deg,#4a0b19,#22040c); border:2px solid #8a5f1e; border-radius:16px; }
+  html[data-theme="vegas"] .game-chip.active{ border-color:#ffd84d !important; box-shadow:0 0 0 2px #5b2f12, 0 0 24px -2px rgba(255,200,60,.8) !important; }
+  html[data-theme="vegas"] .bet-input-wrap{ background:#050000; border:2px solid #d9a441; }
+  html[data-theme="vegas"] .bet-input-wrap input{ font-family:'Bebas Neue',sans-serif; font-size:26px; color:#ffb000; text-shadow:0 0 10px #ff8a00; }
+  html[data-theme="vegas"] .fund-bar-fill{ background:repeating-linear-gradient(45deg,#ffd84d 0 9px,#c1121f 9px 18px) !important; }
+  html[data-theme="vegas"] .tabbar{ background:linear-gradient(180deg,#4a2410,#22100a) !important; border:2px solid #d9a441 !important; border-radius:22px !important; box-shadow:0 -6px 30px -8px rgba(255,60,60,.5) !important; }
+  html[data-theme="vegas"] #loadingScreen{ background:radial-gradient(ellipse at 50% 30%, #7a0f1f 0%, #2a050f 55%, #12020a 100%); }
+  html[data-theme="vegas"] .loading-logo{ width:72px; height:72px; border-radius:50%; padding:5px; background:#12020a; border:3px dotted #ffe27a; animation:bulbs 1s steps(1) infinite; box-shadow:0 0 40px rgba(255,200,60,.7); }
+  html[data-theme="vegas"] .loading-logo svg{ width:100%; height:100%; }
+  html[data-theme="vegas"] .loading-logo img{ border-radius:50%; }
+  html[data-theme="vegas"] .loading-name{ font-family:'Cinzel',serif; color:#ffd84d; }
+  html[data-theme="neon"]{--text:#e9f9ff;--text-soft:#7fb3d9;--bg0:#05010f;--k-bg:linear-gradient(rgba(0,240,255,.1) 1px,transparent 1px) 0 0/100% 36px,linear-gradient(90deg,rgba(255,43,214,.09) 1px,transparent 1px) 0 0/36px 100%,radial-gradient(ellipse at 50% 0%,#2a0a55,#05010f 70%);--k-card:#0a0620;--k-card2:#13093f;--k-bd:#00f0ff;--k-bw:1.5px;--k-acc:#00f0ff;--k-acc2:#ff2bd6;--k-txt:#e9f9ff;--k-soft:#7fb3d9;--k-r:6px;--k-br:4px;--k-lr:8px;--k-font:'Inter',sans-serif;--k-hfont:'Orbitron',sans-serif;--k-hc:#00f0ff;--k-glow:0 0 16px rgba(0,240,255,.7);--k-sh:0 0 22px -6px rgba(0,240,255,.6),inset 0 0 18px rgba(0,240,255,.08);--k-tglow:0 0 14px #ff2bd6;--k-btn:linear-gradient(90deg,#00f0ff,#8a2bff 60%,#ff2bd6);--k-btnc:#05010f;--k-bsh:0 0 24px rgba(138,43,255,.8);--k-bal:#05010f;--k-balc:#00f0ff;--k-stage:radial-gradient(ellipse at 50% 30%,#3a0a6a,#0a0220 80%);--k-strip:linear-gradient(90deg,#00f0ff,#ff2bd6,#8a2bff,#00f0ff);--k-tt:uppercase}
+  html[data-theme="royal"]{--text:#f4efe2;--text-soft:#a9b8ad;--bg0:#06100d;--k-bg:radial-gradient(ellipse at 50% -10%,#14543f,#06100d 65%);--k-card:#0b1a15;--k-card2:#10261f;--k-bd:#b89b5e;--k-bw:1px;--k-acc:#d4b46a;--k-acc2:#f3e2b3;--k-txt:#f4efe2;--k-soft:#a9b8ad;--k-r:14px;--k-br:10px;--k-lr:50%;--k-font:'Inter',sans-serif;--k-hfont:'Cinzel',serif;--k-hc:#f3e2b3;--k-glow:0 0 0 2px rgba(212,180,106,.45);--k-sh:0 12px 30px -16px #000;--k-tglow:none;--k-btn:linear-gradient(180deg,#f3e2b3,#d4b46a 55%,#a98a45);--k-btnc:#1a1405;--k-bsh:0 6px 16px -6px rgba(212,180,106,.6);--k-bal:linear-gradient(160deg,#10261f,#06100d);--k-balc:#f3e2b3;--k-stage:radial-gradient(ellipse at 50% 35%,#146b4c,#0a3a2a 70%,#05231a);--k-strip:linear-gradient(90deg,#a98a45,#f3e2b3,#a98a45);--k-hdir:column;--k-hal:center}
+  html[data-theme="pop"]{--text:#111;--text-soft:#5c4a1e;--bg0:#ffe9a8;--k-bg:radial-gradient(rgba(0,0,0,.09) 1.5px,transparent 2px) 0 0/18px 18px,#ffe9a8;--k-card:#fff;--k-card2:#fff6dc;--k-bd:#111;--k-bw:3px;--k-acc:#ff3d81;--k-acc2:#1b4dff;--k-txt:#111;--k-soft:#5c4a1e;--k-r:14px;--k-br:12px;--k-lr:14px;--k-font:'Inter',sans-serif;--k-hfont:'Bebas Neue',sans-serif;--k-hc:#111;--k-glow:3px 3px 0 #111;--k-sh:5px 5px 0 #111;--k-tglow:3px 3px 0 #111;--k-btn:#ffd400;--k-btnc:#111;--k-bsh:4px 4px 0 #111;--k-bal:#ff3d81;--k-balc:#fff;--k-stage:#2ec27e;--k-strip:repeating-linear-gradient(90deg,#111 0 10px,#ffd400 10px 20px);--k-tt:uppercase}
+  html:not([data-theme="vegas"]) body{background:var(--k-bg);color:var(--k-txt);font-family:var(--k-font)}
+  html:not([data-theme="vegas"]) body::before{background:var(--k-strip);height:5px;box-shadow:none;animation:none}
+  html:not([data-theme="vegas"]) header.app-head{background:var(--k-head,var(--k-card));border:var(--k-bw) solid var(--k-bd);border-radius:var(--k-r);box-shadow:var(--k-sh);flex-direction:var(--k-hdir,row);text-align:var(--k-hal,left);padding:12px;gap:12px}
+  html:not([data-theme="vegas"]) .brand-logo{width:50px;height:50px;padding:3px;border-radius:var(--k-lr);background:var(--k-acc);border:0;animation:none;box-shadow:var(--k-glow)}
+  html:not([data-theme="vegas"]) .brand-logo .av{border-radius:calc(var(--k-lr) - 3px);background:var(--k-card);color:var(--k-acc)}
+  html:not([data-theme="vegas"]) .app-head .titles .name{font-family:var(--k-hfont);font-size:21px;background:none;-webkit-text-fill-color:var(--k-hc);color:var(--k-hc);filter:none;text-transform:var(--k-tt,none);letter-spacing:.05em}
+  html:not([data-theme="vegas"]) .app-head .titles .sub{color:var(--k-soft)}
+  html:not([data-theme="vegas"]) .jackpot{background:var(--k-card);border:var(--k-bw) solid var(--k-bd);border-radius:var(--k-r);box-shadow:var(--k-sh)}
+  html:not([data-theme="vegas"]) .jp-l{color:var(--k-soft);font-family:var(--k-hfont)}
+  html:not([data-theme="vegas"]) .jackpot b{color:var(--k-acc2);text-shadow:var(--k-tglow);font-family:var(--k-hfont)}
+  html:not([data-theme="vegas"]) .card{background:var(--k-card);border:var(--k-bw) solid var(--k-bd);border-radius:var(--k-r);outline:none;box-shadow:var(--k-sh)}
+  html:not([data-theme="vegas"]) .card h3{color:var(--k-soft);font-family:var(--k-hfont)}
+  html:not([data-theme="vegas"]) .bal-hero{background:var(--k-bal) !important;border:var(--k-bw) solid var(--k-bd) !important;border-radius:var(--k-r) !important;box-shadow:var(--k-sh) !important}
+  html:not([data-theme="vegas"]) .bal-huge{color:var(--k-balc) !important;text-shadow:var(--k-tglow) !important;font-family:var(--k-hfont) !important}
+  html:not([data-theme="vegas"]) .bal-label{color:var(--k-balc) !important;opacity:.8;font-family:var(--k-hfont)}
+  html:not([data-theme="vegas"]) .btn{font-family:var(--k-hfont);border-radius:var(--k-br);text-transform:var(--k-tt,none)}
+  html:not([data-theme="vegas"]) .btn.neon{background:var(--k-btn);color:var(--k-btnc);border:var(--k-bw) solid var(--k-bd);box-shadow:var(--k-bsh);text-shadow:none}
+  html:not([data-theme="vegas"]) .btn.ghost{background:transparent;color:var(--k-txt);border:var(--k-bw) solid var(--k-bd)}
+  html:not([data-theme="vegas"]) .chip-btn{background:var(--k-acc);color:var(--k-btnc);border:var(--k-bw) solid var(--k-bd);box-shadow:none}
+  html:not([data-theme="vegas"]) .stage{background:var(--k-stage) !important;border:var(--k-bw) solid var(--k-bd) !important;border-radius:var(--k-r) !important;box-shadow:var(--k-sh) !important}
+  html:not([data-theme="vegas"]) .game-chip{background:var(--k-card);border:var(--k-bw) solid var(--k-bd);border-radius:var(--k-br);color:var(--k-txt)}
+  html:not([data-theme="vegas"]) .game-chip.active{border-color:var(--k-acc) !important;box-shadow:var(--k-glow) !important;background:var(--k-card2) !important}
+  html:not([data-theme="vegas"]) .bet-input-wrap{background:var(--k-card2);border:var(--k-bw) solid var(--k-bd)}
+  html:not([data-theme="vegas"]) .bet-input-wrap input{color:var(--k-acc2);font-family:var(--k-hfont)}
+  html:not([data-theme="vegas"]) .stat-tile{background:var(--k-card2);border:1px solid var(--k-bd)}
+  html:not([data-theme="vegas"]) .stat-tile .n{color:var(--k-acc2)}
+  html:not([data-theme="vegas"]) .field input,html:not([data-theme="vegas"]) .field textarea{background:var(--k-card2);color:var(--k-txt);border:1px solid var(--k-bd)}
+  html:not([data-theme="vegas"]) .fund-bar{background:var(--k-card2);border:1px solid var(--k-bd)}
+  html:not([data-theme="vegas"]) .fund-bar-fill{background:var(--k-acc) !important;box-shadow:none}
+  html:not([data-theme="vegas"]) .tabbar{background:var(--k-card) !important;border:var(--k-bw) solid var(--k-bd) !important;border-radius:var(--k-r) !important;box-shadow:var(--k-sh) !important}
+  html:not([data-theme="vegas"]) .tabbar button.active,html:not([data-theme="vegas"]) .tabbar .tab.active{color:var(--k-acc) !important;filter:none}
+  html:not([data-theme="vegas"]) #loadingScreen{background:var(--k-bg)}
+  html:not([data-theme="vegas"]) .loading-logo{width:72px;height:72px;border-radius:var(--k-lr);border:var(--k-bw) solid var(--k-bd);background:var(--k-card);animation:none;padding:5px;box-shadow:var(--k-glow)}
+  html:not([data-theme="vegas"]) .loading-logo img,html:not([data-theme="vegas"]) .loading-logo svg{border-radius:calc(var(--k-lr) - 4px)}
+  html:not([data-theme="vegas"]) .loading-name{color:var(--k-hc);font-family:var(--k-hfont);text-shadow:none}
+  html:not([data-theme="vegas"]) .sheet{background:var(--k-card);border-top:var(--k-bw) solid var(--k-bd)}
+  html[data-theme="pop"] .bal-label,html[data-theme="pop"] .bal-huge{color:#fff !important}
+  html[data-theme="pop"] .btn{font-size:17px}
+  html[data-theme="neon"] .brand-logo{clip-path:polygon(25% 0,100% 0,100% 75%,75% 100%,0 100%,0 25%)}
+  .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .theme-opt{border:2px solid var(--border);border-radius:14px;padding:10px;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;text-align:left;font:700 12px 'Inter',sans-serif}
+  .theme-opt.on{border-color:#2ee27a;box-shadow:0 0 0 2px #2ee27a}
+  .theme-opt i{display:block;height:26px;border-radius:8px;margin-bottom:7px}
 </style>
 </head>
 <body>
@@ -895,6 +935,14 @@
 
   <!-- ===== ADMIN VIEW (admin only) ===== -->
   <div class="view" id="view-admin">
+    <div class="card"><h3>App Theme</h3>
+      <div class="theme-grid" id="themeGrid">
+        <button class="theme-opt" data-t="vegas"><i style="background:linear-gradient(90deg,#9b1230,#ffd84d)"></i>Vegas Velvet</button>
+        <button class="theme-opt" data-t="neon"><i style="background:linear-gradient(90deg,#00f0ff,#ff2bd6)"></i>Neon Arcade</button>
+        <button class="theme-opt" data-t="royal"><i style="background:linear-gradient(90deg,#0b1a15,#d4b46a)"></i>Royal Emerald</button>
+        <button class="theme-opt" data-t="pop"><i style="background:linear-gradient(90deg,#ffd400,#ff3d81)"></i>Pop Slots</button>
+      </div>
+    </div>
     <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
       <div class="stat-grid" id="adminStats">
@@ -1088,6 +1136,35 @@
   }
 
   document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
+
+
+  // ---------- Themes (admin-selectable, stored on the bot) ----------
+  const THEMES = { vegas:'#12020a', neon:'#05010f', royal:'#06100d', pop:'#ffe9a8' };
+  let themeApi = null;
+  try{ const tu = new URL(params.get('tapi') || ''); if (tu.protocol === 'https:' && !tu.username && !tu.password) themeApi = tu.href; }catch(e){}
+  function applyTheme(t){
+    if (!THEMES[t]) t = 'vegas';
+    document.documentElement.setAttribute('data-theme', t);
+    try{ localStorage.setItem('lg_theme', t); }catch(e){}
+    try{ tg && tg.setHeaderColor && tg.setHeaderColor(THEMES[t]); tg && tg.setBackgroundColor && tg.setBackgroundColor(THEMES[t]); }catch(e){}
+    document.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  }
+  async function themeCall(action, extra){
+    if (!themeApi) throw new Error('Open the app from the bot (/start) to change themes.');
+    const r = await fetch('/api/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'omit',
+      body: JSON.stringify(Object.assign({ api: themeApi, action, init_data: (tg && tg.initData) || '' }, extra || {})) });
+    const d = await r.json();
+    return (d && d.result !== undefined) ? d.result : d;
+  }
+  async function initTheme(){ try{ const r = await themeCall('get_theme'); if (r && r.ok) applyTheme(r.theme); }catch(e){} }
+  document.querySelectorAll('.theme-opt').forEach(b => b.addEventListener('click', async () => {
+    try{
+      const r = await themeCall('set_theme', { theme: b.dataset.t });
+      if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save theme');
+      applyTheme(r.theme); toast('Theme saved for everyone');
+    }catch(e){ toast(e.message || 'Could not save theme'); }
+  }));
+  try{ applyTheme(localStorage.getItem('lg_theme') || 'vegas'); }catch(e){ applyTheme('vegas'); }
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
   // (No manual bot registration, and no public bot-list lookup anymore.)
@@ -1931,7 +2008,7 @@
 
   $('backBtn').addEventListener('click', () => { if (tg && tg.close) tg.close(); else history.back(); });
 
-  (async () => { loadBotInfoQuick(); await resolveBotId(); await loadDashboard(); loadHistory(); })();
+  (async () => { initTheme(); loadBotInfoQuick(); await resolveBotId(); await loadDashboard(); loadHistory(); })();
 })();
 </script>
 <script>
