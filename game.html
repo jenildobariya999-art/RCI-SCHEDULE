@@ -6,6 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
+<meta name="referrer" content="no-referrer" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 <title>Loot Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -795,7 +797,16 @@
 
   const params = new URLSearchParams(location.search);
   let botId = params.get('botid');
-  const apiUrl = params.get('api');
+  let apiUrl = params.get('api');
+
+  // --- Sanitize routing params (never trust the query string) ---
+  if (botId && !/^\d{4,15}$/.test(botId)) botId = null;
+  if (apiUrl){
+    try{
+      const u = new URL(apiUrl);
+      apiUrl = (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null;
+    } catch(e){ apiUrl = null; }
+  }
 
   // Show the bot's real profile photo on the loading screen (falls back to the
   // default star mark if the bot has no public photo, or the request fails).
@@ -811,15 +822,9 @@
   }
   loadBotPhoto(BOT_USERNAME_FALLBACK);
 
-  async function resolveBotId(){
-    if (botId || apiUrl) return;
-    try{
-      const res = await fetch('/api/get-bots');
-      const data = await res.json();
-      const ids = Object.keys(data.bots || {});
-      if (ids.length === 1) botId = ids[0];
-    } catch(e){}
-  }
+  // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
+  // (No manual bot registration, and no public bot-list lookup anymore.)
+  async function resolveBotId(){ return; }
 
   const $ = (id) => document.getElementById(id);
   const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -828,7 +833,9 @@
     try{
       let id = localStorage.getItem('lg_device_id');
       if (!id){
-        id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+        const a = new Uint8Array(12);
+        (window.crypto || window.msCrypto).getRandomValues(a);
+        id = 'dev_' + Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
         localStorage.setItem('lg_device_id', id);
       }
       return id;
@@ -843,25 +850,56 @@
     toast._t = setTimeout(()=>el.classList.remove('show'), 3000);
   };
 
+  const PUBLIC_ACTIONS = new Set(['bot_info']);
+  const MUTATING_ACTIONS = new Set(['bonus','redeem_gift','game_play','withdraw_execute','link_wallet','link_upi',
+    'trigger_verification','admin_toggle_game','admin_save_settings','admin_create_gift','admin_toggle_gift',
+    'admin_ban_user','admin_unban_user','admin_broadcast']);
+  const inflight = new Set();
+
   async function callApi(action, extra){
     if (!botId && !apiUrl) throw new Error('no-api');
     const initData = (tg && tg.initData) ? tg.initData : '';
-    const routeParams = botId ? { botid: botId } : { api: apiUrl };
-    const res = await fetch('/api/proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
-    });
-    let data;
-    try{ data = await res.json(); }
-    catch(parseErr){ throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); }
-    const inner = (data && data.result !== undefined) ? data.result : data;
-    if (inner && inner.ok === false) {
-      const err = new Error(inner.error || 'Something went wrong');
-      err.extra = inner;
-      throw err;
+    // Everything except the public bot name/photo lookup needs Telegram's signed session.
+    if (!initData && !PUBLIC_ACTIONS.has(action)) throw new Error('no-telegram');
+    // Block double-taps / replays of money-moving actions while one is already running.
+    if (MUTATING_ACTIONS.has(action)){
+      if (inflight.has(action)) throw new Error('Please wait, your last request is still processing.');
+      inflight.add(action);
     }
-    return inner;
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 30000);
+    try{
+      const routeParams = botId ? { botid: botId } : { api: apiUrl };
+      let res;
+      try{
+        res = await fetch('/api/proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'omit',
+          signal: ctrl.signal,
+          body: JSON.stringify(Object.assign(routeParams, { action, init_data: initData }, extra || {}))
+        });
+      } catch(netErr){
+        throw new Error(netErr && netErr.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Check your connection.');
+      }
+      let data;
+      try{ data = await res.json(); }
+      catch(parseErr){ throw new Error(`Server returned an invalid response (status ${res.status}). Try again in a moment.`); }
+      const inner = (data && data.result !== undefined) ? data.result : data;
+      if (inner && inner.ok === false) {
+        const err = new Error(inner.error || 'Something went wrong');
+        err.extra = inner;
+        // Server-side channel gate (popup instead of a page).
+        if (Array.isArray(inner.join_needed) && inner.join_needed.length){
+          showJoinPopup(inner.join_needed.map(normalizeChannel), false);
+        }
+        throw err;
+      }
+      return inner;
+    } finally {
+      clearTimeout(to);
+      inflight.delete(action);
+    }
   }
 
   async function loadBotInfoQuick(){
@@ -985,30 +1023,58 @@
     return { name, url };
   }
 
+  // Only used for the contact/captcha verification step now.
+  // Channel-join is handled by a native Telegram popup (see showJoinPopup).
   function renderVerifyGate(d){
     hideLoadingScreen();
     $('app').style.display = 'none';
     $('tabbarWrap').style.display = 'none';
     $('emptyState').style.display = 'block';
-    const channels = (d.join_needed || []).map(normalizeChannel);
-    const channelBtns = channels.map(c => `
-      <a class="btn ghost" href="${escapeHtml(c.url)}" target="_blank" rel="noopener"
-         style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; margin-bottom:10px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
-        Join ${escapeHtml(c.name)}
-      </a>`).join('');
     $('emptyState').innerHTML = `
       <div class="empty">
         <div class="gate-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
         <div class="t">One quick step left</div>
-        <p>${d.verify_needed ? 'Please complete verification in the bot chat, then tap refresh below.' : 'Join the required channel(s) below, then tap refresh.'}</p>
-        <div style="margin-top:18px; text-align:left;">${channelBtns}</div>
-        <button class="btn neon" id="gateRefreshBtn" style="margin-top:4px;">I've done this — Refresh</button>
+        <p>Please complete verification in the bot chat, then tap refresh below.</p>
+        <button class="btn neon" id="gateRefreshBtn" style="margin-top:18px;">I've done this — Refresh</button>
       </div>`;
     $('gateRefreshBtn').addEventListener('click', () => {
       const btn = $('gateRefreshBtn'); btn.disabled = true; btn.textContent = 'Checking…';
       loadDashboard();
     });
+  }
+
+  // ---------- Native Telegram popup when channels are not joined ----------
+  let joinPopupOpen = false;
+  function showJoinPopup(channels, lockApp){
+    if (joinPopupOpen) return;
+    joinPopupOpen = true;
+    const names = (channels || []).map(c => c && c.name).filter(n => n && n !== 'Channel').slice(0, 3).join(', ');
+    const plural = (channels || []).length > 1;
+    const msg = ('You have not joined our channel' + (plural ? 's' : '') + (names ? ' (' + names + ')' : '') +
+      '. Join from the bot chat, then tap Check Again.').slice(0, 250);
+    const finish = (id) => {
+      joinPopupOpen = false;
+      if (id === 'retry'){
+        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
+        loadDashboard();
+      } else if (lockApp && tg && tg.close){
+        try{ tg.close(); }catch(e){}
+      }
+    };
+    const canPopup = tg && tg.showPopup && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'));
+    try{
+      if (canPopup){
+        tg.showPopup({
+          title: 'Channel not joined',
+          message: msg,
+          buttons: [{ id: 'retry', type: 'default', text: 'Check Again' }, { id: 'close', type: 'close' }]
+        }, finish);
+      } else if (tg && tg.showAlert && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'))){
+        tg.showAlert(msg, () => finish('close'));
+      } else {
+        window.alert(msg); finish('close');
+      }
+    } catch(e){ joinPopupOpen = false; }
   }
 
   let dash = null;
@@ -1034,7 +1100,15 @@
     try{
       const d = await callApi('dashboard');
       if (d.banned){ renderEmpty('Your account has been banned from this bot.', true); return; }
-      if ((d.join_needed && d.join_needed.length) || d.verify_needed){ renderVerifyGate(d); return; }
+      const joinList = (d.join_needed || []).map(normalizeChannel);
+      if (joinList.length){
+        // Lock the UI behind the loading screen and show ONLY Telegram's native popup.
+        $('app').style.display = 'none'; $('tabbarWrap').style.display = 'none'; $('emptyState').style.display = 'none';
+        const ls = $('loadingScreen'); if (ls) ls.style.display = 'flex';
+        showJoinPopup(joinList, true);
+        return;
+      }
+      if (d.verify_needed){ renderVerifyGate(d); return; }
       dash = d;
       isAdmin = !!d.is_admin;
 
@@ -1068,6 +1142,7 @@
       await loadGames();
     } catch(e){
       if (e.message === 'no-api'){ renderEmpty(); return; }
+      if (e.message === 'no-telegram'){ renderEmpty('Please open this app from Telegram using the bot\'s button.'); return; }
       hideLoadingScreen();
       toast(e.message || "Couldn't load", true);
     }
@@ -1093,7 +1168,7 @@
 
   function renderGamePicker(){
     $('gamePicker').innerHTML = games.map(g => `
-      <div class="game-chip ${g.id===activeGameId?'active':''}" data-game="${g.id}">
+      <div class="game-chip ${g.id===activeGameId?'active':''}" data-game="${escapeHtml(g.id)}">
         <span class="ic">${gameIcon(g.id)}</span>
         <div class="nm">${escapeHtml(g.name)}</div>
         <div class="mx">${g.multiplier}x</div>
@@ -1390,7 +1465,7 @@
       $('wNet').textContent = '₹' + q.net_amount;
       $('wWallet').textContent = 'To wallet: ' + q.wallet;
       $('gatewayList').innerHTML = (q.gateways||[]).map(gw => `
-        <div class="gw-option" data-gw="${gw.key}">
+        <div class="gw-option" data-gw="${escapeHtml(gw.key)}">
           <div class="gw-ic">${escapeHtml((gw.name||'?').trim().slice(0,2).toUpperCase())}</div>
           <div class="gw-name">${escapeHtml(gw.name)}</div>
           <div class="gw-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
@@ -1448,7 +1523,7 @@
       $('adminTotalFund').value = s.total_fund ?? '';
 
       $('adminGamesList').innerHTML = (s.games||[]).map(g => `
-        <div class="admin-game-row" data-gid="${g.id}">
+        <div class="admin-game-row" data-gid="${escapeHtml(g.id)}">
           <div class="admin-game-head">
             <span style="font-size:20px;">${g.emoji}</span>
             <span class="nm">${escapeHtml(g.name)}</span>
@@ -1498,7 +1573,7 @@
           <div class="mono" style="font-weight:800;">${escapeHtml(c.code)}</div>
           <div style="font-size:11px; color:var(--text-soft);">₹${c.amount} · ${c.claimed}/${c.max} claimed · min ${c.min_ref} refs</div>
         </div>
-        <span class="badge ${c.status==='Active'?'on':'off'}">${c.status}</span>
+        <span class="badge ${c.status==='Active'?'on':'off'}">${escapeHtml(c.status)}</span>
         <button class="chip-btn" data-toggle-gift="${escapeHtml(c.code)}">Toggle</button>
       </div>`).join('');
     document.querySelectorAll('[data-toggle-gift]').forEach(btn => {
