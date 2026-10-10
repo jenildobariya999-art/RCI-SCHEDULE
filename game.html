@@ -1104,114 +1104,41 @@
     }
   }
 
-  // On-page message when channels are not joined (shown together with the Telegram popup).
-  function renderJoinGate(channels){
+  // ---------- Gate = ONLY a native Telegram popup. No page is ever shown. ----------
+  // kind: 'join' (channel not joined) or 'verify' (verification not completed).
+  // Pressing OK (or dismissing the popup) closes the Mini App.
+  let gatePopupOpen = false;
+  function showGatePopup(kind){
+    if (gatePopupOpen) return;
+    gatePopupOpen = true;
+    // Make sure nothing of the app is visible behind the popup.
     try{
       hideLoadingScreen();
       $('app').style.display = 'none';
       $('tabbarWrap').style.display = 'none';
-      $('emptyState').style.display = 'block';
-      const list = (channels || []).slice(0, 4);
-      const named = list.filter(c => c && c.name && c.name !== 'Private channel');
-      const chips = (named.length ? named : list).map(c => `<span class="jg-chip">${escapeHtml(c.name)}</span>`).join('');
-      const plural = (channels || []).length > 1;
-      $('emptyState').innerHTML = `
-        <div class="jg">
-          <div class="jg-card">
-            <div class="jg-avatar">
-              <div class="av" data-brand-avatar></div>
-              <div class="jg-lock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
-            </div>
-            <div class="jg-name" data-brand-name></div>
-            <div class="jg-handle" data-brand-handle></div>
-
-            <div class="jg-title">You have not joined channel</div>
-            <p class="jg-sub">Join our channel${plural ? 's' : ''} to unlock the app, then come back and check again.</p>
-            ${chips ? `<div class="jg-chs">${chips}</div>` : ''}
-
-            <div class="jg-steps">
-              <div class="jg-step"><i>1</i>Open the bot chat &amp; join the channel${plural ? 's' : ''}</div>
-              <div class="jg-step"><i>2</i>Come back here and tap Check Again</div>
-            </div>
-
-            <div class="jg-actions">
-              <button class="btn neon" id="joinRefreshBtn">Check Again</button>
-              <button class="btn ghost" id="joinChatBtn">Open Bot Chat</button>
-            </div>
-          </div>
-        </div>`;
-      loadBotPhoto(brand.username, brand.name);
-      $('joinRefreshBtn').addEventListener('click', () => {
-        const b = $('joinRefreshBtn'); b.disabled = true; b.textContent = 'Checking…';
-        loadDashboard();
-      });
-      $('joinChatBtn').addEventListener('click', () => {
-        try{
-          if (tg && tg.close) tg.close();
-        } catch(e){}
-      });
-    } catch(e){
-      // Last-resort fallback so the page never ends up blank.
-      try{
-        hideLoadingScreen();
-        $('emptyState').style.display = 'block';
-        $('emptyState').innerHTML = '<div class="empty"><div class="t">You have not joined channel</div><p>Join our channel from the bot chat, then reopen the app.</p></div>';
-      } catch(_){}
-    }
-  }
-
-  // Only used for the contact/captcha verification step now.
-  // Channel-join is handled by a native Telegram popup (see showJoinPopup).
-  function renderVerifyGate(d){
-    hideLoadingScreen();
-    $('app').style.display = 'none';
-    $('tabbarWrap').style.display = 'none';
-    $('emptyState').style.display = 'block';
-    $('emptyState').innerHTML = `
-      <div class="empty">
-        <div class="gate-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
-        <div class="t">One quick step left</div>
-        <p>Please complete verification in the bot chat, then tap refresh below.</p>
-        <button class="btn neon" id="gateRefreshBtn" style="margin-top:18px;">I've done this — Refresh</button>
-      </div>`;
-    $('gateRefreshBtn').addEventListener('click', () => {
-      const btn = $('gateRefreshBtn'); btn.disabled = true; btn.textContent = 'Checking…';
-      loadDashboard();
-    });
-  }
-
-  // ---------- Native Telegram popup when channels are not joined ----------
-  let joinPopupOpen = false;
-  function showJoinPopup(channels, lockApp){
-    if (joinPopupOpen) return;
-    joinPopupOpen = true;
-    const names = (channels || []).map(c => c && c.name).filter(n => n && n !== 'Channel' && n !== 'Private channel').slice(0, 3).join(', ');
-    const plural = (channels || []).length > 1;
-    const msg = ('You have not joined our channel' + (plural ? 's' : '') + (names ? ' (' + names + ')' : '') +
-      '. Join from the bot chat, then tap Check Again.').slice(0, 250);
-    const finish = (id) => {
-      joinPopupOpen = false;
-      if (id === 'retry'){
-        loadDashboard();
-      } else if (lockApp && tg && tg.close){
-        try{ tg.close(); }catch(e){}
-      }
+      $('emptyState').style.display = 'none';
+    } catch(e){}
+    const title = kind === 'verify' ? 'Verification pending' : 'Channel not joined';
+    const msg = kind === 'verify'
+      ? 'You have not completed verification. Please complete it in the bot chat, then open the app again.'
+      : 'You have not joined channel. Please join it from the bot chat, then open the app again.';
+    const finish = () => {
+      gatePopupOpen = false;
+      try{ if (tg && tg.close) tg.close(); } catch(e){}
     };
-    const canPopup = tg && tg.showPopup && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'));
+    const okVer = tg && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'));
     try{
-      if (canPopup){
-        tg.showPopup({
-          title: 'Channel not joined',
-          message: msg,
-          buttons: [{ id: 'retry', type: 'default', text: 'Check Again' }, { id: 'close', type: 'close' }]
-        }, finish);
-      } else if (tg && tg.showAlert && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'))){
-        tg.showAlert(msg, () => finish('close'));
+      if (okVer && tg.showPopup){
+        tg.showPopup({ title, message: msg, buttons: [{ id: 'ok', type: 'ok' }] }, finish);
+      } else if (okVer && tg.showAlert){
+        tg.showAlert(msg, finish);
       } else {
-        window.alert(msg); finish('close');
+        window.alert(msg); finish();
       }
-    } catch(e){ joinPopupOpen = false; }
+    } catch(e){ finish(); }
   }
+  // Kept for the server-side action gate (callApi): same popup, same behaviour.
+  function showJoinPopup(){ showGatePopup('join'); }
 
   let dash = null;
   let games = [];
@@ -1239,12 +1166,10 @@
       const joinList = (d.join_needed || []).map(normalizeChannel);
       if (joinList.length){
         // Lock the UI behind the loading screen and show ONLY Telegram's native popup.
-        if (d.bot_username) { brand.username = String(d.bot_username); if (d.bot_name) brand.name = String(d.bot_name); }
-        renderJoinGate(joinList);
-        showJoinPopup(joinList, false);
+        showGatePopup('join');
         return;
       }
-      if (d.verify_needed){ renderVerifyGate(d); return; }
+      if (d.verify_needed){ showGatePopup('verify'); return; }
       dash = d;
       isAdmin = !!d.is_admin;
 
