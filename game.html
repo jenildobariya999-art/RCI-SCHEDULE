@@ -764,6 +764,54 @@
   .theme-opt{border:2px solid var(--border);border-radius:14px;padding:10px;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;text-align:left;font:700 12px 'Inter',sans-serif}
   .theme-opt.on{border-color:#2ee27a;box-shadow:0 0 0 2px #2ee27a}
   .theme-opt i{display:block;height:26px;border-radius:8px;margin-bottom:7px}
+
+  /* ===== STRUCTURE per theme (layout, shapes, nav — not just colours) + small logo ===== */
+  html[data-theme] .brand-logo{ width:36px; height:36px; padding:3px; border-width:2px; }
+  html[data-theme] .loading-logo{ width:54px; height:54px; padding:4px; border-width:2px; }
+  html[data-theme] .app-head .titles .name{ font-size:18px; }
+
+  /* VEGAS — centred marquee sign, floating pill nav, scrolling game reel */
+  html[data-theme="vegas"] header.app-head{ flex-direction:row; justify-content:center; padding:12px; }
+
+  /* NEON — terminal/HUD: slim top bar, 2-col game grid, docked full-width nav, angled corners */
+  html[data-theme="neon"] header.app-head{ border-radius:0; border-width:0 0 2px 0; background:transparent; box-shadow:0 10px 24px -14px #00f0ff; padding:8px 2px 10px; }
+  html[data-theme="neon"] .card, html[data-theme="neon"] .jackpot, html[data-theme="neon"] .bal-hero, html[data-theme="neon"] .stage{
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px)); border-radius:0 !important; }
+  html[data-theme="neon"] .card{ border-left:4px solid #ff2bd6; }
+  html[data-theme="neon"] .game-picker{ display:grid !important; grid-template-columns:1fr 1fr; gap:10px; overflow:visible !important; }
+  html[data-theme="neon"] .game-chip{ min-width:0; clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%); }
+  html[data-theme="neon"] .btn{ transform:skewX(-8deg); letter-spacing:.14em; }
+  html[data-theme="neon"] .bal-huge{ text-align:left; letter-spacing:.02em; }
+  html[data-theme="neon"] .tabbar-wrap{ left:0 !important; right:0 !important; bottom:0 !important; padding:0 !important; }
+  html[data-theme="neon"] .tabbar{ border-radius:0 !important; border-width:2px 0 0 0 !important; width:100% !important; max-width:none !important; }
+  html[data-theme="neon"] .jackpot{ flex-direction:column; align-items:flex-start; gap:2px; }
+
+  /* ROYAL — boutique: borderless airy header, centred serif headings, 3-up game tiles, slim underline nav */
+  html[data-theme="royal"] header.app-head{ flex-direction:column; background:transparent; border:0; border-bottom:1px solid #b89b5e; border-radius:0; box-shadow:none; padding:6px 0 14px; margin-bottom:18px; }
+  html[data-theme="royal"] .card{ padding:24px 20px; }
+  html[data-theme="royal"] .card h3{ justify-content:center; text-align:center; letter-spacing:.3em; font-size:11px; }
+  html[data-theme="royal"] .card h3::after{ content:''; }
+  html[data-theme="royal"] .bal-hero{ text-align:center; }
+  html[data-theme="royal"] .bal-hero > *{ margin-left:auto; margin-right:auto; }
+  html[data-theme="royal"] .game-picker{ display:grid !important; grid-template-columns:repeat(3,1fr); gap:8px; overflow:visible !important; }
+  html[data-theme="royal"] .game-chip{ min-width:0; flex-direction:column; text-align:center; padding:12px 4px; }
+  html[data-theme="royal"] .btn{ letter-spacing:.2em; font-weight:700; }
+  html[data-theme="royal"] .jackpot{ justify-content:center; flex-direction:column; text-align:center; background:transparent; border-width:1px 0; border-radius:0; box-shadow:none; }
+  html[data-theme="royal"] .tabbar{ width:auto !important; max-width:92% !important; margin:0 auto; }
+
+  /* POP — sticker book: tilted cards, chunky stacked games, big offset-shadow buttons, sticky header badge */
+  html[data-theme="pop"] header.app-head{ transform:rotate(-1deg); background:#ffd400; }
+  html[data-theme="pop"] .card:nth-of-type(odd){ transform:rotate(-.6deg); }
+  html[data-theme="pop"] .card:nth-of-type(even){ transform:rotate(.6deg); }
+  html[data-theme="pop"] .bal-hero{ transform:rotate(-1.2deg); }
+  html[data-theme="pop"] .bal-huge{ font-size:68px !important; -webkit-text-stroke:3px #111; }
+  html[data-theme="pop"] .game-picker{ display:flex !important; flex-direction:column; gap:10px; overflow:visible !important; }
+  html[data-theme="pop"] .game-chip{ width:100%; min-width:0; flex-direction:row; justify-content:flex-start; gap:12px; padding:12px 14px; box-shadow:4px 4px 0 #111; }
+  html[data-theme="pop"] .btn{ padding-top:16px; padding-bottom:16px; border-radius:999px; }
+  html[data-theme="pop"] .btn:active{ transform:translate(4px,4px); box-shadow:0 0 0 #111 !important; }
+  html[data-theme="pop"] .tabbar{ border-radius:999px !important; background:#ff3d81 !important; }
+  html[data-theme="pop"] .tabbar button, html[data-theme="pop"] .tabbar .tab{ color:#fff; }
+  html[data-theme="pop"] .tabbar button.active, html[data-theme="pop"] .tabbar .tab.active{ color:#ffd400 !important; }
 </style>
 </head>
 <body>
