@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Bet &amp; Earn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#050a1a;--c1:#0b1430;--c2:#121e44;--bd:#1f2f66;--tx:#f4f7ff;--sf:#8d9bc7;--g:#3dff7a;--g2:#b8ff3d;--y:#ffc83d;--r:#ff4f6d}
@@ -13,7 +15,7 @@
 [hidden]{display:none!important}
 html{background:var(--bg);overscroll-behavior-y:none}
 html::before{content:'';position:fixed;inset:0;z-index:-1;transform:translateZ(0);background:radial-gradient(ellipse 80% 38% at 50% 0,rgba(40,90,220,.34),transparent 70%),radial-gradient(ellipse 60% 30% at 100% 65%,rgba(120,50,255,.2),transparent 70%),var(--bg)}
-body{font:500 14px/1.35 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--tx);padding:0 14px calc(96px + env(safe-area-inset-bottom,0px));min-height:100vh}
+body{font:500 13.5px/1.45 'Poppins',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;overscroll-behavior:none;color:var(--tx);padding:0 14px calc(96px + env(safe-area-inset-bottom,0px));min-height:100vh}
 button,input,textarea{font:inherit;color:inherit;border:0;background:none;outline:none}
 button{cursor:pointer}
 .ic{width:1.15em;height:1.15em;display:inline-block;vertical-align:-.2em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -28,7 +30,7 @@ button{cursor:pointer}
 .av img{width:100%;height:100%;object-fit:cover;display:block}
 .brand{text-align:center;min-width:0;padding:0 8px}
 .brand .ic{display:block;margin:0 auto -2px;width:22px;height:22px;color:var(--y)}
-.brand b{display:block;font-size:21px;font-weight:900;font-style:italic;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{display:block;font-size:19px;font-weight:800;font-style:italic;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand b i{color:var(--g);font-style:italic}
 .brand small{font-size:10px;letter-spacing:.3em;color:var(--sf)}
 .ib{width:42px;height:42px;border-radius:50%;background:var(--c2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;color:#cfd6f5}
@@ -39,17 +41,17 @@ button{cursor:pointer}
 .v.on>*:nth-child(2){animation-delay:.05s}.v.on>*:nth-child(3){animation-delay:.1s}.v.on>*:nth-child(4){animation-delay:.15s}.v.on>*:nth-child(5){animation-delay:.2s}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .card{background:linear-gradient(160deg,var(--c2),var(--c1));border:1px solid var(--bd);border-radius:20px;padding:14px;margin-bottom:12px}
-.card h3{font-size:16px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:15.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .hero{position:relative;overflow:hidden;min-height:188px;padding:16px 14px;border-color:rgba(61,255,122,.5);box-shadow:0 0 24px -8px rgba(61,255,122,.5);background:radial-gradient(circle at 85% 40%,rgba(61,255,122,.22),transparent 55%),linear-gradient(160deg,#10224a,#08122c)}
 .hero .gm{position:absolute;right:-8px;bottom:0;height:112%;width:auto;pointer-events:none}
 .hero p{color:var(--sf);font-size:12px;position:relative}
-.hero h2{font-size:22px;font-weight:900;position:relative;max-width:62%;margin:1px 0 3px}
+.hero h2{font-size:21px;font-weight:800;position:relative;max-width:62%;margin:1px 0 3px}
 .hero h2 .ic{color:var(--y);width:20px;height:20px}
 .bal{position:absolute;left:12px;bottom:12px;width:calc(100% - 92px);display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 10px 10px 12px;border-radius:16px;background:rgba(5,10,26,.82);border:1.5px solid rgba(61,255,122,.6)}
 .bal small{display:block;color:var(--sf);font-size:11px}
-.bal b{font-size:24px;font-weight:900;letter-spacing:.3px;white-space:nowrap}
+.bal b{font-size:23px;font-weight:800;letter-spacing:.3px;white-space:nowrap}
 .bal b em{font-size:12px;font-style:normal;color:var(--g);margin-left:3px}
-.btn{position:relative;overflow:hidden;display:block;width:100%;padding:13px;border-radius:15px;font-weight:900;font-size:15px;color:#04200f;background:linear-gradient(180deg,var(--g2),#20d65a);box-shadow:0 8px 20px -10px rgba(61,255,122,.8);text-align:center;transition:transform .12s}
+.btn{position:relative;overflow:hidden;display:block;width:100%;padding:13px;border-radius:15px;font-weight:700;font-size:14.5px;letter-spacing:.2px;color:#04200f;background:linear-gradient(180deg,var(--g2),#20d65a);box-shadow:0 8px 20px -10px rgba(61,255,122,.8);text-align:center;transition:transform .12s}
 .btn:active{transform:scale(.97)}
 .btn:not(.ghost)::after{content:'';position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-150%) skewX(-20deg);animation:shn 3.6s ease-in-out infinite}
 @keyframes shn{0%,60%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(400%) skewX(-20deg)}}
@@ -63,9 +65,9 @@ button{cursor:pointer}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .tile{display:flex;flex-direction:column;align-items:center;gap:7px;border-radius:16px;padding:12px 4px 10px;background:var(--c1);border:1px solid var(--bd);transition:transform .12s}
 .tile:active{transform:scale(.95)}
-.tile b{font-size:12px;font-weight:800}.tile small{font-size:10px;color:var(--sf);margin-top:-5px}
+.tile b{font-size:11.5px;font-weight:700}.tile small{font-size:9.5px;color:var(--sf);margin-top:-5px}
 .bonus{display:flex;align-items:center;gap:12px;border-color:rgba(255,200,61,.45);background:linear-gradient(160deg,#2a1f08,var(--c1))}
-.bonus h4{font-size:16px;font-weight:900}.bonus p{font-size:12px;color:var(--sf)}.bonus .tm{color:var(--y);font-weight:800;font-size:13px;margin-top:3px}
+.bonus h4{font-size:15.5px;font-weight:700}.bonus p{font-size:12px;color:var(--sf)}.bonus .tm{color:var(--y);font-weight:800;font-size:13px;margin-top:3px}
 #clBtn:not([disabled]){animation:pls 1.8s ease-in-out infinite}
 @keyframes pls{50%{transform:scale(1.05)}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stats.g2{grid-template-columns:1fr 1fr}
@@ -82,7 +84,7 @@ textarea.inp{min-height:84px;resize:vertical}
 .row.me{border-color:var(--g)}
 .banner{display:flex;align-items:center;gap:14px;border-radius:20px;padding:16px;margin-bottom:12px;border:1px solid var(--bd);background:linear-gradient(135deg,#1a2a7a,#3a1a7a 60%,#0f4a3a)}
 .banner .ibx{width:58px;height:58px;border-radius:18px}.banner .ibx .ic{width:30px;height:30px}
-.banner h2{font-size:21px;font-weight:900}.banner p{color:#cfd6f5;font-size:12.5px;margin-top:2px}
+.banner h2{font-size:20px;font-weight:800}.banner p{color:#cfd6f5;font-size:12.5px;margin-top:2px}
 .games{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gc{display:flex;flex-direction:column;align-items:center;border-radius:18px;padding:14px 10px 12px;background:linear-gradient(170deg,var(--c2),var(--c1));border:1px solid var(--bd)}
 .gc .ibx{width:58px;height:58px;border-radius:18px;margin-bottom:8px}.gc .ibx .ic{width:30px;height:30px}
@@ -95,7 +97,7 @@ textarea.inp{min-height:84px;resize:vertical}
 .mdl.m1{background:#ffd84d;color:#3a2a00}.mdl.m2{background:#cfd6e6;color:#1a2238}.mdl.m3{background:#e0985a;color:#2a1400}
 /* nav */
 #nav{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:100;display:flex;padding:8px 4px;border-radius:22px;background:rgba(9,15,38,.97);border:1px solid var(--bd);box-shadow:0 -6px 24px -10px rgba(40,90,220,.5);transform:translateZ(0)}
-#nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--sf);padding:4px 0;transition:color .15s}
+#nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;font-weight:600;color:var(--sf);padding:4px 0;transition:color .15s}
 #nav .ic{width:22px;height:22px}
 #nav button.on{color:var(--g)}#nav button.on .ic{animation:navp .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes navp{from{transform:scale(.6)}to{transform:scale(1)}}
@@ -112,7 +114,9 @@ textarea.inp{min-height:84px;resize:vertical}
 @keyframes cfa{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),90px) rotate(240deg)}}
 #adm{position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px calc(40px + env(safe-area-inset-bottom,0px))}
 #adm .top{position:sticky;top:0;z-index:2;background:var(--bg);padding:12px 0 8px}
-#adm .top div{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:900}
+#adm .top>div:first-child{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800}
+#adm{overscroll-behavior:contain}
+.ld{display:flex;align-items:center;gap:10px;padding:18px 0;color:var(--sf);font-size:12.5px}
 #admTabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
 #admTabs button{flex-shrink:0;padding:8px 13px;border-radius:999px;background:var(--c2);border:1px solid var(--bd);font-size:12px;font-weight:800;color:var(--sf)}
 #admTabs button.on{background:var(--g);color:#04200f;border-color:var(--g)}
@@ -216,25 +220,32 @@ const P = new URLSearchParams(location.search);
 let apiUrl = P.get('api'); try { const u = new URL(apiUrl); apiUrl = (u.protocol === 'https:' && !u.username && !u.password) ? u.href : null; } catch (e) { apiUrl = null; }
 let botId = P.get('botid'); if (botId && !/^\d{4,15}$/.test(botId)) botId = null;
 if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); tg.setHeaderColor('#050a1a'); tg.setBackgroundColor('#050a1a'); } catch (e) {} }
-let D = null, brand = { u: '', n: '' }, busy = {}, booted = false;
+let D = null, brand = { u: '', n: '' }, booted = false;
 
 let tt; function toast(m) { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2600); }
-async function api(action, extra) {
-  if (!apiUrl && !botId) throw new Error('no-api');
+const inflight = {};
+function api(action, extra, o) {
+  if (!apiUrl && !botId) return Promise.reject(new Error('no-api'));
   const init = (tg && tg.initData) || '';
-  if (!init && action !== 'bot_info') throw new Error('no-telegram');
-  if (busy[action]) throw new Error('Please wait…');
-  busy[action] = 1; const c = new AbortController(), t = setTimeout(() => c.abort(), 20000);
-  try {
-    let r;
-    try { r = await fetch('/api/proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit', signal: c.signal,
-      body: JSON.stringify(Object.assign(botId ? { botid: botId } : { api: apiUrl }, { action, init_data: init }, extra || {})) }); }
-    catch (e) { throw new Error(e.name === 'AbortError' ? 'Request timed out' : 'Network error'); }
-    let d; try { d = await r.json(); } catch (e) { throw new Error('Bad server response'); }
-    const x = (d && d.result !== undefined) ? d.result : d;
-    if (x && x.ok === false) { const er = new Error(x.error || 'Something went wrong'); er.x = x; if ((x.join_needed || []).length) gate('join'); throw er; }
-    return x;
-  } finally { clearTimeout(t); delete busy[action]; }
+  if (!init && action !== 'bot_info') return Promise.reject(new Error('no-telegram'));
+  const key = action + (extra ? JSON.stringify(extra) : '');
+  if (inflight[key]) return inflight[key];           // a repeated tap re-uses the running request (no error, no double send)
+  const p = (async () => {
+    const c = new AbortController(), t = setTimeout(() => c.abort(), (o && o.timeout) || 20000);
+    try {
+      let r;
+      try { r = await fetch('/api/proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit', signal: c.signal,
+        body: JSON.stringify(Object.assign(botId ? { botid: botId } : { api: apiUrl }, { action, init_data: init }, extra || {})) }); }
+      catch (e) { throw new Error(e.name === 'AbortError' ? 'Server is slow — try again in a moment' : 'Network error'); }
+      let d; try { d = await r.json(); } catch (e) { throw new Error('Bad server response'); }
+      const x = (d && d.result !== undefined) ? d.result : d;
+      if (x && x.ok === false) { const er = new Error(x.error || 'Something went wrong'); er.x = x; if ((x.join_needed || []).length) gate('join'); throw er; }
+      if (/^admin_(save|toggle|create|ban|unban|broadcast)/.test(action)) delete AC.admin_settings;
+      return x;
+    } finally { clearTimeout(t); }
+  })();
+  inflight[key] = p; const done = () => { delete inflight[key]; }; p.then(done, done);
+  return p;
 }
 function avatar(el, url, letter) {
   el.textContent = letter || 'B';
@@ -257,8 +268,8 @@ function gate(kind) {
   const fin = () => { try { tg.close(); } catch (e) {} };
   try { if (tg && tg.showPopup && tg.isVersionAtLeast('6.2')) tg.showPopup({ title: kind === 'verify' ? 'Verification pending' : 'Channel not joined', message: msg, buttons: [{ type: 'ok' }] }, fin); else { alert(msg); fin(); } } catch (e) { fin(); }
 }
-window.addEventListener('error', e => { if (!booted) fail('Error: ' + (e.message || 'script error')); });
-window.addEventListener('unhandledrejection', e => { if (!booted) fail('Error: ' + ((e.reason && e.reason.message) || 'request failed')); });
+window.addEventListener('error', e => { if (!booted) fail('Error: ' + (e.message || 'script error')); else toast('Error: ' + (e.message || 'script error')); });
+window.addEventListener('unhandledrejection', e => { const m = (e.reason && e.reason.message) || 'request failed'; if (!booted) fail('Error: ' + m); else toast(m); });
 setTimeout(() => { if (!booted) fail('Taking longer than usual…'); }, 14000);
 
 function sheet(html) { $('shB').innerHTML = html; $('sh').hidden = false; }
@@ -376,21 +387,24 @@ $('admTabs').innerHTML = AT.map(t => `<button data-t="${t[0]}">${t[1]}</button>`
 $('admBtn').onclick = () => { $('adm').hidden = false; admTab('stats'); };
 $('admClose').onclick = () => { $('adm').hidden = true; };
 $('admTabs').onclick = e => { const b = e.target.closest('[data-t]'); if (b) admTab(b.dataset.t); };
+let admTok = 0; const AC = {};
+async function aget(action, ttl, o) { const c = AC[action]; if (c && Date.now() - c.t < ttl) return c.v; const v = await api(action, null, o); AC[action] = { t: Date.now(), v }; return v; }
+const LD = m => '<div class="ld"><div class="spin"></div>' + (m || 'Loading…') + '</div>';
 const box = h => { $('admB').innerHTML = h; };
-const err = e => box('<div class="mut" style="padding:12px 0">' + esc(e.message) + '</div>');
+const err = e => box('<div class="mut" style="padding:12px 0">' + esc(e.message) + '</div><button class="btn ghost sm" onclick="document.querySelector(\'#admTabs .on\').click()">Retry</button>');
 const F = (id, l, v, t, ph) => `<label class="fl">${l}<input class="inp" id="${id}" type="${t || 'text'}" ${t === 'number' ? 'inputmode="decimal"' : ''} value="${esc(v == null ? '' : v)}" placeholder="${esc(ph || '')}"></label>`;
 const val = id => { const e = $(id); return e ? e.value.trim() : ''; };
 function admTab(t) {
   document.querySelectorAll('#admTabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
-  box('<div class="mut" style="padding:12px 0">Loading…</div>');
+  admTok++; box(LD(t === 'stats' ? 'Counting users — this can take a few seconds…' : 'Loading…'));
   ({ stats: aStats, set: aSet, games: aGames, gifts: aGifts, users: aUsers, cast: aCast, pay: aPay, ch: aCh })[t]();
 }
-async function aStats() { try { const s = await api('admin_stats');
+async function aStats() { const my = admTok; try { const s = await aget('admin_stats', 60000, { timeout: 45000 }); if (my !== admTok) return;
   box(`<div class="stats g2">${[['Members', s.total_members], ['Verified', s.total_verified], ['Payouts ₹', s.total_payouts], ['Success ₹', s.total_payouts_success], ['Bonus claimers', s.total_bonus_claimers], ['Users balance ₹', s.total_balance], ['With referrer', s.with_refer], ['Without', s.without_refer]].map(x => `<div class="st"><small>${x[0]}</small><b>${esc(x[1])}</b></div>`).join('')}</div>
     <button class="btn ghost" id="aOpen" style="margin-top:12px">Open bot /admin in chat</button>`);
   $('aOpen').onclick = async () => { try { const r = await api('admin_open', { target: 'full' }); toast(r.message || 'Opened in chat'); } catch (e) { toast(e.message); } };
 } catch (e) { err(e); } }
-async function aSet() { try { const s = await api('admin_settings');
+async function aSet() { const my = admTok; try { const s = await aget('admin_settings', 20000); if (my !== admTok) return;
   box(`<div class="card"><h3>Rewards &amp; Withdraw</h3><div class="two">${F('f_per', 'Per referral (₹ or 1-5)', s.per_refer)}${F('f_bonus', 'Daily bonus ₹', s.daily_bonus, 'number')}${F('f_min', 'Min withdraw ₹', s.min_withdraw, 'number')}${F('f_max', 'Max withdraw ₹', s.max_withdraw, 'number')}${F('f_tax', 'Fee %', s.tax_percent, 'number')}${F('f_mref', 'Min refs for gift', s.min_ref, 'number')}${F('f_live', 'Live fund ₹', s.live_fund, 'number')}${F('f_tot', 'Total fund ₹', s.total_fund, 'number')}</div>
     ${F('f_pc', 'Payout channel ID' + (s.payout_channel_configured ? ' (set — leave blank to keep)' : ''), '', 'text', '-100…')}
     <button class="btn" id="aSave">Save settings</button></div>
@@ -401,14 +415,14 @@ async function aSet() { try { const s = await api('admin_settings');
     try { await api('admin_save_settings', o); toast('Settings saved'); } catch (e) { toast(e.message); } };
   $('admB').onclick = async e => { const b = e.target.closest('[data-same]'); if (!b) return; try { const r = await api('admin_toggle_same', { which: b.dataset.same }); b.textContent = r.value; b.className = 'pill ' + (r.value === 'ON' ? 'on' : 'off'); } catch (er) { toast(er.message); } };
 } catch (e) { err(e); } }
-async function aGames() { try { const s = await api('admin_settings'), gs = s.games || [];
+async function aGames() { const my = admTok; try { const s = await aget('admin_settings', 20000), gs = s.games || []; if (my !== admTok) return;
   box(gs.map(g => `<div class="card" data-g="${esc(g.id)}"><h3><span style="flex:1">${esc(g.name)}</span><button class="pill ${g.enabled ? 'on' : 'off'}" data-tg="${esc(g.id)}">${g.enabled ? 'ON' : 'OFF'}</button></h3>
     <div class="two">${F('gmin_' + g.id, 'Min bet', g.min_bet, 'number')}${F('gmax_' + g.id, 'Max bet', g.max_bet, 'number')}${F('gwin_' + g.id, 'Win chance %', g.win_chance, 'number')}${F('gmul_' + g.id, 'Multiplier ×', g.multiplier, 'number')}</div></div>`).join('') + '<button class="btn" id="gSave">Save all games</button>');
   $('gSave').onclick = async () => { const arr = gs.map(g => ({ id: g.id, min_bet: val('gmin_' + g.id), max_bet: val('gmax_' + g.id), win_chance: val('gwin_' + g.id), multiplier: val('gmul_' + g.id) }));
     try { await api('admin_save_settings', { games: arr }); toast('Games saved'); } catch (e) { toast(e.message); } };
   $('admB').onclick = async e => { const b = e.target.closest('[data-tg]'); if (!b) return; try { const r = await api('admin_toggle_game', { id: b.dataset.tg }); b.textContent = r.enabled ? 'ON' : 'OFF'; b.className = 'pill ' + (r.enabled ? 'on' : 'off'); } catch (er) { toast(er.message); } };
 } catch (e) { err(e); } }
-async function aGifts() { try { const s = await api('admin_settings'), gc = s.gift_codes || [];
+async function aGifts() { const my = admTok; try { const s = await aget('admin_settings', 20000), gc = s.gift_codes || []; if (my !== admTok) return;
   box(`<div class="card"><h3>Create gift code</h3><div class="two">${F('c_amt', 'Amount ₹', '', 'number')}${F('c_max', 'Max users', '', 'number')}</div>${F('c_ref', 'Min referrals (optional)', '', 'number')}<button class="btn" id="cMake">Create code</button></div>
     <div class="card"><h3>Latest codes</h3>${gc.length ? gc.map(c => `<div class="row"><div class="tx"><b>${esc(c.code)}</b><small>₹${esc(c.amount)} · ${esc(c.claimed)}/${esc(c.max)} claimed · min ${esc(c.min_ref)} refs</small></div><button class="pill ${c.status === 'Active' ? 'on' : 'off'}" data-gt="${esc(c.code)}">${esc(c.status)}</button></div>`).join('') : '<div class="mut">No codes yet.</div>'}</div>`);
   $('cMake').onclick = async () => { try { const r = await api('admin_create_gift', { amount: val('c_amt'), max_users: val('c_max'), min_ref: val('c_ref') || 0 }); toast(r.message || 'Created'); aGifts(); } catch (e) { toast(e.message); } };
@@ -424,10 +438,10 @@ function aCast() {
   $('bGo').onclick = async () => { const t = val('b_t'); if (!t) return toast('Write a message first'); if (!confirm('Send this to ALL users?')) return;
     try { const r = await api('admin_broadcast', { text: t, btn_text: val('b_bt'), btn_url: val('b_bu') }); toast(r.message || 'Broadcast started'); } catch (e) { toast(e.message); } };
 }
-async function aPay() { try { const r = await api('admin_withdrawals'), w = r.withdrawals || [];
+async function aPay() { const my = admTok; try { const r = await aget('admin_withdrawals', 15000), w = r.withdrawals || []; if (my !== admTok) return;
   box(w.length ? w.map(x => `<div class="row"><span class="ibx" style="--a:${x.status === 'success' ? '#3dff7a' : '#ff8a9a'};--b:${x.status === 'success' ? '#12a84a' : '#e0204a'}">${ico('coin')}</span><div class="tx"><b>₹${esc(x.amount)} · ${esc(x.gateway)}</b><small>${esc(x.user)} · ${esc(x.status)} · ${esc(x.date)} ${esc(x.time)}</small></div></div>`).join('') : '<div class="mut" style="padding:12px 0">No withdrawals yet.</div>');
 } catch (e) { err(e); } }
-async function aCh() { try { const r = await api('admin_check_channels'), c = r.channels || [];
+async function aCh() { const my = admTok; try { const r = await aget('admin_check_channels', 30000, { timeout: 30000 }), c = r.channels || []; if (my !== admTok) return;
   box(c.length ? c.map(x => `<div class="row"><span class="pill ${x.ok ? 'on' : 'off'}">${x.ok ? 'OK' : 'FAIL'}</span><div class="tx"><b>${esc(x.name)}</b><small>${esc(x.chat_id)} · ${esc(x.your_status)}${x.error ? ' · ' + esc(x.error) : ''}</small></div></div>`).join('') : '<div class="mut" style="padding:12px 0">No channels configured.</div>');
 } catch (e) { err(e); } }
 
