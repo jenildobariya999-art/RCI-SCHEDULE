@@ -798,6 +798,47 @@
   html[data-theme] .loading-logo{ width:54px; height:54px; padding:0; border-radius:14px; border:2px solid rgba(255,255,255,.45); background:#12020a; animation:none; box-shadow:none; }
   html[data-theme] .loading-logo img, html[data-theme] .loading-logo svg{ border-radius:12px; }
   html[data-theme] .jp-s, html[data-theme] .live-badge{ border:1.5px solid currentColor !important; padding:3px 10px; border-radius:999px; }
+
+  /* ===== jackpot row: label + LIVE on top, amount full-width below (never cut off) ===== */
+  html[data-theme] .jackpot{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:4px 10px; text-align:center; }
+  html[data-theme] .jp-l{ order:1; font-size:11px; letter-spacing:.1em; white-space:nowrap; }
+  html[data-theme] .jp-s{ order:2; }
+  html[data-theme] .jackpot b{ order:3; flex:1 1 100%; text-align:center; font-size:clamp(24px,8.5vw,34px); line-height:1.1; white-space:nowrap; letter-spacing:.02em; }
+
+  /* ===== DESIGN STUDIO (admin) ===== */
+  #studio{ margin-top:12px; }
+  .st-h{ font:800 11px 'Inter',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--text-soft); margin:14px 0 8px; }
+  .st-row{ display:flex; gap:8px; }
+  .st-c{ flex:1; font:700 10px 'Inter',sans-serif; text-align:center; color:var(--text-soft); }
+  .st-c input{ display:block; width:100%; height:38px; margin-top:4px; border:1px solid var(--border); border-radius:10px; background:none; padding:2px; }
+  .st-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .st-f{ display:block; font:700 10px 'Inter',sans-serif; color:var(--text-soft); margin-bottom:6px; }
+  .st-f select, .st-f input{ display:block; width:100%; margin-top:4px; padding:10px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.06); color:var(--text); font:600 13px 'Inter',sans-serif; }
+
+  /* ===== CUSTOM theme layout options (chosen in the Studio) ===== */
+  html[data-theme="custom"][data-corner="sharp"]{ --k-r:3px; --k-br:2px; --k-lr:3px; }
+  html[data-theme="custom"][data-corner="round"]{ --k-r:16px; --k-br:12px; --k-lr:10px; }
+  html[data-theme="custom"][data-corner="pill"]{ --k-r:28px; --k-br:999px; --k-lr:14px; }
+  html[data-theme="custom"][data-font="inter"]{ --k-hfont:'Inter',sans-serif; }
+  html[data-theme="custom"][data-font="cinzel"]{ --k-hfont:'Cinzel',serif; }
+  html[data-theme="custom"][data-font="bebas"]{ --k-hfont:'Bebas Neue',sans-serif; }
+  html[data-theme="custom"][data-font="orbitron"]{ --k-hfont:'Orbitron',sans-serif; }
+  html[data-theme="custom"][data-hdr="center"] header.app-head{ flex-direction:column; text-align:center; }
+  html[data-theme="custom"][data-hdr="left"] header.app-head{ flex-direction:row; text-align:left; }
+  html[data-theme="custom"][data-games="grid2"] .game-picker{ display:grid !important; grid-template-columns:1fr 1fr; gap:10px; overflow:visible !important; }
+  html[data-theme="custom"][data-games="grid3"] .game-picker{ display:grid !important; grid-template-columns:repeat(3,1fr); gap:8px; overflow:visible !important; }
+  html[data-theme="custom"][data-games="stack"] .game-picker{ display:flex !important; flex-direction:column; gap:10px; overflow:visible !important; }
+  html[data-theme="custom"][data-games="grid2"] .game-chip, html[data-theme="custom"][data-games="grid3"] .game-chip, html[data-theme="custom"][data-games="stack"] .game-chip{ min-width:0; width:100%; }
+  html[data-theme="custom"][data-nav="dock"] .tabbar-wrap{ left:0 !important; right:0 !important; bottom:0 !important; padding:0 !important; }
+  html[data-theme="custom"][data-nav="dock"] .tabbar{ border-radius:0 !important; width:100% !important; max-width:none !important; }
+  html[data-theme="custom"][data-card="flat"] .card{ box-shadow:none !important; border-color:transparent !important; }
+  html[data-theme="custom"][data-card="glass"] .card{ background:rgba(255,255,255,.07) !important; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  html[data-theme="custom"][data-card="shadow"] .card{ box-shadow:5px 5px 0 var(--k-bd) !important; }
+
+  .pg-v{ display:flex; align-items:center; justify-content:space-between; padding:11px 12px; margin-bottom:8px; border:1.5px solid var(--border); border-radius:12px; font:700 13px 'Inter',sans-serif; color:var(--text); cursor:pointer; }
+  .pg-v.on{ border-color:#2ee27a; box-shadow:0 0 0 2px rgba(46,226,122,.35); }
+  .pg-v i{ width:26px; height:26px; border-radius:8px; border:1px solid rgba(255,255,255,.35); }
+  #pgBody canvas{ display:block; margin:0 0 10px; touch-action:manipulation; cursor:crosshair; }
 </style>
 </head>
 <body>
@@ -974,11 +1015,17 @@
         <button class="theme-opt" data-t="vegas"><i style="background:linear-gradient(90deg,#9b1230,#ffd84d)"></i>Vegas Velvet</button>
         <button class="theme-opt" data-t="royal"><i style="background:linear-gradient(90deg,#0b1a15,#d4b46a)"></i>Royal Emerald</button>
       </div>
-      <label class="img-drop" style="margin-top:12px;">📷 Send image — design becomes the same
+      <label class="img-drop" style="margin-top:12px;">📷 Send image — opens the Design Studio
         <input type="file" id="themeImg" accept="image/*" style="display:none;">
       </label>
       <div class="sw-row" id="themeSw"></div>
+      <div id="studio" style="display:none;"></div>
       <button class="btn neon" id="themeApplyBtn" style="display:none;">Apply for everyone ✅</button>
+    </div>
+    <div class="card"><h3>Page Studio</h3>
+      <div class="st-h" style="margin-top:0">1 · Select the page (bottom button)</div>
+      <div class="theme-grid" id="pgTabs"></div>
+      <div id="pgBody"></div>
     </div>
     <div class="card">
       <h3><span class="hdr-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>Bot stats</h3>
@@ -1170,6 +1217,7 @@
     document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
     document.querySelectorAll('[data-brand-name]').forEach(el => { el.textContent = brand.name || brand.username || 'Bot'; });
     document.querySelectorAll('[data-brand-handle]').forEach(el => { el.textContent = brand.username ? '@' + brand.username : ''; });
+    try{ reapplyTexts(); }catch(e){}
   }
 
   document.querySelectorAll('[data-brand-avatar]').forEach(paintLogo);
@@ -1202,6 +1250,7 @@
     try{ localStorage.setItem('lg_theme', t); localStorage.setItem('lg_palette', JSON.stringify(t === 'custom' ? p : null)); }catch(e){}
     try{ tg && tg.setHeaderColor && tg.setHeaderColor(hdr); tg && tg.setBackgroundColor && tg.setBackgroundColor(hdr); }catch(e){}
     document.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    try{ reapplyTexts(); }catch(e){}
   }
   async function themeCall(action, extra){
     if (!themeApi) throw new Error('Open the app from the bot (/start) to change themes.');
@@ -1210,7 +1259,7 @@
     const d = await r.json();
     return (d && d.result !== undefined) ? d.result : d;
   }
-  async function initTheme(){ try{ const r = await themeCall('get_theme'); if (r && r.ok) applyTheme(r.theme, r.palette); }catch(e){} }
+  async function initTheme(){ try{ const r = await themeCall('get_theme'); if (r && r.ok) applyServer(r); }catch(e){} }
 
   // ---- colour helpers + palette from an image ----
   const toHex = (r,g,b) => '#' + [r,g,b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2,'0')).join('');
@@ -1246,36 +1295,176 @@
       txt:toHex(txt.r,txt.g,txt.b), soft:toHex(...Object.values(mix(txt, bg, 0.45))), btnc: lum(acc) > 0.55 ? '#111111' : '#ffffff' };
   }
 
+  // ================= DESIGN STUDIO =================
+  let design = null;
+  const DEF = { hdr:'left', corner:'round', games:'scroll', nav:'float', card:'bordered', font:'inter' };
+  const OPTS = { hdr:['left','center'], corner:['sharp','round','pill'], games:['scroll','grid2','grid3','stack'],
+                 nav:['float','dock'], card:['bordered','flat','glass','shadow'], font:['inter','cinzel','bebas','orbitron'] };
+  const h2c = h => ({ r:parseInt(h.slice(1,3),16), g:parseInt(h.slice(3,5),16), b:parseInt(h.slice(5,7),16) });
+  const c2h = c => toHex(c.r, c.g, c.b);
+  function deriveP(p){
+    const bg = h2c(p.bg), acc = h2c(p.acc), txt = h2c(p.txt), card = h2c(p.card);
+    p.card2 = c2h(mix(card, txt, 0.07)); p.bd = c2h(mix(bg, acc, 0.55)); p.soft = c2h(mix(txt, bg, 0.45));
+    p.btnc = lum(acc) > 0.55 ? '#111111' : '#ffffff'; return p;
+  }
+  function reapplyTexts(){
+    const on = document.documentElement.getAttribute('data-theme') === 'custom';
+    const t = (on && design && design.t) || {};
+    [['#botNameTitle', t.title], ['.app-head .sub', t.tag], ['.jp-l', t.jp], ['.bal-label', t.bal]].forEach(([sel, v]) => {
+      const e = document.querySelector(sel); if (!e) return;
+      if (e.dataset.orig === undefined) e.dataset.orig = e.textContent;
+      if (v) e.textContent = v;
+      else if (sel === '.app-head .sub') e.textContent = brand.username ? '@' + brand.username : e.dataset.orig;
+      else if (sel !== '#botNameTitle') e.textContent = e.dataset.orig;
+    });
+  }
+  function applyDesign(d){
+    design = d;
+    const root = document.documentElement;
+    Object.keys(OPTS).forEach(k => root.setAttribute('data-' + k, (d && OPTS[k].includes(d[k])) ? d[k] : DEF[k]));
+    applyTheme('custom', d.p);
+    try{ localStorage.setItem('lg_design', JSON.stringify(d)); }catch(e){}
+    reapplyTexts();
+  }
+  function applyServer(r){ if (r.pages && typeof r.pages === 'object'){ pages = r.pages; try{ applyPages(); }catch(e){} }
+    if (r.theme === 'custom' && r.design && validPalette(r.design.p)) applyDesign(r.design); else applyTheme(r.theme); }
+
+  function buildStudio(){
+    const box = document.getElementById('studio'); if (!box || !design) return;
+    const d = design, p = d.p, t = d.t || {};
+    const col = (k, l) => `<label class="st-c">${l}<input type="color" data-pk="${k}" value="${p[k]}"></label>`;
+    const sel = (k, l) => `<label class="st-f">${l}<select data-dk="${k}">${OPTS[k].map(o => `<option value="${o}" ${d[k] === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`;
+    const txt = (k, l, ph) => `<label class="st-f">${l}<input type="text" maxlength="40" data-tk="${k}" placeholder="${ph}" value="${escapeHtml(t[k] || '')}"></label>`;
+    box.innerHTML = `<div class="st-h">Colours (from your image — tap to fine-tune)</div>
+      <div class="st-row">${col('bg','Back')}${col('card','Card')}${col('acc','Accent')}${col('acc2','Accent 2')}${col('txt','Text')}</div>
+      <div class="st-h">Layout</div>
+      <div class="st-grid">${sel('hdr','Header')}${sel('corner','Corners')}${sel('games','Games list')}${sel('nav','Bottom nav')}${sel('card','Cards')}${sel('font','Font')}</div>
+      <div class="st-h">Texts (blank = default)</div>
+      ${txt('title','App title','e.g. Lucky Casino')}${txt('tag','Tagline','e.g. Play · Win · Withdraw')}${txt('jp','Jackpot label','e.g. MEGA JACKPOT')}${txt('bal','Balance label','e.g. YOUR BALANCE')}`;
+    box.style.display = 'block';
+  }
+  const studioBox = document.getElementById('studio');
+  if (studioBox){
+    const upd = (e) => {
+      if (!design) return; const el = e.target;
+      if (el.dataset.pk){ design.p[el.dataset.pk] = el.value; deriveP(design.p); }
+      else if (el.dataset.dk){ design[el.dataset.dk] = el.value; }
+      else if (el.dataset.tk){ design.t = design.t || {}; design.t[el.dataset.tk] = el.value.replace(/[<>]/g, '').slice(0, 40); }
+      applyDesign(design);
+    };
+    studioBox.addEventListener('input', upd); studioBox.addEventListener('change', upd);
+  }
+
   document.querySelectorAll('.theme-opt').forEach(b => b.addEventListener('click', async () => {
     try{
       const r = await themeCall('set_theme', { theme: b.dataset.t });
       if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save theme');
-      applyTheme(r.theme, r.palette); toast('Theme saved for everyone');
+      applyServer(r); toast('Theme saved for everyone');
     }catch(e){ toast(e.message || 'Could not save theme'); }
   }));
   const imgIn = document.getElementById('themeImg');
   if (imgIn) imgIn.addEventListener('change', async () => {
     const f = imgIn.files && imgIn.files[0]; if (!f) return;
     try{
-      pendingPalette = await paletteFromFile(f);
-      applyTheme('custom', pendingPalette);                       // live preview
-      document.getElementById('themeSw').innerHTML = ['bg','card','acc','acc2','txt'].map(k => `<i style="background:${pendingPalette[k]}"></i>`).join('');
+      const p = await paletteFromFile(f);
+      applyDesign(Object.assign({}, DEF, { p, t:{ title:'', tag:'', jp:'', bal:'' } }));   // live preview on the real page
+      buildStudio();
+      document.getElementById('themeSw').innerHTML = '';
       document.getElementById('themeApplyBtn').style.display = 'block';
     }catch(e){ toast(e.message || 'Could not read image'); }
   });
   const applyBtn = document.getElementById('themeApplyBtn');
   if (applyBtn) applyBtn.addEventListener('click', async () => {
-    if (!pendingPalette) return;
+    if (!design) return;
     try{
-      const r = await themeCall('set_theme', { theme:'custom', palette:pendingPalette });
-      if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save theme');
-      applyTheme('custom', r.palette); toast('Design applied for everyone ✅');
-    }catch(e){ toast(e.message || 'Could not save theme'); }
+      const r = await themeCall('set_theme', { theme:'custom', design });
+      if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save design');
+      applyServer(r); toast('Design applied for everyone ✅');
+    }catch(e){ toast(e.message || 'Could not save design'); }
   });
   try{
-    let cp = null; try{ cp = JSON.parse(localStorage.getItem('lg_palette') || 'null'); }catch(e){}
-    applyTheme(localStorage.getItem('lg_theme') || 'vegas', cp);
+    const cached = JSON.parse(localStorage.getItem('lg_design') || 'null');
+    if (localStorage.getItem('lg_theme') === 'custom' && cached && validPalette(cached.p)) applyDesign(cached);
+    else applyTheme(localStorage.getItem('lg_theme') || 'vegas');
   }catch(e){ applyTheme('vegas'); }
+
+  // ================= PAGE STUDIO: pick a bottom tab -> send its screenshot -> set variables =================
+  let pages = {}, pgSel = null, pgPick = null;
+  const PG_HOME = [['balcard','Balance card','.bal-hero','background'],['bal','Balance amount','.bal-huge','color'],['live','LIVE badge','.live-badge','color'],['fund','Fund bar','.fund-bar-fill','background'],['bonus','Bonus button','#bonusBtn','background']];
+  const PG_GEN  = [['bg','Page background','','background'],['card','Cards','.card','background'],['btn','Main button','.btn.neon','background'],['head','Card headings','.card h3','color'],['text','Body text','','color']];
+  const pgVars = v => (v === 'wallet' ? PG_HOME : []).concat(PG_GEN);
+  function applyPages(){
+    let css = '';
+    Object.keys(pages || {}).forEach(v => {
+      if (!/^[a-z0-9_-]{1,20}$/.test(v)) return;
+      pgVars(v).forEach(([k, n, sel, prop]) => {
+        const o = pages[v] && pages[v][k]; if (!o || !HEX.test(String(o.c || ''))) return;
+        css += `#view-${v} ${sel}`.trim() + `{${prop}:${o.c} !important}\n`;
+      });
+    });
+    let st = document.getElementById('pageStyle');
+    if (!st){ st = document.createElement('style'); st.id = 'pageStyle'; document.head.appendChild(st); }
+    st.textContent = css;
+    try{ localStorage.setItem('lg_pages', JSON.stringify(pages)); }catch(e){}
+  }
+  const pgCount = () => Object.keys((pages[pgSel]) || {}).length;
+  function pgRefresh(){
+    const cur = pages[pgSel] || {};
+    document.querySelectorAll('#pgVars .pg-v').forEach(el => { const o = cur[el.dataset.k]; el.querySelector('i').style.background = o ? o.c : 'transparent'; });
+    const n = pgCount(), ok = n >= 2;
+    document.getElementById('pgCount').textContent = ok ? `${n} variables set ✅` : `Set at least 2 variables — ${n}/2 done`;
+    document.getElementById('pgApply').style.opacity = ok ? 1 : .45;
+  }
+  function pgBuild(){
+    const body = document.getElementById('pgBody');
+    body.innerHTML = `<div class="st-h">2 · Send the screenshot</div>
+      <label class="img-drop">📷 Choose screenshot<input type="file" id="pgImg" accept="image/*" style="display:none;"></label>
+      <canvas id="pgCv" style="display:none;width:100%;border-radius:12px;border:1px solid var(--border);margin-top:10px;"></canvas>
+      <div class="st-h">3 · Set variables — tap one, then tap the screenshot</div>
+      <div id="pgVars">${pgVars(pgSel).map(([k, n]) => `<div class="pg-v" data-k="${k}"><span>${n}</span><i></i></div>`).join('')}</div>
+      <div class="st-h" id="pgCount"></div>
+      <button class="btn neon" id="pgApply">Apply this page for everyone ✅</button>`;
+    pgPick = null; pgRefresh();
+    const cv = document.getElementById('pgCv');
+    document.getElementById('pgImg').addEventListener('change', e => {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      const u = URL.createObjectURL(f), im = new Image();
+      im.onload = () => { cv.width = Math.min(420, im.width); cv.height = Math.round(im.height * cv.width / im.width);
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); cv.style.display = 'block'; URL.revokeObjectURL(u); };
+      im.src = u;
+    });
+    cv.addEventListener('click', e => {
+      if (!pgPick){ toast('Select a variable first'); return; }
+      const r = cv.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) * cv.width / r.width), y = Math.floor((e.clientY - r.top) * cv.height / r.height);
+      const d = cv.getContext('2d').getImageData(Math.max(0, x - 1), Math.max(0, y - 1), 3, 3).data;
+      let R = 0, G = 0, B = 0; for (let i = 0; i < 36; i += 4){ R += d[i]; G += d[i+1]; B += d[i+2]; }
+      pages[pgSel] = pages[pgSel] || {}; pages[pgSel][pgPick] = { c: toHex(R/9, G/9, B/9) };
+      applyPages(); pgRefresh();
+    });
+    document.getElementById('pgVars').addEventListener('click', e => {
+      const el = e.target.closest('.pg-v'); if (!el) return; pgPick = el.dataset.k;
+      document.querySelectorAll('#pgVars .pg-v').forEach(x => x.classList.toggle('on', x === el));
+    });
+    document.getElementById('pgApply').addEventListener('click', async () => {
+      if (pgCount() < 2){ toast('Set at least 2 variables first'); return; }
+      try{
+        const r = await themeCall('set_pages', { pages });
+        if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save');
+        toast('Page design applied for everyone ✅');
+      }catch(err){ toast(err.message || 'Could not save'); }
+    });
+  }
+  (function pgInit(){
+    const box = document.getElementById('pgTabs'); if (!box) return;
+    const tabs = [...document.querySelectorAll('.tabbar button.tab')].filter(b => b.dataset.view && b.dataset.view !== 'admin')
+      .map(b => ({ v: b.dataset.view, n: (b.textContent || '').replace(/\s+/g, ' ').trim() || b.dataset.view }));
+    box.innerHTML = tabs.map(t => `<button class="theme-opt" data-pg="${escapeHtml(t.v)}">${escapeHtml(t.n)}</button>`).join('');
+    box.addEventListener('click', e => {
+      const b = e.target.closest('[data-pg]'); if (!b) return; pgSel = b.dataset.pg;
+      box.querySelectorAll('[data-pg]').forEach(x => x.classList.toggle('on', x === b)); pgBuild();
+    });
+    try{ pages = JSON.parse(localStorage.getItem('lg_pages') || '{}') || {}; applyPages(); }catch(e){}
+  })();
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
   // (No manual bot registration, and no public bot-list lookup anymore.)
@@ -1563,7 +1752,7 @@
       $('app').style.display = 'block';
       $('tabbarWrap').style.display = 'flex';
       hideLoadingScreen();
-      $('botNameTitle').textContent = d.bot_name || 'Casino'; if (d.bot_username) brand.username = String(d.bot_username); if (d.bot_name) brand.name = String(d.bot_name);
+      $('botNameTitle').textContent = d.bot_name || 'Casino'; if (d.bot_username) brand.username = String(d.bot_username); if (d.bot_name) brand.name = String(d.bot_name); try{ reapplyTexts(); }catch(e){}
       if (d.bot_username) loadBotPhoto(d.bot_username, d.bot_name);
       $('balanceAmt').textContent = Number(d.balance || 0).toFixed(2);
       $('bonusBtn').disabled = !!d.bonus_claimed_today;
