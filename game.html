@@ -847,6 +847,8 @@
   .sk-b{ padding:.55em .8em; border-radius:.7em; text-align:center; cursor:pointer; }
   .ed .sk-l{ cursor:grab; touch-action:none; }
   .sk-l.sel{ outline:2px dashed #2ee27a; outline-offset:2px; }
+  body.skin-on header.app-head, body.skin-on .jackpot{ display:none !important; }
+  .ed-row .btn{ padding:10px; font-size:12px; }
   .gal{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0; }
   .gal button{ border:2px solid var(--border); border-radius:12px; background:#000 center/cover no-repeat; height:86px; color:#fff; font:800 11px 'Inter',sans-serif; text-shadow:0 1px 4px #000; display:flex; align-items:flex-end; justify-content:center; padding:6px; }
   .ed-bar{ display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
@@ -1042,6 +1044,9 @@
     <div class="card"><h3>Page Studio</h3>
       <div class="st-h" style="margin-top:0">Gallery · pick the page (bottom button) to design</div>
       <div class="theme-grid" id="pgTabs"></div>
+      <div class="st-h">Templates — tap to start from a ready design</div>
+      <div class="gal" id="pgTpl" style="grid-template-columns:repeat(2,1fr)"></div>
+      <div class="st-h">Your pages</div>
       <div class="gal" id="pgGal"></div>
       <div id="pgBody"></div>
     </div>
@@ -1425,31 +1430,53 @@
 
   // ================= STUDIO: screenshot = page background, drag text/buttons on top, {variables} =================
   let skins = {}, pgSel = null, ed = null, edSel = null;
-  const TOKENS = ['balance','name','first_name','username','bonus','referrals','started','perrefer','live_fund','total_fund','wallet','tier','withdrawn','jackpot'];
+  const TOKENS = ['balance','bot_name','user_name','first_name','username','bonus','referrals','started','perrefer','live_fund','total_fund','wallet','tier','withdrawn','jackpot'];
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const okHex = v => HEX.test(String(v || '')) ? v : '';
   function tokenMap(){
     const d = dash || {}, f = (n, x = 2) => Number(n || 0).toFixed(x);
-    return { balance:f(d.balance), name:d.bot_name || brand.name || '', first_name:d.first_name || '', username:brand.username ? '@' + brand.username : '',
+    return { balance:f(d.balance), name:d.bot_name || brand.name || '', bot_name:d.bot_name || brand.name || '', user_name:userInfo().name || d.first_name || '', first_name:d.first_name || '', username:brand.username ? '@' + brand.username : '',
       bonus:f(d.daily_bonus_amount, 0), referrals:d.verified_referrals || 0, started:d.started_referrals || 0, perrefer:d.per_refer || 0,
       live_fund:f(d.live_fund, 0), total_fund:f(d.total_fund, 0), wallet:(d.wallet && d.wallet !== 'Not Linked') ? d.wallet : 'Not linked',
       tier:d.tier ? d.tier.name : '', withdrawn:f(d.total_withdrawn), jackpot:(document.getElementById('jpAmt') || {}).textContent || '' };
   }
   const fillTokens = t => { const m = tokenMap(); return String(t || '').replace(/\{(\w+)\}/g, (x, k) => (m[k] !== undefined ? m[k] : x)); };
   function setU(st){ st.style.setProperty('--u', (st.clientWidth / 100) + 'px'); }
+  function userInfo(){
+    try{ const u = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+      return { name:[u.first_name, u.last_name].filter(Boolean).join(' '), photo:u.photo_url || '', init:String(u.first_name || 'U')[0].toUpperCase() };
+    }catch(e){ return { name:'', photo:'', init:'U' }; }
+  }
+  function srcUrl(k){ return k === 'user_photo' ? userInfo().photo : (k === 'bot_photo' && brand.username ? userpicUrl(brand.username) : ''); }
   function drawStage(st, d){
     st.style.paddingBottom = (clamp(Number(d.ratio) || 1.8, 0.3, 4) * 100) + '%';
     st.style.backgroundImage = `url("${d.img}")`;
     st.innerHTML = '';
+    const u = v => `calc(var(--u,4px)*${v})`;
     (d.layers || []).forEach((L, i) => {
-      const e = document.createElement('div');
-      e.className = 'sk-l' + (L.type === 'button' ? ' sk-b' : ''); e.dataset.i = i;
-      e.style.cssText = `left:${clamp(+L.x||0,0,100)}%;top:${clamp(+L.y||0,0,100)}%;width:${clamp(+L.w||30,3,100)}%;font-size:calc(var(--u,4px)*${clamp(+L.size||5,1,30)});color:${okHex(L.color) || '#ffffff'};font-weight:${[400,700,900].includes(+L.weight) ? +L.weight : 700};text-align:${['left','center','right'].includes(L.align) ? L.align : 'left'};` + (L.type === 'button' && okHex(L.bg) ? `background:${L.bg};` : '');
-      e.textContent = fillTokens(L.text); st.appendChild(e);
+      const t = ['text','button','image','shape'].includes(L.type) ? L.type : 'text', e = document.createElement('div');
+      const w = clamp(+L.w || 30, 3, 100), op = clamp(L.opacity === undefined ? 1 : +L.opacity, 0.05, 1), rot = clamp(+L.rot || 0, -180, 180), rad = clamp(+L.radius || 0, 0, 50);
+      e.className = 'sk-l' + (t === 'button' ? ' sk-b' : ''); e.dataset.i = i;
+      let css = `left:${clamp(+L.x||0,0,100)}%;top:${clamp(+L.y||0,0,100)}%;width:${w}%;opacity:${op};transform:rotate(${rot}deg);`;
+      if (t === 'text' || t === 'button'){
+        css += `font-size:${u(clamp(+L.size||5,1,30))};color:${okHex(L.color) || '#ffffff'};font-weight:${[400,700,900].includes(+L.weight) ? +L.weight : 700};text-align:${['left','center','right'].includes(L.align) ? L.align : 'left'};`;
+        if (t === 'button'){ if (okHex(L.bg)) css += `background:${L.bg};`; css += `border-radius:${u(rad || 2.5)};`; }
+        e.textContent = fillTokens(L.text);
+      } else if (t === 'shape'){
+        css += `height:${u(clamp(+L.h||20,1,190))};background:${okHex(L.bg) || '#ffffff'};border-radius:${u(rad)};`;
+      } else {
+        css += `height:${u(w)};border-radius:${u(rad)};background:${okHex(L.bg) || '#2a2a3a'};overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:${u(w * 0.45)};font-weight:900;color:#fff;`;
+        const letter = (L.src === 'user_photo' ? userInfo().init : String(brand.name || 'B')[0]).toUpperCase(), url = srcUrl(L.src);
+        if (url){ const im = new Image(); im.referrerPolicy = 'no-referrer'; im.style.cssText = 'width:100%;height:100%;object-fit:cover;pointer-events:none;';
+          im.onerror = () => { im.remove(); e.textContent = letter; }; im.src = url; e.appendChild(im); }
+        else e.textContent = letter;
+      }
+      e.style.cssText = css; st.appendChild(e);
     });
     setU(st);
   }
-  function updU(){ document.querySelectorAll('.skin-stage').forEach(setU); }
+  function syncChrome(){ const a = document.querySelector('.view.active'); document.body.classList.toggle('skin-on', !!(a && a.classList.contains('skinned'))); }
+  function updU(){ document.querySelectorAll('.skin-stage').forEach(setU); try{ syncChrome(); }catch(e){} }
   window.addEventListener('resize', updU);
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.tab')) setTimeout(updU, 60); });
 
@@ -1468,10 +1495,60 @@
         h.addEventListener('click', e => { const el = e.target.closest('.sk-b'); if (!el) return; const L = ((skins[id] || {}).layers || [])[+el.dataset.i]; if (L) runAction(L.action); }); v.appendChild(h); }
       drawStage(h.firstChild, d);
     });
+    try{ syncChrome(); }catch(e){}
   }
   function applyServer(r){
     if (r.skins && typeof r.skins === 'object'){ skins = r.skins; try{ renderSkins(); }catch(e){} }
     if (r.theme === 'custom' && r.design && validPalette(r.design.p)) applyDesign(r.design); else applyTheme(r.theme);
+  }
+
+  // ---------- Ready-made templates (real gallery) ----------
+  const glow = (c, x, y, r, col) => { const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(0, 0, 360, 684); };
+  const PRESETS = [
+    { n:'Midnight Vault', v:'A', a:'#ffd84d', btn:'#ffd84d', btnt:'#1a1200', card:'#ffffff',
+      draw:c => { const g = c.createLinearGradient(0,0,0,684); g.addColorStop(0,'#0b1330'); g.addColorStop(1,'#03050f'); c.fillStyle = g; c.fillRect(0,0,360,684); glow(c,300,80,260,'rgba(255,216,77,.28)'); glow(c,40,560,230,'rgba(70,110,255,.28)'); } },
+    { n:'Golden Roulette', v:'B', a:'#ffd84d', btn:'#ffd84d', btnt:'#2a1400', card:'#000000',
+      draw:c => { c.fillStyle = '#12020a'; c.fillRect(0,0,360,684); glow(c,180,120,330,'rgba(200,20,50,.65)'); c.strokeStyle = 'rgba(255,216,77,.5)'; c.lineWidth = 3;
+        for (let r = 60; r < 360; r += 58){ c.beginPath(); c.arc(180,120,r,0,7); c.stroke(); } } },
+    { n:'Aurora Lounge', v:'A', a:'#7cf2d0', btn:'#7cf2d0', btnt:'#06231c', card:'#ffffff',
+      draw:c => { const g = c.createLinearGradient(0,0,360,684); g.addColorStop(0,'#2b0a4d'); g.addColorStop(1,'#04202a'); c.fillStyle = g; c.fillRect(0,0,360,684); glow(c,60,120,260,'rgba(180,90,255,.5)'); glow(c,320,420,280,'rgba(0,220,190,.4)'); glow(c,120,640,220,'rgba(255,90,180,.3)'); } },
+    { n:'Crimson Club', v:'B', a:'#ff5a72', btn:'#ff3d5a', btnt:'#ffffff', card:'#000000',
+      draw:c => { c.fillStyle = '#16030a'; c.fillRect(0,0,360,684); c.save(); c.rotate(-0.5); c.fillStyle = 'rgba(255,60,90,.09)'; for (let x = -400; x < 700; x += 46) c.fillRect(x, -100, 20, 1100); c.restore(); glow(c,180,40,300,'rgba(255,50,80,.45)'); } },
+  ];
+  const presetImgCache = {};
+  function presetImg(i){
+    if (presetImgCache[i]) return presetImgCache[i];
+    const cv = document.createElement('canvas'); cv.width = 360; cv.height = 684; PRESETS[i].draw(cv.getContext('2d'));
+    return (presetImgCache[i] = cv.toDataURL('image/jpeg', 0.82));
+  }
+  function presetLayers(P){
+    const T = (text, x, y, w, size, color, weight, align) => ({ type:'text', text, x, y, w, size, color, weight, align, opacity:1, rot:0 });
+    const SH = (x, y, w, h, bg, radius, opacity) => ({ type:'shape', x, y, w, h, bg, radius, opacity, rot:0 });
+    const IM = (src, x, y, w) => ({ type:'image', src, x, y, w, radius:50, bg:'#2a2a3a', opacity:1, rot:0 });
+    const BT = (text, x, y, w, bg, color, action) => ({ type:'button', text, x, y, w, size:4.6, color, bg, weight:900, align:'center', action, radius:3, opacity:1, rot:0 });
+    const soft = '#c8cde0', a = P.a;
+    if (P.v === 'A') return [
+      SH(4,2,92,22,P.card,5,0.1), IM('bot_photo',7,3.4,12), T('{bot_name}',22,3.6,50,4.8,'#ffffff',900,'left'), T('{username}',22,7.2,50,3,soft,700,'left'), IM('user_photo',83,3.4,10),
+      SH(4,15,92,28,'#000000',5,0.45), T('★ MEGA JACKPOT ★',4,16.6,92,3.4,a,900,'center'), T('{jackpot}',4,20.5,92,10,'#ff5a5a',900,'center'),
+      SH(4,35,92,40,P.card,5,0.1), T('YOUR BALANCE',4,36.6,92,3.2,soft,700,'center'), T('₹ {balance}',4,40,92,14,a,900,'center'), T('{tier} · {referrals} referrals',4,53.5,92,3.2,soft,700,'center'),
+      BT('Claim ₹{bonus} Bonus',10,59,80,P.btn,P.btnt,'bonus'), BT('Withdraw',10,67,80,'#26324f','#ffffff','withdraw'),
+      T('Invite friends — ₹{perrefer} per referral',4,78,92,3.8,'#ffffff',700,'center'), BT('Copy invite link',10,84,80,'#ffffff',' #111111'.trim(),'copy')];
+    return [
+      SH(33,1.6,34,34,a,50,0.35), IM('bot_photo',37,3.4,26), T('{bot_name}',0,20,100,6.2,'#ffffff',900,'center'), T('{username}',0,24.2,100,3.2,soft,700,'center'),
+      IM('user_photo',44,29,12), T('Hi, {user_name}',0,36,100,4,'#ffffff',700,'center'),
+      SH(8,43,84,26,'#000000',5,0.5), T('★ MEGA JACKPOT ★',8,44.6,84,3.2,a,900,'center'), T('{jackpot}',8,48.4,84,9.5,'#ff5a5a',900,'center'),
+      SH(8,60,84,22,P.card,5,0.12), T('BALANCE  ₹ {balance}',8,62.4,84,6.6,'#ffffff',900,'center'),
+      BT('Claim ₹{bonus} Bonus',12,76,76,P.btn,P.btnt,'bonus'), BT('Withdraw',12,84,76,'#2a2a3a','#ffffff','withdraw')];
+  }
+  function applyPreset(i){
+    if (!pgSel) pgSel = 'wallet';
+    pgBuild();
+    const P = PRESETS[i]; ed = { img:presetImg(i), ratio:684 / 360, layers:presetLayers(P) }; edSel = null; edDraw(); edInspector(); galRender();
+    toast(P.n + ' loaded — edit, then Save');
+  }
+  function tplRender(){
+    const g = document.getElementById('pgTpl'); if (!g) return;
+    g.innerHTML = PRESETS.map((P, i) => `<button data-tpl="${i}" style="background-image:url('${presetImg(i)}')">${escapeHtml(P.n)}</button>`).join('');
   }
 
   // ---------- editor ----------
@@ -1498,33 +1575,42 @@
   function edInspector(){
     const box = document.getElementById('edInsp'); const L = ed && ed.layers[edSel];
     if (!L){ box.innerHTML = '<div class="st-h">Tap a layer to edit it, or add one above</div>'; return; }
-    const acts = ['','bonus','withdraw','copy'].concat(tabsList().map(t => 'tab:' + t.v));
+    const t = L.type, acts = ['','bonus','withdraw','copy'].concat(tabsList().map(x => 'tab:' + x.v));
     const opt = (arr, cur) => arr.map(o => `<option value="${escapeHtml(o)}" ${String(cur) === String(o) ? 'selected' : ''}>${escapeHtml(o || 'none')}</option>`).join('');
-    box.innerHTML = `<div class="ed-row">
-      <label style="grid-column:1/3">Text (use {balance} etc.)<textarea data-f="text" rows="2" maxlength="120">${escapeHtml(L.text)}</textarea></label>
-      <label>Size<input type="range" data-f="size" min="2" max="20" step="0.5" value="${L.size}"></label>
-      <label>Width<input type="range" data-f="w" min="5" max="100" value="${L.w}"></label>
-      <label>Text colour<input type="color" data-f="color" value="${okHex(L.color) || '#ffffff'}"></label>
-      <label>${L.type === 'button' ? 'Button colour' : 'Weight'}${L.type === 'button' ? `<input type="color" data-f="bg" value="${okHex(L.bg) || '#ffd84d'}">` : `<select data-f="weight">${opt([400,700,900], L.weight)}</select>`}</label>
-      <label>Align<select data-f="align">${opt(['left','center','right'], L.align)}</select></label>
-      ${L.type === 'button' ? `<label>On tap<select data-f="action">${opt(acts, L.action || '')}</select></label>` : '<span></span>'}
-      <button class="btn ghost" data-del="1" style="grid-column:1/3">🗑 Delete layer</button></div>`;
+    const rng = (k, l, lo, hi, st, v) => `<label>${l}<input type="range" data-f="${k}" min="${lo}" max="${hi}" step="${st}" value="${v}"></label>`;
+    const col = (k, l, v) => `<label>${l}<input type="color" data-f="${k}" value="${okHex(v) || '#ffffff'}"></label>`;
+    let h = '';
+    if (t === 'text' || t === 'button'){
+      h += `<label style="grid-column:1/3">Text (use {balance} etc.)<textarea data-f="text" rows="2" maxlength="120">${escapeHtml(L.text)}</textarea></label>`;
+      h += rng('size','Size',2,24,0.5,L.size) + rng('w','Width',5,100,1,L.w) + col('color','Text colour',L.color);
+      h += t === 'button' ? col('bg','Button colour',L.bg || '#ffd84d') : `<label>Weight<select data-f="weight">${opt([400,700,900], L.weight)}</select></label>`;
+      h += `<label>Align<select data-f="align">${opt(['left','center','right'], L.align)}</select></label>`;
+      h += t === 'button' ? `<label>On tap<select data-f="action">${opt(acts, L.action || '')}</select></label>` : '<span></span>';
+    } else if (t === 'shape'){
+      h += rng('w','Width',3,100,1,L.w) + rng('h','Height',1,190,1,L.h || 20) + col('bg','Colour',L.bg) + rng('radius','Corner',0,50,1,L.radius || 0);
+    } else {
+      h += `<label>Photo<select data-f="src">${opt(['user_photo','bot_photo'], L.src)}</select></label>` + rng('w','Size',4,100,1,L.w) + rng('radius','Corner (50 = circle)',0,50,1,L.radius || 0) + col('bg','Fallback colour',L.bg || '#2a2a3a');
+    }
+    h += rng('opacity','Opacity',0.05,1,0.05,L.opacity === undefined ? 1 : L.opacity) + rng('rot','Rotate',-180,180,1,L.rot || 0);
+    h += `<button class="btn ghost" data-act="dup">⧉ Duplicate</button><button class="btn ghost" data-act="front">▲ Front</button><button class="btn ghost" data-act="back">▼ Back</button><button class="btn ghost" data-act="del">🗑 Delete</button>`;
+    box.innerHTML = `<div class="ed-row">${h}</div>`;
   }
   function edSelect(i){ edSel = i; edStage().querySelectorAll('.sk-l').forEach(el => el.classList.toggle('sel', +el.dataset.i === i)); edInspector(); }
   function edAdd(type){
-    if (!ed.img){ toast('Send a screenshot first'); return; }
+    if (!ed.img){ toast('Send a screenshot or pick a template first'); return; }
     if (ed.layers.length >= 40){ toast('Too many layers'); return; }
-    ed.layers.push(type === 'button'
-      ? { type:'button', text:'Claim ₹{bonus}', x:12, y:70, w:60, size:4.5, color:'#111111', bg:'#ffd84d', weight:900, align:'center', action:'bonus' }
-      : { type:'text', text:'{balance}', x:10, y:12, w:60, size:9, color:'#ffffff', weight:900, align:'left' });
-    edDraw(); edSelect(ed.layers.length - 1);
+    const base = { text:{ type:'text', text:'{balance}', x:10, y:12, w:60, size:9, color:'#ffffff', weight:900, align:'left' },
+      button:{ type:'button', text:'Claim ₹{bonus}', x:12, y:70, w:60, size:4.5, color:'#111111', bg:'#ffd84d', weight:900, align:'center', action:'bonus', radius:2.5 },
+      image:{ type:'image', src:'user_photo', x:70, y:6, w:20, radius:50, bg:'#2a2a3a' },
+      shape:{ type:'shape', x:6, y:20, w:88, h:30, bg:'#ffffff', radius:4, opacity:0.12 } }[type];
+    ed.layers.push(Object.assign({ opacity:1, rot:0 }, base)); edDraw(); edSelect(ed.layers.length - 1);
   }
   function pgBuild(){
     const body = document.getElementById('pgBody'); const cur = skins[pgSel];
     ed = cur ? JSON.parse(JSON.stringify(cur)) : { img:'', ratio:1.8, layers:[] }; edSel = null;
     body.innerHTML = `<label class="img-drop">📷 ${cur ? 'Replace' : 'Send'} screenshot of this page<input type="file" id="pgImg" accept="image/*" style="display:none;"></label>
       <div class="ed" id="edWrap" style="margin-top:10px;"><div class="skin-stage" id="edStage"></div></div>
-      <div class="ed-bar"><button id="edAddT">＋ Text</button><button id="edAddB">＋ Button</button></div>
+      <div class="ed-bar"><button id="edAddT">＋ Text</button><button id="edAddB">＋ Button</button><button id="edAddI">＋ Photo</button><button id="edAddS">＋ Shape</button></div>
       <div class="st-h">Variables — tap to add into the selected layer</div>
       <div class="ed-chips">${TOKENS.map(t => `<button data-tok="${t}">{${t}}</button>`).join('')}</div>
       <div id="edInsp"></div>
@@ -1537,6 +1623,8 @@
     });
     document.getElementById('edAddT').onclick = () => edAdd('text');
     document.getElementById('edAddB').onclick = () => edAdd('button');
+    document.getElementById('edAddI').onclick = () => edAdd('image');
+    document.getElementById('edAddS').onclick = () => edAdd('shape');
     body.querySelector('.ed-chips').onclick = e => {
       const b = e.target.closest('[data-tok]'); if (!b) return;
       if (edSel === null){ edAdd('text'); }
@@ -1544,9 +1632,16 @@
     };
     const insp = document.getElementById('edInsp');
     const upd = e => { const el = e.target, L = ed.layers[edSel]; if (!L || !el.dataset.f) return; const k = el.dataset.f;
-      L[k] = ['size','w','weight'].includes(k) ? Number(el.value) : el.value; edDraw(); };
+      L[k] = ['size','w','h','weight','radius','opacity','rot'].includes(k) ? Number(el.value) : el.value; edDraw(); };
     insp.addEventListener('input', upd); insp.addEventListener('change', upd);
-    insp.addEventListener('click', e => { if (e.target.closest('[data-del]')){ ed.layers.splice(edSel, 1); edSel = null; edDraw(); edInspector(); } });
+    insp.addEventListener('click', e => {
+      const b = e.target.closest('[data-act]'); if (!b || edSel === null) return; const a = b.dataset.act, arr = ed.layers, L = arr[edSel];
+      if (a === 'del'){ arr.splice(edSel, 1); edSel = null; }
+      else if (a === 'dup'){ if (arr.length >= 40) return; arr.push(Object.assign({}, L, { x:clamp(L.x + 3, 0, 95), y:clamp(L.y + 2, 0, 95) })); edSel = arr.length - 1; }
+      else if (a === 'front'){ arr.push(arr.splice(edSel, 1)[0]); edSel = arr.length - 1; }
+      else if (a === 'back'){ arr.unshift(arr.splice(edSel, 1)[0]); edSel = 0; }
+      edDraw(); edInspector();
+    });
     const st = edStage();
     st.addEventListener('pointerdown', e => {
       const el = e.target.closest('.sk-l'); if (!el) { edSelect(null); return; }
@@ -1575,7 +1670,8 @@
     const box = document.getElementById('pgTabs'), gal = document.getElementById('pgGal'); if (!box || !gal) return;
     box.style.display = 'none';
     gal.addEventListener('click', e => { const b = e.target.closest('[data-pg]'); if (!b) return; pgSel = b.dataset.pg; pgBuild(); });
-    galRender();
+    galRender(); tplRender();
+    const tp = document.getElementById('pgTpl'); if (tp) tp.addEventListener('click', e => { const b = e.target.closest('[data-tpl]'); if (b) applyPreset(+b.dataset.tpl); });
   })();
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
