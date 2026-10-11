@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>EarnZone</title>
+<style>
+:root{
+  --bg:#080b12;
+  --card:#111725;
+  --line:#242d40;
+  --green:#b8ff65;
+  --muted:#8994aa;
+  --white:#f5f7ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--white);
+  font-family:Inter,system-ui,Arial,sans-serif;
+  padding-bottom:95px;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:480px;margin:auto;padding:20px 17px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;gap:10px;align-items:center;font-weight:900;font-size:20px}
+.logo{
+  width:42px;height:42px;border-radius:15px;
+  background:linear-gradient(135deg,#c5ff77,#58c67b);
+  color:#07100a;display:grid;place-items:center;font-size:24px;
+}
+.avatar{
+  width:42px;height:42px;border-radius:50%;background:#1c2738;
+  display:grid;place-items:center;border:1px solid #344157;
+}
+.eyebrow{font-size:11px;color:var(--muted);letter-spacing:2px;font-weight:800}
+h1{font-size:28px;line-height:1.2;margin:10px 0}
+p{color:var(--muted);font-size:13px;line-height:1.6}
+.hero{
+  margin-top:26px;padding:23px;border-radius:25px;
+  background:radial-gradient(circle at 90% 5%,#3d5935 0,transparent 40%),
+  linear-gradient(135deg,#1a2a23,#111923 65%);
+  border:1px solid #354837;position:relative;overflow:hidden;
+}
+.hero:after{
+  content:"✦";position:absolute;right:24px;top:20px;
+  font-size:62px;color:#d7ff9d;opacity:.8;
+}
+.hero h2{font-size:17px;margin:0 0 22px}
+.balance{font-size:36px;font-weight:900;letter-spacing:-1px}
+.balance small{font-size:13px;color:var(--green);letter-spacing:0}
+.hero-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.pill{font-size:11px;background:#26372a;color:var(--green);padding:8px 11px;border-radius:20px}
+.primary{
+  background:var(--green);color:#10180b;border:0;border-radius:13px;
+  padding:12px 17px;font-weight:900;
+}
+.section{margin-top:28px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.section-head h3{margin:0;font-size:17px}
+.small-link{color:var(--green);font-size:12px;background:none;border:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:19px;padding:17px 14px;min-height:140px;
+  text-align:left;color:var(--white);width:100%;
+}
+.tile-icon{
+  width:43px;height:43px;border-radius:14px;display:grid;
+  place-items:center;font-size:22px;background:#222d3b;margin-bottom:16px;
+}
+.tile strong{display:block;font-size:14px}
+.tile span{display:block;color:var(--muted);font-size:11px;margin-top:6px}
+.task{
+  display:flex;align-items:center;gap:12px;padding:14px;
+  border:1px solid var(--line);border-radius:17px;background:var(--card);
+  margin-top:10px;
+}
+.task-icon{width:42px;height:42px;display:grid;place-items:center;
+  background:#222d3b;border-radius:13px;font-size:20px}
+.task-info{flex:1}
+.task-info strong{font-size:13px}
+.task-info p{margin:4px 0 0;font-size:11px}
+.bottom{
+  position:fixed;bottom:0;left:0;right:0;z-index:5;
+  background:#0d121dF5;border-top:1px solid var(--line);
+  padding:10px 7px calc(10px + env(safe-area-inset-bottom));
+  display:flex;justify-content:center;gap:2px;
+  backdrop-filter:blur(18px);
+}
+.nav{
+  background:none;border:0;color:#7f8ba1;flex:1;
+  padding:8px 0 5px;border-radius:12px;font-size:10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.nav b{font-size:21px;font-weight:500}
+.nav.active{color:var(--green);background:#1b2820}
+.page{display:none}
+.page.active{display:block}
+.panel{
+  margin-top:23px;padding:21px;border-radius:22px;
+  background:var(--card);border:1px solid var(--line);
+}
+.field{
+  width:100%;padding:15px;border-radius:13px;border:1px solid #344157;
+  background:#090e18;color:white;outline:none;margin:14px 0;
+}
+.wide{width:100%;padding:15px}
+.refbox{padding:13px;background:#090e18;border:1px dashed #516448;
+  border-radius:13px;overflow-wrap:anywhere;color:var(--green);font-size:12px}
+.rank{display:flex;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
+.rank:last-child{border-bottom:0}
+.number{font-size:17px;font-weight:900;width:28px;text-align:center}
+.person{flex:1;font-size:13px;font-weight:700}
+.points{color:var(--green);font-size:12px;font-weight:800}
+.note{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+.toast{
+  position:fixed;bottom:95px;left:50%;transform:translateX(-50%);
+  background:#e0ffc1;color:#111;padding:12px 18px;border-radius:12px;
+  font-size:12px;font-weight:800;display:none;z-index:10;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">✦</div> EarnZone<span style="color:var(--green)">.</span></div>
+    <div class="avatar" id="avatar">👤</div>
+  </header>
+
+  <main>
+    <section id="home" class="page active">
+      <div style="margin-top:30px">
+        <div class="eyebrow">YOUR REWARDS HUB</div>
+        <h1>Welcome back, <span id="username">Champion</span> 👋</h1>
+        <p>Your next reward is just a few activities away.</p>
+      </div>
+
+      <div class="hero">
+        <h2>✦ Your Rewards Balance</h2>
+        <div class="balance"><span id="balance">1,250</span> <small>PTS</small></div>
+        <div class="hero-foot">
+          <span class="pill">✦ Rewards Member</span>
+          <button class="primary" onclick="showPage('gift')">Redeem ↗</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h3>Explore</h3><span class="eyebrow">04 FEATURES</span></div>
+        <div class="grid">
+          <button class="tile" onclick="showPage('home')">
+            <div class="tile-icon">🏠</div><strong>Home</strong><span>Your rewards dashboard</span>
+          </button>
+          <button class="tile" onclick="showPage('gift')">
+            <div class="tile-icon">🎁</div><strong>Gift Code</strong><span>Redeem a reward code</span>
+          </button>
+          <button class="tile" onclick="showPage('invite')">
+            <div class="tile-icon">👥</div><strong>Invite Friends</strong><span>Share your referral link</span>
+          </button>
+          <button class="tile" onclick="showPage('leaderboard')">
+            <div class="tile-icon">🏆</div><strong>Leaderboard</strong><span>Discover top members</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h3>Quick activities</h3><span class="small-link">Earn points</span></div>
+        <div class="task">
+          <div class="task-icon">🎯</div>
+          <div class="task-info"><strong>Daily Check-in</strong><p>Visit daily to see available rewards</p></div>
+          <button class="primary" onclick="notify('Connect your daily reward command')">Open</button>
+        </div>
+        <div class="task">
+          <div class="task-icon">📣</div>
+          <div class="task-info"><strong>Community</strong><p>Explore community activities</p></div>
+          <button class="primary" onclick="notify('Connect your community task')">Open</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gift" class="page">
+      <div style="margin-top:30px">
+        <div class="eyebrow">SPECIAL REWARDS</div>
+        <h1>Gift Code 🎁</h1>
+        <p>Have a reward code? Enter it below to redeem your points.</p>
+      </div>
+      <div class="panel">
+        <div style="font-size:55px;text-align:center;margin:8px">🎁</div>
+        <h2 style="text-align:center">Unlock your reward</h2>
+        <p style="text-align:center">Enter your code to continue.</p>
+        <input class="field" id="giftcode" placeholder="ENTER GIFT CODE" maxlength="80">
+        <button class="primary wide" onclick="redeemCode()">Redeem Code →</button>
+        <p class="note">Codes are verified by your bot.</p>
+      </div>
+    </section>
+
+    <section id="invite" class="page">
+      <div style="margin-top:30px">
+        <div class="eyebrow">GROW TOGETHER</div>
+        <h1>Invite Friends 👥</h1>
+        <p>Share your personal invite link and track your referrals.</p>
+      </div>
+      <div class="hero">
+        <h2>🤝 Your Invite Link</h2>
+        <div class="refbox" id="referral">Open this app from Telegram to get your invite link.</div>
+        <div style="margin-top:18px">
+          <button class="primary wide" onclick="shareInvite()">Share Invite ↗</button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="grid">
+          <div class="tile"><div class="tile-icon">👤</div><strong id="refcount">0</strong><span>Total referrals</span></div>
+          <div class="tile"><div class="tile-icon">⭐</div><strong id="refpoints">0 PTS</strong><span>Referral points</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="page">
+      <div style="margin-top:30px">
+        <div class="eyebrow">COMMUNITY RANKINGS</div>
+        <h1>Leaderboard 🏆</h1>
+        <p>Celebrate members earning points through activities.</p>
+      </div>
+      <div class="panel">
+        <div class="section-head"><h3>Top Members</h3><span class="pill">ALL TIME</span></div>
+        <div id="ranklist"></div>
+        <p class="note">Sample rankings — connect your bot database for live data.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="bottom">
+  <button class="nav active" data-page="home" onclick="showPage('home')"><b>⌂</b>Home</button>
+  <button class="nav" data-page="gift" onclick="showPage('gift')"><b>🎁</b>Gift Code</button>
+  <button class="nav" data-page="invite" onclick="showPage('invite')"><b>♧</b>Invite</button>
+  <button class="nav" data-page="leaderboard" onclick="showPage('leaderboard')"><b>♛</b>Ranking</button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
+
+const user = tg?.initDataUnsafe?.user;
+if(user){
+  document.getElementById('username').textContent =
+    (user.first_name || 'Champion').split(' ')[0];
+  document.getElementById('avatar').textContent =
+    (user.first_name || 'U').charAt(0).toUpperCase();
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav').forEach(n=>
+    n.classList.toggle('active',n.dataset.page===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function notify(message){
+  const el=document.getElementById('toast');
+  el.textContent=message;
+  el.style.display='block';
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>el.style.display='none',2400);
+}
+
+function redeemCode(){
+  const code=document.getElementById('giftcode').value.trim();
+  if(!code)return notify('Please enter a gift code');
+  notify('Connect this button to your bot gift-code API');
+}
+
+const botUsername='YOUR_BOT_USERNAME';
+const uid=user?.id;
+const link=uid
+  ? `https://t.me/${botUsername}?start=${uid}`
+  : `https://t.me/${botUsername}`;
+
+document.getElementById('referral').textContent=link;
+
+function shareInvite(){
+  if(!uid)return notify('Please open this app inside Telegram');
+  const shareUrl='https://t.me/share/url?url='+
+    encodeURIComponent(link)+'&text='+
+    encodeURIComponent('Join me on EarnZone!');
+  if(tg?.openTelegramLink)tg.openTelegramLink(shareUrl);
+  else window.open(shareUrl,'_blank');
+}
+
+const members=[
+  {name:'StarPlayer',points:9850},
+  {name:'RewardMaster',points:8720},
+  {name:'LuckyMember',points:7540},
+  {name:'SuperEarn',points:6230},
+  {name:'TopChampion',points:5190}
+];
+
+document.getElementById('ranklist').innerHTML=members.map((m,i)=>`
+  <div class="rank">
+    <div class="number">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</div>
+    <div class="person">${m.name}</div>
+    <div class="points">${m.points.toLocaleString()} PTS</div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>
