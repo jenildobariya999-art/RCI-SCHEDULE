@@ -839,6 +839,23 @@
   .pg-v.on{ border-color:#2ee27a; box-shadow:0 0 0 2px rgba(46,226,122,.35); }
   .pg-v i{ width:26px; height:26px; border-radius:8px; border:1px solid rgba(255,255,255,.35); }
   #pgBody canvas{ display:block; margin:0 0 10px; touch-action:manipulation; cursor:crosshair; }
+
+  /* ===== SKINNED PAGES (screenshot = background, layers on top) ===== */
+  .view.skinned > *:not(.skin-host){ display:none !important; }
+  .skin-stage{ position:relative; width:100%; height:0; background-size:100% 100%; background-repeat:no-repeat; border-radius:14px; overflow:hidden; user-select:none; -webkit-user-select:none; }
+  .sk-l{ position:absolute; line-height:1.15; white-space:pre-wrap; word-break:break-word; box-sizing:border-box; }
+  .sk-b{ padding:.55em .8em; border-radius:.7em; text-align:center; cursor:pointer; }
+  .ed .sk-l{ cursor:grab; touch-action:none; }
+  .sk-l.sel{ outline:2px dashed #2ee27a; outline-offset:2px; }
+  .gal{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0; }
+  .gal button{ border:2px solid var(--border); border-radius:12px; background:#000 center/cover no-repeat; height:86px; color:#fff; font:800 11px 'Inter',sans-serif; text-shadow:0 1px 4px #000; display:flex; align-items:flex-end; justify-content:center; padding:6px; }
+  .ed-bar{ display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
+  .ed-bar button, .ed-chips button{ padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.07); color:var(--text); font:700 12px 'Inter',sans-serif; }
+  .ed-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .ed-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .ed-row label{ display:block; font:700 10px 'Inter',sans-serif; color:var(--text-soft); }
+  .ed-row input, .ed-row select, .ed-row textarea{ display:block; width:100%; margin-top:4px; padding:8px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.06); color:var(--text); font:600 13px 'Inter',sans-serif; }
+  .ed-row input[type=color]{ height:38px; padding:2px; }
 </style>
 </head>
 <body>
@@ -1023,8 +1040,9 @@
       <button class="btn neon" id="themeApplyBtn" style="display:none;">Apply for everyone ✅</button>
     </div>
     <div class="card"><h3>Page Studio</h3>
-      <div class="st-h" style="margin-top:0">1 · Select the page (bottom button)</div>
+      <div class="st-h" style="margin-top:0">Gallery · pick the page (bottom button) to design</div>
       <div class="theme-grid" id="pgTabs"></div>
+      <div class="gal" id="pgGal"></div>
       <div id="pgBody"></div>
     </div>
     <div class="card">
@@ -1345,8 +1363,6 @@
     try{ localStorage.setItem('lg_design', JSON.stringify(d)); }catch(e){}
     reapplyTexts();
   }
-  function applyServer(r){ if (r.pages && typeof r.pages === 'object'){ pages = r.pages; try{ applyPages(); }catch(e){} }
-    if (r.theme === 'custom' && r.design && validPalette(r.design.p)) applyDesign(r.design); else applyTheme(r.theme); }
 
   function buildStudio(){
     const box = document.getElementById('studio'); if (!box || !design) return;
@@ -1407,82 +1423,159 @@
     else applyTheme(localStorage.getItem('lg_theme') || 'vegas');
   }catch(e){ applyTheme('vegas'); }
 
-  // ================= PAGE STUDIO: pick a bottom tab -> send its screenshot -> set variables =================
-  let pages = {}, pgSel = null, pgPick = null;
-  const PG_HOME = [['balcard','Balance card','.bal-hero','background'],['bal','Balance amount','.bal-huge','color'],['live','LIVE badge','.live-badge','color'],['fund','Fund bar','.fund-bar-fill','background'],['bonus','Bonus button','#bonusBtn','background']];
-  const PG_GEN  = [['bg','Page background','','background'],['card','Cards','.card','background'],['btn','Main button','.btn.neon','background'],['head','Card headings','.card h3','color'],['text','Body text','','color']];
-  const pgVars = v => (v === 'wallet' ? PG_HOME : []).concat(PG_GEN);
-  function applyPages(){
-    let css = '';
-    Object.keys(pages || {}).forEach(v => {
-      if (!/^[a-z0-9_-]{1,20}$/.test(v)) return;
-      pgVars(v).forEach(([k, n, sel, prop]) => {
-        const o = pages[v] && pages[v][k]; if (!o || !HEX.test(String(o.c || ''))) return;
-        css += `#view-${v} ${sel}`.trim() + `{${prop}:${o.c} !important}\n`;
-      });
-    });
-    let st = document.getElementById('pageStyle');
-    if (!st){ st = document.createElement('style'); st.id = 'pageStyle'; document.head.appendChild(st); }
-    st.textContent = css;
-    try{ localStorage.setItem('lg_pages', JSON.stringify(pages)); }catch(e){}
+  // ================= STUDIO: screenshot = page background, drag text/buttons on top, {variables} =================
+  let skins = {}, pgSel = null, ed = null, edSel = null;
+  const TOKENS = ['balance','name','first_name','username','bonus','referrals','started','perrefer','live_fund','total_fund','wallet','tier','withdrawn','jackpot'];
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const okHex = v => HEX.test(String(v || '')) ? v : '';
+  function tokenMap(){
+    const d = dash || {}, f = (n, x = 2) => Number(n || 0).toFixed(x);
+    return { balance:f(d.balance), name:d.bot_name || brand.name || '', first_name:d.first_name || '', username:brand.username ? '@' + brand.username : '',
+      bonus:f(d.daily_bonus_amount, 0), referrals:d.verified_referrals || 0, started:d.started_referrals || 0, perrefer:d.per_refer || 0,
+      live_fund:f(d.live_fund, 0), total_fund:f(d.total_fund, 0), wallet:(d.wallet && d.wallet !== 'Not Linked') ? d.wallet : 'Not linked',
+      tier:d.tier ? d.tier.name : '', withdrawn:f(d.total_withdrawn), jackpot:(document.getElementById('jpAmt') || {}).textContent || '' };
   }
-  const pgCount = () => Object.keys((pages[pgSel]) || {}).length;
-  function pgRefresh(){
-    const cur = pages[pgSel] || {};
-    document.querySelectorAll('#pgVars .pg-v').forEach(el => { const o = cur[el.dataset.k]; el.querySelector('i').style.background = o ? o.c : 'transparent'; });
-    const n = pgCount(), ok = n >= 2;
-    document.getElementById('pgCount').textContent = ok ? `${n} variables set ✅` : `Set at least 2 variables — ${n}/2 done`;
-    document.getElementById('pgApply').style.opacity = ok ? 1 : .45;
+  const fillTokens = t => { const m = tokenMap(); return String(t || '').replace(/\{(\w+)\}/g, (x, k) => (m[k] !== undefined ? m[k] : x)); };
+  function setU(st){ st.style.setProperty('--u', (st.clientWidth / 100) + 'px'); }
+  function drawStage(st, d){
+    st.style.paddingBottom = (clamp(Number(d.ratio) || 1.8, 0.3, 4) * 100) + '%';
+    st.style.backgroundImage = `url("${d.img}")`;
+    st.innerHTML = '';
+    (d.layers || []).forEach((L, i) => {
+      const e = document.createElement('div');
+      e.className = 'sk-l' + (L.type === 'button' ? ' sk-b' : ''); e.dataset.i = i;
+      e.style.cssText = `left:${clamp(+L.x||0,0,100)}%;top:${clamp(+L.y||0,0,100)}%;width:${clamp(+L.w||30,3,100)}%;font-size:calc(var(--u,4px)*${clamp(+L.size||5,1,30)});color:${okHex(L.color) || '#ffffff'};font-weight:${[400,700,900].includes(+L.weight) ? +L.weight : 700};text-align:${['left','center','right'].includes(L.align) ? L.align : 'left'};` + (L.type === 'button' && okHex(L.bg) ? `background:${L.bg};` : '');
+      e.textContent = fillTokens(L.text); st.appendChild(e);
+    });
+    setU(st);
+  }
+  function updU(){ document.querySelectorAll('.skin-stage').forEach(setU); }
+  window.addEventListener('resize', updU);
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.tab')) setTimeout(updU, 60); });
+
+  function runAction(a){
+    if (a === 'bonus') $('bonusBtn') && $('bonusBtn').click();
+    else if (a === 'withdraw') $('withdrawOpenBtn') && $('withdrawOpenBtn').click();
+    else if (a === 'copy'){ try{ navigator.clipboard.writeText((dash && dash.referral_link) || ''); toast('Link copied'); }catch(e){} }
+    else if (/^tab:[a-z0-9_-]{1,20}$/.test(a || '')){ const t = document.querySelector(`.tab[data-view="${a.slice(4)}"]`); t && t.click(); }
+  }
+  function renderSkins(){
+    document.querySelectorAll('.view').forEach(v => {
+      const id = v.id.replace('view-', ''), d = skins[id], host = v.querySelector(':scope > .skin-host');
+      if (!d || !d.img || id === 'admin'){ v.classList.remove('skinned'); if (host) host.remove(); return; }
+      v.classList.add('skinned');
+      let h = host; if (!h){ h = document.createElement('div'); h.className = 'skin-host'; h.innerHTML = '<div class="skin-stage"></div>';
+        h.addEventListener('click', e => { const el = e.target.closest('.sk-b'); if (!el) return; const L = ((skins[id] || {}).layers || [])[+el.dataset.i]; if (L) runAction(L.action); }); v.appendChild(h); }
+      drawStage(h.firstChild, d);
+    });
+  }
+  function applyServer(r){
+    if (r.skins && typeof r.skins === 'object'){ skins = r.skins; try{ renderSkins(); }catch(e){} }
+    if (r.theme === 'custom' && r.design && validPalette(r.design.p)) applyDesign(r.design); else applyTheme(r.theme);
+  }
+
+  // ---------- editor ----------
+  const tabsList = () => [...document.querySelectorAll('.tabbar button.tab')].filter(b => b.dataset.view && b.dataset.view !== 'admin')
+    .map(b => ({ v:b.dataset.view, n:(b.textContent || '').replace(/\s+/g, ' ').trim() || b.dataset.view }));
+  function galRender(){
+    const g = document.getElementById('pgGal'); if (!g) return;
+    g.innerHTML = tabsList().map(t => { const d = skins[t.v];
+      return `<button data-pg="${escapeHtml(t.v)}" class="${pgSel === t.v ? 'on' : ''}" style="${d && d.img ? `background-image:url('${d.img}')` : ''}">${escapeHtml(t.n)}${d ? ' ✅' : ''}</button>`; }).join('');
+  }
+  async function toJpeg(file){
+    const u = URL.createObjectURL(file), im = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = u; });
+    let w = Math.min(720, im.width), q = 0.72, out = '';
+    for (let n = 0; n < 5; n++){
+      const c = document.createElement('canvas'); c.width = w; c.height = Math.round(im.height * w / im.width);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); out = c.toDataURL('image/jpeg', q);
+      if (out.length <= 190000) return { img: out, ratio: c.height / c.width };
+      w = Math.round(w * 0.82); q = Math.max(0.45, q - 0.07);
+    }
+    URL.revokeObjectURL(u); throw new Error('Image is too large — use a smaller screenshot');
+  }
+  function edStage(){ return document.getElementById('edStage'); }
+  function edDraw(){ const st = edStage(); if (!st || !ed || !ed.img) return; drawStage(st, ed); st.querySelectorAll('.sk-l').forEach(el => el.classList.toggle('sel', +el.dataset.i === edSel)); }
+  function edInspector(){
+    const box = document.getElementById('edInsp'); const L = ed && ed.layers[edSel];
+    if (!L){ box.innerHTML = '<div class="st-h">Tap a layer to edit it, or add one above</div>'; return; }
+    const acts = ['','bonus','withdraw','copy'].concat(tabsList().map(t => 'tab:' + t.v));
+    const opt = (arr, cur) => arr.map(o => `<option value="${escapeHtml(o)}" ${String(cur) === String(o) ? 'selected' : ''}>${escapeHtml(o || 'none')}</option>`).join('');
+    box.innerHTML = `<div class="ed-row">
+      <label style="grid-column:1/3">Text (use {balance} etc.)<textarea data-f="text" rows="2" maxlength="120">${escapeHtml(L.text)}</textarea></label>
+      <label>Size<input type="range" data-f="size" min="2" max="20" step="0.5" value="${L.size}"></label>
+      <label>Width<input type="range" data-f="w" min="5" max="100" value="${L.w}"></label>
+      <label>Text colour<input type="color" data-f="color" value="${okHex(L.color) || '#ffffff'}"></label>
+      <label>${L.type === 'button' ? 'Button colour' : 'Weight'}${L.type === 'button' ? `<input type="color" data-f="bg" value="${okHex(L.bg) || '#ffd84d'}">` : `<select data-f="weight">${opt([400,700,900], L.weight)}</select>`}</label>
+      <label>Align<select data-f="align">${opt(['left','center','right'], L.align)}</select></label>
+      ${L.type === 'button' ? `<label>On tap<select data-f="action">${opt(acts, L.action || '')}</select></label>` : '<span></span>'}
+      <button class="btn ghost" data-del="1" style="grid-column:1/3">🗑 Delete layer</button></div>`;
+  }
+  function edSelect(i){ edSel = i; edStage().querySelectorAll('.sk-l').forEach(el => el.classList.toggle('sel', +el.dataset.i === i)); edInspector(); }
+  function edAdd(type){
+    if (!ed.img){ toast('Send a screenshot first'); return; }
+    if (ed.layers.length >= 40){ toast('Too many layers'); return; }
+    ed.layers.push(type === 'button'
+      ? { type:'button', text:'Claim ₹{bonus}', x:12, y:70, w:60, size:4.5, color:'#111111', bg:'#ffd84d', weight:900, align:'center', action:'bonus' }
+      : { type:'text', text:'{balance}', x:10, y:12, w:60, size:9, color:'#ffffff', weight:900, align:'left' });
+    edDraw(); edSelect(ed.layers.length - 1);
   }
   function pgBuild(){
-    const body = document.getElementById('pgBody');
-    body.innerHTML = `<div class="st-h">2 · Send the screenshot</div>
-      <label class="img-drop">📷 Choose screenshot<input type="file" id="pgImg" accept="image/*" style="display:none;"></label>
-      <canvas id="pgCv" style="display:none;width:100%;border-radius:12px;border:1px solid var(--border);margin-top:10px;"></canvas>
-      <div class="st-h">3 · Set variables — tap one, then tap the screenshot</div>
-      <div id="pgVars">${pgVars(pgSel).map(([k, n]) => `<div class="pg-v" data-k="${k}"><span>${n}</span><i></i></div>`).join('')}</div>
-      <div class="st-h" id="pgCount"></div>
-      <button class="btn neon" id="pgApply">Apply this page for everyone ✅</button>`;
-    pgPick = null; pgRefresh();
-    const cv = document.getElementById('pgCv');
-    document.getElementById('pgImg').addEventListener('change', e => {
+    const body = document.getElementById('pgBody'); const cur = skins[pgSel];
+    ed = cur ? JSON.parse(JSON.stringify(cur)) : { img:'', ratio:1.8, layers:[] }; edSel = null;
+    body.innerHTML = `<label class="img-drop">📷 ${cur ? 'Replace' : 'Send'} screenshot of this page<input type="file" id="pgImg" accept="image/*" style="display:none;"></label>
+      <div class="ed" id="edWrap" style="margin-top:10px;"><div class="skin-stage" id="edStage"></div></div>
+      <div class="ed-bar"><button id="edAddT">＋ Text</button><button id="edAddB">＋ Button</button></div>
+      <div class="st-h">Variables — tap to add into the selected layer</div>
+      <div class="ed-chips">${TOKENS.map(t => `<button data-tok="${t}">{${t}}</button>`).join('')}</div>
+      <div id="edInsp"></div>
+      <button class="btn neon" id="edSave" style="margin-top:12px;">Save this page for everyone ✅</button>
+      ${cur ? '<button class="btn ghost" id="edRemove" style="margin-top:8px;">Remove design (back to default)</button>' : ''}`;
+    edDraw(); edInspector(); galRender();
+    document.getElementById('pgImg').addEventListener('change', async e => {
       const f = e.target.files && e.target.files[0]; if (!f) return;
-      const u = URL.createObjectURL(f), im = new Image();
-      im.onload = () => { cv.width = Math.min(420, im.width); cv.height = Math.round(im.height * cv.width / im.width);
-        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); cv.style.display = 'block'; URL.revokeObjectURL(u); };
-      im.src = u;
+      try{ const r = await toJpeg(f); ed.img = r.img; ed.ratio = r.ratio; edDraw(); }catch(err){ toast(err.message || 'Could not read image'); }
     });
-    cv.addEventListener('click', e => {
-      if (!pgPick){ toast('Select a variable first'); return; }
-      const r = cv.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) * cv.width / r.width), y = Math.floor((e.clientY - r.top) * cv.height / r.height);
-      const d = cv.getContext('2d').getImageData(Math.max(0, x - 1), Math.max(0, y - 1), 3, 3).data;
-      let R = 0, G = 0, B = 0; for (let i = 0; i < 36; i += 4){ R += d[i]; G += d[i+1]; B += d[i+2]; }
-      pages[pgSel] = pages[pgSel] || {}; pages[pgSel][pgPick] = { c: toHex(R/9, G/9, B/9) };
-      applyPages(); pgRefresh();
+    document.getElementById('edAddT').onclick = () => edAdd('text');
+    document.getElementById('edAddB').onclick = () => edAdd('button');
+    body.querySelector('.ed-chips').onclick = e => {
+      const b = e.target.closest('[data-tok]'); if (!b) return;
+      if (edSel === null){ edAdd('text'); }
+      const L = ed.layers[edSel]; if (!L) return; L.text = (L.text ? L.text + ' ' : '') + '{' + b.dataset.tok + '}'; edDraw(); edInspector();
+    };
+    const insp = document.getElementById('edInsp');
+    const upd = e => { const el = e.target, L = ed.layers[edSel]; if (!L || !el.dataset.f) return; const k = el.dataset.f;
+      L[k] = ['size','w','weight'].includes(k) ? Number(el.value) : el.value; edDraw(); };
+    insp.addEventListener('input', upd); insp.addEventListener('change', upd);
+    insp.addEventListener('click', e => { if (e.target.closest('[data-del]')){ ed.layers.splice(edSel, 1); edSel = null; edDraw(); edInspector(); } });
+    const st = edStage();
+    st.addEventListener('pointerdown', e => {
+      const el = e.target.closest('.sk-l'); if (!el) { edSelect(null); return; }
+      const i = +el.dataset.i, L = ed.layers[i]; edSelect(i);
+      const r = st.getBoundingClientRect(), sx = e.clientX, sy = e.clientY, ox = L.x, oy = L.y;
+      try{ el.setPointerCapture(e.pointerId); }catch(_){}
+      const mv = ev => { L.x = clamp(ox + (ev.clientX - sx) / r.width * 100, 0, 98); L.y = clamp(oy + (ev.clientY - sy) / r.height * 100, 0, 98); el.style.left = L.x + '%'; el.style.top = L.y + '%'; };
+      const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); };
+      el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
     });
-    document.getElementById('pgVars').addEventListener('click', e => {
-      const el = e.target.closest('.pg-v'); if (!el) return; pgPick = el.dataset.k;
-      document.querySelectorAll('#pgVars .pg-v').forEach(x => x.classList.toggle('on', x === el));
-    });
-    document.getElementById('pgApply').addEventListener('click', async () => {
-      if (pgCount() < 2){ toast('Set at least 2 variables first'); return; }
+    const save = async (next) => {
       try{
-        const r = await themeCall('set_pages', { pages });
+        const r = await themeCall('set_skins', { skins: next });
         if (!r || r.ok === false) throw new Error((r && r.error) || 'Could not save');
-        toast('Page design applied for everyone ✅');
-      }catch(err){ toast(err.message || 'Could not save'); }
-    });
+        skins = r.skins || next; renderSkins(); galRender(); toast('Saved for everyone ✅'); return true;
+      }catch(err){ toast(err.message || 'Could not save'); return false; }
+    };
+    document.getElementById('edSave').onclick = async () => {
+      if (!ed.img){ toast('Send a screenshot first'); return; }
+      if (await save(Object.assign({}, skins, { [pgSel]: ed }))) pgBuild();
+    };
+    const rm = document.getElementById('edRemove');
+    if (rm) rm.onclick = async () => { const n = Object.assign({}, skins); delete n[pgSel]; if (await save(n)) pgBuild(); };
   }
   (function pgInit(){
-    const box = document.getElementById('pgTabs'); if (!box) return;
-    const tabs = [...document.querySelectorAll('.tabbar button.tab')].filter(b => b.dataset.view && b.dataset.view !== 'admin')
-      .map(b => ({ v: b.dataset.view, n: (b.textContent || '').replace(/\s+/g, ' ').trim() || b.dataset.view }));
-    box.innerHTML = tabs.map(t => `<button class="theme-opt" data-pg="${escapeHtml(t.v)}">${escapeHtml(t.n)}</button>`).join('');
-    box.addEventListener('click', e => {
-      const b = e.target.closest('[data-pg]'); if (!b) return; pgSel = b.dataset.pg;
-      box.querySelectorAll('[data-pg]').forEach(x => x.classList.toggle('on', x === b)); pgBuild();
-    });
-    try{ pages = JSON.parse(localStorage.getItem('lg_pages') || '{}') || {}; applyPages(); }catch(e){}
+    const box = document.getElementById('pgTabs'), gal = document.getElementById('pgGal'); if (!box || !gal) return;
+    box.style.display = 'none';
+    gal.addEventListener('click', e => { const b = e.target.closest('[data-pg]'); if (!b) return; pgSel = b.dataset.pg; pgBuild(); });
+    galRender();
   })();
 
   // Bot routing now comes from the signed ?api= webhook link the bot itself sends.
@@ -1797,6 +1890,7 @@
       $('adminTabBtn').style.display = isAdmin ? 'flex' : 'none';
 
       await loadGames();
+      try{ renderSkins(); }catch(e){}
     } catch(e){
       if (e.message === 'no-api'){ renderEmpty(); return; }
       if (e.message === 'no-telegram'){ renderEmpty('Please open this app from Telegram using the bot\'s button.'); return; }
