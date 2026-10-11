@@ -1165,6 +1165,25 @@
   const tg = window.Telegram ? window.Telegram.WebApp : null;
   if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor && tg.setHeaderColor('#0a0212'); tg.setBackgroundColor && tg.setBackgroundColor('#0a0212'); }catch(e){} }
 
+  // ---------- Boot safety net: never sit on "Loading" forever — show the real reason + Retry ----------
+  let bootDone = false, bootErr = '';
+  function bootFail(msg){
+    if (bootDone) return;
+    if (msg) bootErr = msg;
+    const ls = document.getElementById('loadingScreen'); if (!ls) return;
+    let b = document.getElementById('bootFail');
+    if (!b){ b = document.createElement('div'); b.id = 'bootFail'; b.style.cssText = 'margin-top:18px;text-align:center;font:600 12px Inter,sans-serif;color:#ffb3b3;max-width:300px;padding:0 16px;position:relative;z-index:5;'; ls.appendChild(b); }
+    b.innerHTML = '';
+    const t = document.createElement('div'); t.textContent = bootErr || 'Taking longer than usual…';
+    const btn = document.createElement('button'); btn.textContent = 'Retry';
+    btn.style.cssText = 'margin-top:10px;padding:9px 22px;border-radius:12px;border:0;font:800 13px Inter,sans-serif;background:#ffd84d;color:#222;';
+    btn.onclick = () => location.reload();
+    b.appendChild(t); b.appendChild(btn);
+  }
+  window.addEventListener('error', e => bootFail('Error: ' + (e && e.message || 'script error')));
+  window.addEventListener('unhandledrejection', e => bootFail('Error: ' + ((e && e.reason && e.reason.message) || (e && e.reason) || 'request failed')));
+  setTimeout(() => bootFail(''), 12000);
+
   const params = new URLSearchParams(location.search);
   let botId = params.get('botid');
   let apiUrl = params.get('api');
@@ -1510,8 +1529,9 @@
       if (inflight.has(action)) throw new Error('Please wait, your last request is still processing.');
       inflight.add(action);
     }
+    if (!bootDone) bootErr = 'Server not responding (' + action + ') — check the bot and try again.';
     const ctrl = new AbortController();
-    const to = setTimeout(() => ctrl.abort(), 30000);
+    const to = setTimeout(() => ctrl.abort(), 15000);
     try{
       const routeParams = botId ? { botid: botId } : { api: apiUrl };
       let res;
@@ -1637,6 +1657,7 @@
   $('celebrateOverlay').addEventListener('click', (e) => { if (e.target === $('celebrateOverlay')) $('celebrateOverlay').classList.remove('show'); });
 
   function hideLoadingScreen(){
+    bootDone = true;
     const ls = $('loadingScreen');
     if (ls) ls.style.display = 'none';
   }
