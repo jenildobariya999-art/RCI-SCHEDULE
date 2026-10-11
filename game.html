@@ -1489,8 +1489,8 @@
   // (No manual bot registration, and no public bot-list lookup anymore.)
   async function resolveBotId(){ return; }
 
-  const $ = (id) => document.getElementById(id);
-  const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function $(id){ return document.getElementById(id); }
+  function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function getDeviceId(){
     try{
