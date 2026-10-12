@@ -102,7 +102,7 @@ textarea.inp{min-height:84px;resize:vertical}
 #nav button.on{color:var(--g)}#nav button.on .ic{animation:navp .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes navp{from{transform:scale(.6)}to{transform:scale(1)}}
 /* sheet, admin, toast */
-#sh{position:fixed;inset:0;z-index:400;background:rgba(2,5,15,.72);display:flex;align-items:flex-end}
+#sh{position:fixed;inset:0;z-index:600;background:rgba(2,5,15,.72);display:flex;align-items:flex-end}
 #sh>div{width:100%;max-height:88vh;overflow-y:auto;background:linear-gradient(180deg,var(--c2),var(--c1));border:1px solid var(--bd);border-bottom:0;border-radius:24px 24px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 #sh h3{font-size:18px;font-weight:900;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
@@ -155,6 +155,46 @@ textarea.inp{min-height:84px;resize:vertical}
 .gstats>div{text-align:center;border-right:1px solid #26282d;min-width:0;padding:0 4px}.gstats>div:last-child{border:0}
 .gstats b{display:block;font-size:20px;font-weight:600;white-space:nowrap}.gstats small{display:block;margin-top:7px;font-size:11px;font-weight:700;color:#9aa0ab;letter-spacing:.04em}
 .gstats .gr b{color:#22c55e}
+/* ===== NEW LOOK: user side ===== */
+.card:not(.hero):not(.bonus):not(.fundc){border:1px solid transparent;background:linear-gradient(160deg,var(--c2),var(--c1)) padding-box,linear-gradient(140deg,rgba(120,150,255,.55),rgba(61,255,122,.16) 55%,rgba(163,91,255,.4)) border-box}
+.card h3::before{content:'';width:4px;height:15px;border-radius:2px;background:linear-gradient(var(--g2),#20d65a);flex-shrink:0}
+.tiles{grid-template-columns:1fr 1fr;gap:10px}
+.tile{display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:0;align-items:center;text-align:left;padding:13px 12px;color:#fff;border:0;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 10px 22px -12px var(--a)}
+.tile .ibx{grid-row:1/3;width:44px;height:44px;background:rgba(255,255,255,.22);box-shadow:none}
+.tile b{font-size:14px;align-self:end;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.tile small{margin-top:0;font-size:11px;color:rgba(255,255,255,.9);align-self:start}
+#nav{padding:6px;border-radius:26px;background:rgba(10,16,40,.97)}
+#nav button{border-radius:18px;padding:7px 0}
+#nav button.on{color:#04200f;background:linear-gradient(180deg,var(--g2),#20d65a);box-shadow:0 6px 16px -8px var(--g)}
+.row{border-radius:15px}
+.btn.sm{border-radius:13px}
+/* ===== NEW LOOK: admin ===== */
+#adm{background:radial-gradient(ellipse 80% 26% at 50% 0,rgba(61,255,122,.13),transparent 70%),var(--bg)}
+#admTabs button{padding:9px 15px;font-weight:700}
+#admTabs button.on{background:linear-gradient(180deg,var(--g2),#20d65a);box-shadow:0 6px 14px -8px var(--g)}
+.stats.g2 .st{position:relative;text-align:left;padding:13px 12px 13px 17px}
+.stats.g2 .st::before{content:'';position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:2px;background:var(--c,#3dff7a)}
+.stats.g2 .st:nth-child(4n+2){--c:#5cc8ff}.stats.g2 .st:nth-child(4n+3){--c:#c58bff}.stats.g2 .st:nth-child(4n){--c:#ffd84d}
+.stats.g2 .st b{font-size:22px}
+/* gift ticket (own design) */
+.gk{position:relative;display:flex;border-radius:20px;overflow:hidden;margin-bottom:12px;background:linear-gradient(160deg,var(--c2),var(--c1));border:1px solid var(--bd)}
+.gk-stub{flex:0 0 92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 6px;color:#06160d;background:linear-gradient(160deg,var(--g2),#20d65a)}
+.gk.off .gk-stub{background:linear-gradient(160deg,#59607a,#3a405a);color:#dfe4f5}
+.gk-stub small{font-size:9.5px;font-weight:700;letter-spacing:.1em;opacity:.8}.gk-stub b{font-size:22px;font-weight:800}
+.gk-main{flex:1;min-width:0;padding:14px 14px 12px;border-left:2px dashed rgba(255,255,255,.16)}
+.gk::before,.gk::after{content:'';position:absolute;left:84px;width:16px;height:16px;border-radius:50%;background:var(--bg);z-index:2}
+.gk::before{top:-8px}.gk::after{bottom:-8px}
+.gk-top{display:flex;align-items:center;gap:8px}
+.gk-code{flex:1;min-width:0;text-align:left;font:700 clamp(15px,4.8vw,19px)/1.2 ui-monospace,'SF Mono',Menlo,Consolas,monospace;letter-spacing:.08em;word-break:break-all;color:#fff}
+.gk-ic{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:#cfd6f5;flex-shrink:0}
+.gk-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);margin:12px 0 6px;overflow:hidden}
+.gk-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#5cc8ff,#3dff7a)}
+.gk-meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--sf)}
+.gk-foot{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.chip{padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700;background:rgba(255,255,255,.07);color:#cfd6f5}.chip.g{background:rgba(61,255,122,.15);color:var(--g)}
+.tg{margin-left:auto;width:44px;height:26px;border-radius:99px;background:#3a405a;position:relative;transition:background .2s;flex-shrink:0}
+.tg::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.tg.on{background:#20d65a}.tg.on::after{transform:translateX(18px)}
 </style>
 </head>
 <body>
@@ -468,18 +508,13 @@ function admTab(t) {
   admTok++; box('<div class="skr" style="height:130px"></div><div class="skr" style="height:84px"></div>');
   ({ over: aOver, set: aSet, games: aGames, gifts: aGifts, users: aUsers, cast: aCast, pay: aPay, ch: aCh })[t]();
 }
-const statGrid = (a, cls) => `<div class="stats g2 ${cls || ''}">${a.map(x => `<div class="st"><small>${x[0]}</small><b>${esc(x[1])}</b></div>`).join('')}</div>`;
+const statGrid = a => `<div class="stats g2">${a.map(x => `<div class="st"><small>${x[0]}</small><b>${esc(x[1])}</b></div>`).join('')}</div>`;
 async function aOver() { const my = admTok; try {
-  if (tapi) {
-    const s = await aget('quick_stats', 45000, null, true); if (my !== admTok) return;
-    box(statGrid([['Members', s.members], ['Verified', s.verified], ['Bonus claimers', s.bonus_claimers], ['Banned', s.banned], ['Payouts ₹', s.payouts], ['Success ₹', s.payouts_success]]) +
-      '<button class="btn ghost" id="aFull" style="margin-top:12px">Full report — balances &amp; referrals (slower)</button><div id="aFullB"></div><button class="btn ghost" id="aOpen" style="margin-top:10px">Open bot /admin in chat</button>');
-    $('aFull').onclick = async () => { $('aFullB').innerHTML = LD('Counting every user…'); try { const f = await aget('admin_stats', 60000, { timeout: 60000 });
-      $('aFullB').innerHTML = statGrid([['Users balance ₹', f.total_balance], ['With referrer', f.with_refer], ['Without', f.without_refer], ['Verified (live)', f.verified_count], ['Not verified', f.failed_count]], '" style="margin-top:12px'); } catch (e) { $('aFullB').innerHTML = '<div class="mut" style="padding:8px 0">' + esc(e.message) + '</div>'; } };
-  } else {
-    box(LD('Counting users — can take a few seconds…')); const f = await aget('admin_stats', 60000, { timeout: 60000 }); if (my !== admTok) return;
-    box(statGrid([['Members', f.total_members], ['Verified', f.total_verified], ['Payouts ₹', f.total_payouts], ['Success ₹', f.total_payouts_success], ['Bonus claimers', f.total_bonus_claimers], ['Users balance ₹', f.total_balance], ['With referrer', f.with_refer], ['Without', f.without_refer]]) + '<button class="btn ghost" id="aOpen" style="margin-top:12px">Open bot /admin in chat</button>');
-  }
+  let h = '';
+  if (tapi) { const s = await aget('quick_stats', 45000, null, true); if (my !== admTok) return;
+    h = statGrid([['Members', s.members], ['Verified', s.verified], ['Bonus claimers', s.bonus_claimers], ['Banned', s.banned], ['Payouts ₹', s.payouts], ['Paid ₹', s.payouts_success]]); }
+  else h = '<div class="mut" style="padding:6px 0 12px">Open the app from the bot\'s PLAY NOW button to see live numbers here.</div>';
+  box(h + '<button class="btn ghost" id="aOpen" style="margin-top:12px">Open bot /admin in chat</button>');
   $('aOpen').onclick = async () => { try { const r = await api('admin_open', { target: 'full' }); toast(r.message || 'Opened in chat'); } catch (e) { toast(e.message); } };
 } catch (e) { err(e); } }
 async function aSet() { const my = admTok; try { const s = await aget('admin_settings', 20000); if (my !== admTok) return;
@@ -511,10 +546,10 @@ async function aGames() { const my = admTok; try { const s = await aget('admin_s
 let giftRows = [];
 function giftCard(c) {
   const mx = Number(c.max) || 0, cl = Number(c.claimed) || 0, am = Number(c.amount) || 0, pct = mx ? Math.min(100, Math.round(cl / mx * 100)) : 0, act = c.status === 'Active', left = Math.max(0, mx - cl);
-  return `<div class="gcard"><div class="gtop"><button class="gst ${act ? '' : 'off'}" data-gt="${esc(c.code)}"><i></i>${act ? 'Active' : 'Inactive'}</button><button class="gedit" data-ge="${esc(c.code)}">${ico('edit')} Edit</button></div>
-    <div class="gcr"><b class="gcode">${esc(c.code)}</b><button class="gcopy" data-gc="${esc(c.code)}">${ico('copy')}</button></div>
-    <div class="gcl"><b>${cl}</b><span>/ ${mx} claimed</span><em>${pct}%</em></div><div class="gbar"><i style="width:${pct}%"></i></div><div class="gleft">${left} slots left</div></div>
-    <div class="gstats"><div><b>${inr(cl * am)}</b><small>PAID OUT</small></div><div class="gr"><b>${inr(left * am)}</b><small>BUDGET LEFT</small></div><div><b>${inr(am)}</b><small>PER USER</small></div></div>`;
+  return `<div class="gk ${act ? '' : 'off'}"><div class="gk-stub"><small>PER USER</small><b>${inr(am)}</b></div>
+    <div class="gk-main"><div class="gk-top"><button class="gk-code" data-gc="${esc(c.code)}">${esc(c.code)}</button><button class="gk-ic" data-ge="${esc(c.code)}" aria-label="Edit">${ico('edit')}</button></div>
+    <div class="gk-bar"><i style="width:${pct}%"></i></div><div class="gk-meta"><span>${cl} / ${mx} claimed</span><span>${left} left</span></div>
+    <div class="gk-foot"><span class="chip">Paid ${inr(cl * am)}</span><span class="chip g">Left ${inr(left * am)}</span><button class="tg ${act ? 'on' : ''}" data-gt="${esc(c.code)}" aria-label="${act ? 'Active' : 'Inactive'}"></button></div></div></div>`;
 }
 function renderGifts() {
   box(`<div class="card"><h3>New gift code</h3><div class="two">${F('c_amt', 'Per user ₹', '', 'number')}${F('c_max', 'Max users', '', 'number')}</div>${F('c_ref', 'Min referrals (optional)', '', 'number')}<button class="btn" id="cMake">Create code</button></div>` +
@@ -538,25 +573,27 @@ function aUsers() {
   const run = async (a, ok) => { const id = val('u_id'); if (!/^\d+$/.test(id)) return toast('Enter a numeric user ID'); try { const r = await api(a, { user_id: id }); $('uOut').textContent = ok(r); toast(r.message || 'Done'); } catch (e) { toast(e.message); } };
   $('uBan').onclick = () => run('admin_ban_user', r => r.message); $('uUnban').onclick = () => run('admin_unban_user', r => r.message); $('uChk').onclick = () => run('admin_check_ban', r => 'User ' + r.user_id + ' is ' + (r.banned ? 'BANNED' : 'not banned'));
 }
+async function bcHistory() { if (tapi) { try { return (await tcall('bc_list')).items || []; } catch (e) {} } return LS.get('lg_bc') || []; }
+async function bcLog(item) { if (tapi) { try { await tcall('bc_add', item); return; } catch (e) {} } const a = LS.get('lg_bc') || []; a.unshift(Object.assign({ when: new Date().toLocaleString('en-IN') }, item)); LS.set('lg_bc', a.slice(0, 5)); }
+function bcRender(a) { const b = $('bcList'); if (!b) return;
+  b.innerHTML = a.length ? a.slice(0, 5).map((x, i) => `<div class="row" style="align-items:flex-start"><div class="tx"><b style="white-space:normal;max-height:2.9em;overflow:hidden">${esc(x.text)}</b><small>${esc(x.when)}${x.count ? ' · ' + esc(x.count) + ' users' : ''}${x.btn_text ? ' · button: ' + esc(x.btn_text) : ''}</small></div><button class="btn sm ghost" data-re="${i}">Reuse</button></div>`).join('') : '<div class="mut">No broadcasts yet.</div>'; }
 function aCast() {
-  box(`<div class="card"><h3>Broadcast to all users</h3><label class="fl">Message (HTML allowed)<textarea class="inp" id="b_t" maxlength="3500"></textarea></label><div class="two">${F('b_bt', 'Button text', '')}${F('b_bu', 'Button URL (https://)', '')}</div><button class="btn" id="bGo">Send broadcast</button></div>`);
+  let hist = [];
+  box(`<div class="card"><h3>New broadcast</h3><label class="fl">Message (HTML allowed)<textarea class="inp" id="b_t" maxlength="3500"></textarea></label><div class="two">${F('b_bt', 'Button text', '')}${F('b_bu', 'Button URL (https://)', '')}</div><button class="btn" id="bGo">Send to all users</button></div>
+    <div class="card"><h3>Last 5 broadcasts</h3><div id="bcList">${SK}</div></div>`);
+  bcHistory().then(a => { hist = a; bcRender(a); });
+  $('admB').onclick = e => { const b = e.target.closest('[data-re]'); if (!b) return; const x = hist[+b.dataset.re]; if (!x) return; $('b_t').value = x.text; $('b_bt').value = x.btn_text || ''; $('b_bu').value = x.btn_url || ''; toast('Loaded into the form'); window.scrollTo(0, 0); $('adm').scrollTop = 0; };
   $('bGo').onclick = async () => { const t = val('b_t'); if (!t) return toast('Write a message first'); if (!confirm('Send this to ALL users?')) return;
-    try { const r = await api('admin_broadcast', { text: t, btn_text: val('b_bt'), btn_url: val('b_bu') }); toast(r.message || 'Broadcast started'); } catch (e) { toast(e.message); } };
+    try { const r = await api('admin_broadcast', { text: t, btn_text: val('b_bt'), btn_url: val('b_bu') }); toast(r.message || 'Broadcast started');
+      await bcLog({ text: t, btn_text: val('b_bt'), btn_url: val('b_bu'), count: r.recipient_count || 0 }); hist = await bcHistory(); bcRender(hist);
+    } catch (e) { toast(e.message); } };
 }
 async function aPay() { const my = admTok; try { const r = await aget('admin_withdrawals', 15000), w = r.withdrawals || []; if (my !== admTok) return;
   box(w.length ? w.map(x => `<div class="row"><span class="ibx" style="--a:${x.status === 'success' ? '#3dff7a' : '#ff8a9a'};--b:${x.status === 'success' ? '#12a84a' : '#e0204a'}">${ico('coin')}</span><div class="tx"><b>₹${esc(x.amount)} · ${esc(x.gateway)}</b><small>${esc(x.user)} · ${esc(x.status)} · ${esc(x.date)} ${esc(x.time)}</small></div></div>`).join('') : '<div class="mut" style="padding:12px 0">No withdrawals yet.</div>');
 } catch (e) { err(e); } }
-function chRender(c) {
-  box((c.length ? c.map(x => `<div class="card"><h3><span class="ibx" style="--a:#5cc8ff;--b:#2d5bff;width:34px;height:34px;border-radius:11px">${ico('users')}</span><span style="flex:1;min-width:0;word-break:break-all">${esc(x.name)}</span></h3>
-    <div class="stats g2"><div class="st"><small>Members now</small><b>${x.members == null ? '—' : esc(x.members)}</b></div><div class="st"><small>Joined via link</small><b style="color:var(--g)">${esc(x.requests)}</b></div></div>
-    ${x.members == null ? `<div class="mut" style="margin-top:8px">Can't read members: ${esc(x.why || 'make the bot an admin of this channel')}</div>` : ''}
-    <div class="mut" style="margin-top:8px;word-break:break-all">${esc(x.link)}</div></div>`).join('') : '<div class="mut">No channels configured.</div>') +
-    '<button class="btn ghost" id="chSync">Recount "joined via link" (slow)</button><div class="mut" style="margin-top:8px">"Joined via link" = people who sent a join request through the bot\'s invite link. New requests are counted automatically; Recount rebuilds the number from stored data.</div>');
-  $('chSync').onclick = async () => { const b = $('chSync'); b.disabled = true; b.textContent = 'Counting…';
-    try { const r = await tcall('channel_stats', { sync: true }, { timeout: 90000 }); AC['T:channel_stats'] = { t: Date.now(), v: r }; chRender(r.channels || []); toast('Recounted'); }
-    catch (e) { toast(e.message); b.disabled = false; b.textContent = 'Recount "joined via link" (slow)'; } };
-}
-async function aCh() { const my = admTok; try { const r = await aget('channel_stats', 30000, { timeout: 40000 }, true); if (my !== admTok) return; chRender(r.channels || []); } catch (e) { err(e); } }
+async function aCh() { const my = admTok; try { const r = await aget('admin_check_channels', 30000, { timeout: 30000 }); if (my !== admTok) return; const c = r.channels || [];
+  box(c.length ? c.map(x => `<div class="row"><span class="pill ${x.ok ? 'on' : 'off'}">${x.ok ? 'OK' : 'FAIL'}</span><div class="tx"><b>${esc(x.name)}</b><small style="word-break:break-all">${esc(x.link)}</small>${x.error ? `<small style="color:var(--r)">${esc(x.error)}</small>` : ''}</div></div>`).join('') : '<div class="mut" style="padding:12px 0">No channels configured.</div>');
+} catch (e) { err(e); } }
 
 function show() { hideLoad(); $('app').hidden = false; tick(); }
 const uidNow = () => { try { return String(tg.initDataUnsafe.user.id); } catch (e) { return ''; } };
