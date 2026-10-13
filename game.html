@@ -195,6 +195,7 @@ textarea.inp{min-height:84px;resize:vertical}
 .tg{margin-left:auto;width:44px;height:26px;border-radius:99px;background:#3a405a;position:relative;transition:background .2s;flex-shrink:0}
 .tg::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
 .tg.on{background:#20d65a}.tg.on::after{transform:translateX(18px)}
+.chips button.on{background:linear-gradient(180deg,var(--g2),#20d65a);color:#04200f;border-color:var(--g)}
 </style>
 </head>
 <body>
@@ -468,23 +469,47 @@ function openGame(id) {
 }
 
 $('wdBtn').onclick = () => wdStart();
-function wdStart() {
-  const linked = D.wallet && D.wallet !== 'Not Linked';
-  sheet(`<h3><span>${ico('coin', 'h')} Withdraw</span><button data-x>×</button></h3>
-    <div class="mut">Balance ₹${fm(D.balance)} · Min ₹${D.min_withdraw} · Max ₹${D.max_withdraw} · Fee ${D.tax_percent || 0}%</div>
-    <div class="mut" style="margin:12px 0 4px">Wallet number</div>
-    <div style="display:flex;gap:8px"><input class="inp" id="wNum" inputmode="numeric" maxlength="10" placeholder="10-digit number" value="${linked ? esc(D.wallet) : ''}"><button class="btn sm ghost" id="wSave">${linked ? 'Update' : 'Link'}</button></div>
-    <div class="mut" style="margin:12px 0 4px">Amount</div>
-    <input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount">
-    <button class="btn" id="wGo" style="margin-top:12px">Continue ›</button><div id="wOut"></div>`);
-  $('wSave').onclick = async () => { try { const r = await api('link_wallet', { wallet: $('wNum').value.trim() }); D.wallet = r.wallet; toast('Wallet linked'); } catch (e) { toast(e.message); } };
-  $('wGo').onclick = async () => {
-    try { const q = await api('withdraw_quote', { amount: Number($('wAmt').value) });
-      $('wOut').innerHTML = `<div class="mut" style="margin:12px 0 6px">You get ₹${fm(q.net_amount)} (fee ₹${fm(q.tax_amount)}) → ${esc(q.wallet)}. Choose a gateway:</div>` + q.gateways.map(g => `<button class="btn ghost" style="margin-bottom:8px" data-gw="${esc(g.key)}">${esc(g.name)}</button>`).join('');
-      $('wOut').onclick = async e => { const b = e.target.closest('[data-gw]'); if (!b) return; b.disabled = true;
-        try { const r = await api('withdraw_execute', { amount: q.amount, gateway: b.dataset.gw }); toast(r.message || 'Withdrawal submitted'); closeSheet(); delete LC.act; refresh(); }
-        catch (er) { toast(er.message); b.disabled = false; } };
-    } catch (e) { toast(e.message); }
+const WM = { wallet: 'Wallet', upi: 'UPI', bank: 'Bank' };
+async function wdStart() {
+  sheet(`<h3><span>${ico('coin', 'h')} Withdraw</span><button data-x>×</button></h3><div id="wdB">${SK}</div>`);
+  let info; try { info = await tcall('wd_info'); } catch (e) { $('wdB').innerHTML = '<div class="mut">' + esc(e.message) + '</div>'; return; }
+  const ms = ['wallet', 'upi', 'bank'].filter(m => info[m] && info[m].on);
+  if (!ms.length) { $('wdB').innerHTML = '<div class="mut">Withdrawals are not available right now. Please try again later.</div>'; return; }
+  let cur = ms[0];
+  const draw = () => {
+    const i = info[cur];
+    const fields = cur === 'wallet' ? '<input class="inp" id="wNum" inputmode="numeric" maxlength="10" placeholder="10-digit wallet number">'
+      : cur === 'upi' ? '<input class="inp" id="wUpi" placeholder="yourname@bank" autocapitalize="off">'
+      : '<input class="inp" id="bNo" inputmode="numeric" maxlength="18" placeholder="Account number" style="margin-bottom:8px"><input class="inp" id="bIf" maxlength="11" placeholder="IFSC code" style="margin-bottom:8px;text-transform:uppercase"><input class="inp" id="bNm" maxlength="40" placeholder="Account holder name">';
+    $('wdB').innerHTML = `<div class="chips">${ms.map(m => `<button data-m="${m}" class="${m === cur ? 'on' : ''}">${WM[m]}</button>`).join('')}</div>
+      <div class="mut">Balance ₹${fm(D.balance)} · Min ₹${fm(i.min, 0)} · Max ₹${fm(i.max, 0)}</div>
+      <div style="margin:12px 0">${i.linked
+        ? `<div class="row"><div class="tx"><b>${esc(i.shown)}</b><small>${WM[cur]} linked</small></div><button class="btn sm ghost" id="wChg">Change</button></div>`
+        : `<div class="mut" style="margin-bottom:6px">Link your ${WM[cur]} details</div>${fields}<button class="btn sm" id="wLink" style="margin-top:10px">Link</button>`}</div>
+      ${i.linked ? '<div class="mut" style="margin-bottom:4px">Amount</div><input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount"><button class="btn" id="wGo" style="margin-top:12px">Continue ›</button><div id="wOut"></div>' : ''}`;
+  };
+  draw();
+  $('wdB').onclick = async e => {
+    const m = e.target.closest('[data-m]'); if (m) { cur = m.dataset.m; draw(); return; }
+    if (e.target.closest('#wChg')) { info[cur].linked = false; draw(); return; }
+    if (e.target.closest('#wLink')) {
+      try {
+        let r;
+        if (cur === 'wallet') { const v = $('wNum').value.trim(); r = await api('link_wallet', { wallet: v }); r = { shown: v.length >= 10 ? v.slice(0, 3) + 'xxxxx' + v.slice(8) : v }; }
+        else if (cur === 'upi') r = await tcall('link_upi', { upi: $('wUpi').value.trim() });
+        else r = await tcall('link_bank', { account_no: $('bNo').value.trim(), ifsc: $('bIf').value.trim(), account_name: $('bNm').value.trim() });
+        info[cur].linked = true; info[cur].shown = r.shown; toast(WM[cur] + ' linked'); draw();
+      } catch (er) { toast(er.message); }
+      return;
+    }
+    if (e.target.closest('#wGo')) {
+      try { const q = await tcall('wd_quote', { amount: Number($('wAmt').value), method: cur });
+        $('wOut').innerHTML = `<div class="mut" style="margin:12px 0 6px">Withdrawing ₹${fm(q.amount)} to ${esc(q.shown)}. Choose a gateway:</div>` + q.gateways.map(g => `<button class="btn ghost" style="margin-bottom:8px" data-gw="${esc(g.key)}">${esc(g.name)}</button>`).join('');
+        $('wOut').onclick = async ev => { const b = ev.target.closest('[data-gw]'); if (!b) return; b.disabled = true;
+          try { const r = await tcall('wd_execute', { amount: q.amount, method: cur, gateway: b.dataset.gw }); toast(r.message || 'Withdrawal submitted'); closeSheet(); delete LC.act; fx(); refresh(); }
+          catch (er) { toast(er.message); b.disabled = false; } };
+      } catch (er) { toast(er.message); }
+    }
   };
 }
 
@@ -512,15 +537,20 @@ const statGrid = a => `<div class="stats g2">${a.map(x => `<div class="st"><smal
 async function aOver() { const my = admTok; try {
   let h = '';
   if (tapi) { const s = await aget('quick_stats', 45000, null, true); if (my !== admTok) return;
-    h = statGrid([['Members', s.members], ['Verified', s.verified], ['Bonus claimers', s.bonus_claimers], ['Banned', s.banned], ['Payouts ₹', s.payouts], ['Paid ₹', s.payouts_success]]); }
+    h = statGrid([['Members', s.members], ['Verified', s.verified], ['Bonus claimers', s.bonus_claimers], ['Banned', s.banned], ['Payouts ₹', s.payouts], ['Paid ₹', s.payouts_success]]) + '<div class="card" style="margin-top:12px"><h3>Total users balance</h3><div class="fv"><b id="tbV">…</b><small id="tbS"></small></div><button class="btn ghost sm" id="tbR" style="margin-top:10px">Refresh</button></div>'; }
   else h = '<div class="mut" style="padding:6px 0 12px">Open the app from the bot\'s PLAY NOW button to see live numbers here.</div>';
   box(h + '<button class="btn ghost" id="aOpen" style="margin-top:12px">Open bot /admin in chat</button>');
+  if (tapi && $('tbR')) {
+    const loadTB = async force => { try { $('tbV').textContent = '…'; $('tbS').textContent = 'Calculating…'; const r = await tcall('total_balance', force ? { force: true } : null, { timeout: 90000 });
+      $('tbV').textContent = inr(r.total); $('tbS').textContent = r.users + ' users · ' + (r.age ? Math.max(1, Math.round(r.age / 60)) + ' min ago' : 'just now'); } catch (e) { $('tbV').textContent = '—'; $('tbS').textContent = e.message; } };
+    $('tbR').onclick = () => loadTB(true); loadTB(false);
+  }
   $('aOpen').onclick = async () => { try { const r = await api('admin_open', { target: 'full' }); toast(r.message || 'Opened in chat'); } catch (e) { toast(e.message); } };
 } catch (e) { err(e); } }
 async function aSet() { const my = admTok; try { const s = await aget('admin_settings', 20000); if (my !== admTok) return;
   try { cfg = Object.assign(cfg, await tcall('get_cfg')); } catch (e) {}
   const tOk = !!tapi;
-  box(`<div class="card"><h3>Rewards &amp; Withdraw</h3><div class="two">${F('f_per', 'Per referral (₹ or 1-5)', s.per_refer)}${F('f_bonus', 'Daily bonus ₹', s.daily_bonus, 'number')}${F('f_min', 'Min withdraw ₹', s.min_withdraw, 'number')}${F('f_max', 'Max withdraw ₹', s.max_withdraw, 'number')}${F('f_tax', 'Fee %', s.tax_percent, 'number')}${F('f_mref', 'Min refs for gift', s.min_ref, 'number')}${F('f_live', 'Live fund ₹', s.live_fund, 'number')}${F('f_tot', 'Total fund ₹', s.total_fund, 'number')}</div>
+  box(`<div class="card"><h3>Rewards &amp; Withdraw</h3><div class="two">${F('f_per', 'Per referral (₹ or 1-5)', s.per_refer)}${F('f_bonus', 'Daily bonus ₹', s.daily_bonus, 'number')}${F('f_min', 'Min withdraw ₹', s.min_withdraw, 'number')}${F('f_max', 'Max withdraw ₹', s.max_withdraw, 'number')}${F('f_tax', 'Fee %', s.tax_percent, 'number')}${F('f_mref', 'Min refs for withdrawal', s.min_ref, 'number')}${F('f_live', 'Live fund ₹', s.live_fund, 'number')}${F('f_tot', 'Total fund ₹', s.total_fund, 'number')}</div>
     ${F('f_pc', 'Payout channel ID' + (s.payout_channel_configured ? ' (set — leave blank to keep)' : ''), '', 'text', '-100…')}
     <button class="btn" id="aSave">Save settings</button></div>
     <div class="card"><h3>Home page options</h3>
