@@ -196,6 +196,8 @@ textarea.inp{min-height:84px;resize:vertical}
 .tg::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
 .tg.on{background:#20d65a}.tg.on::after{transform:translateX(18px)}
 .chips button.on{background:linear-gradient(180deg,var(--g2),#20d65a);color:#04200f;border-color:var(--g)}
+.stp{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sf);margin:14px 0 8px}
+.stp:first-child{margin-top:0}
 </style>
 </head>
 <body>
@@ -284,7 +286,8 @@ textarea.inp{min-height:84px;resize:vertical}
 (() => {
 'use strict';
 const tg = window.Telegram && Telegram.WebApp;
-const $ = id => document.getElementById(id);
+const GHOST = document.createElement('input');
+const $ = id => document.getElementById(id) || GHOST;   // late updates into a closed sheet are absorbed instead of throwing
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fm = (n, d = 2) => Number(n || 0).toFixed(d);
 const ico = (n, c) => '<svg class="ic ' + (c || '') + '"><use href="#i-' + n + '"/></svg>';
@@ -461,7 +464,7 @@ function openGame(id) {
   $('shB').onclick = e => { const b = e.target.closest('[data-bet]'); if (b) $('bet').value = b.dataset.bet; };
   $('goPlay').onclick = async () => {
     const btn = $('goPlay'); btn.disabled = true;
-    try { const r = await api('game_play', { game: id, bet: Number($('bet').value) }); D.balance = r.balance; paint(); delete LC.act; if (r.win) fx();
+    try { const r = await api('game_play', { game: id, bet: Number($('bet').value) }); D.balance = r.balance; paint(); delete LC.act; if (r.win) fx(); if (tapi) tcall('notify_last').catch(() => {});
       const cf = r.win ? ['#ffd84d','#3dff7a','#ff4fd8','#3dd8ff','#ff9a3d','#c36bff','#ffd84d','#3dff7a'].map((c, i) => `<i class="cf" style="--x:${(i - 3.5) * 22}px;background:${c};animation-delay:${i * 30}ms"></i>`).join('') : '';
       $('gRes').innerHTML = `<div class="res">${cf}<span class="ibx" style="--a:${r.win ? '#ffd84d' : '#ff8a9a'};--b:${r.win ? '#f08a00' : '#e0204a'}">${ico(r.win ? 'trophy' : 'x')}</span><h2 class="${r.win ? 'pos' : 'neg'}">${r.win ? 'YOU WON +₹' + fm(r.profit) : 'You lost ₹' + fm(Math.abs(r.profit))}</h2><div class="mut">New balance ₹${fm(r.balance)}</div></div>`; btn.textContent = 'Play again ›';
     } catch (e) { toast(e.message); } btn.disabled = false;
@@ -481,12 +484,12 @@ async function wdStart() {
     const fields = cur === 'wallet' ? '<input class="inp" id="wNum" inputmode="numeric" maxlength="10" placeholder="10-digit wallet number">'
       : cur === 'upi' ? '<input class="inp" id="wUpi" placeholder="yourname@bank" autocapitalize="off">'
       : '<input class="inp" id="bNo" inputmode="numeric" maxlength="18" placeholder="Account number" style="margin-bottom:8px"><input class="inp" id="bIf" maxlength="11" placeholder="IFSC code" style="margin-bottom:8px;text-transform:uppercase"><input class="inp" id="bNm" maxlength="40" placeholder="Account holder name">';
-    $('wdB').innerHTML = `<div class="chips">${ms.map(m => `<button data-m="${m}" class="${m === cur ? 'on' : ''}">${WM[m]}</button>`).join('')}</div>
+    $('wdB').innerHTML = `<div class="stp">1 · Method</div><div class="chips">${ms.map(m => `<button data-m="${m}" class="${m === cur ? 'on' : ''}">${WM[m]}</button>`).join('')}</div>
       <div class="mut">Balance ₹${fm(D.balance)} · Min ₹${fm(i.min, 0)} · Max ₹${fm(i.max, 0)}</div>
-      <div style="margin:12px 0">${i.linked
+      <div class="stp">2 · Your ${WM[cur]} details</div><div style="margin:0 0 4px">${i.linked
         ? `<div class="row"><div class="tx"><b>${esc(i.shown)}</b><small>${WM[cur]} linked</small></div><button class="btn sm ghost" id="wChg">Change</button></div>`
         : `<div class="mut" style="margin-bottom:6px">Link your ${WM[cur]} details</div>${fields}<button class="btn sm" id="wLink" style="margin-top:10px">Link</button>`}</div>
-      ${i.linked ? '<div class="mut" style="margin-bottom:4px">Amount</div><input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount"><button class="btn" id="wGo" style="margin-top:12px">Continue ›</button><div id="wOut"></div>' : ''}`;
+      ${i.linked ? '<div class="stp">3 · Amount</div><input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount"><button class="btn" id="wGo" style="margin-top:12px">Continue ›</button><div id="wOut"></div>' : ''}`;
   };
   draw();
   $('wdB').onclick = async e => {
