@@ -198,6 +198,35 @@ textarea.inp{min-height:84px;resize:vertical}
 .chips button.on{background:linear-gradient(180deg,var(--g2),#20d65a);color:#04200f;border-color:var(--g)}
 .stp{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sf);margin:14px 0 8px}
 .stp:first-child{margin-top:0}
+/* ===== DESIGN POLISH ===== */
+html::before{background:radial-gradient(ellipse 90% 40% at 50% -4%,rgba(50,110,255,.38),transparent 70%),radial-gradient(ellipse 55% 30% at 100% 55%,rgba(150,70,255,.24),transparent 70%),radial-gradient(ellipse 50% 26% at 0% 85%,rgba(61,255,122,.12),transparent 70%),var(--bg)}
+.hd{padding:16px 0 14px}
+.av{box-shadow:0 0 0 3px rgba(61,255,122,.15),0 6px 18px -6px rgba(61,255,122,.5)}
+.brand b{background:linear-gradient(90deg,#fff,#c9ffe0);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 10px rgba(61,255,122,.25))}
+.brand b i{-webkit-text-fill-color:var(--g)}
+.card{box-shadow:0 14px 30px -18px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05)}
+.card h3{letter-spacing:.2px}
+.hero{box-shadow:0 18px 40px -18px rgba(61,255,122,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+.hero h2{font-size:23px;letter-spacing:-.3px}
+.bal{backdrop-filter:none;box-shadow:0 10px 24px -14px rgba(0,0,0,.9)}
+.bal b{background:linear-gradient(180deg,#fff,#b8ffd0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{box-shadow:0 10px 22px -10px rgba(61,255,122,.75),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn.ghost{box-shadow:none}
+.tile{position:relative;overflow:hidden;box-shadow:0 12px 24px -14px var(--a),inset 0 1px 0 rgba(255,255,255,.3)}
+.tile::after{content:'';position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.14)}
+.bonus{box-shadow:0 14px 30px -18px rgba(255,200,61,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.st{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-color:rgba(120,150,255,.25)}
+.st b{background:linear-gradient(180deg,#fff,#cfe0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.row{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border-color:rgba(120,150,255,.2)}
+.row .ibx{box-shadow:0 6px 14px -8px var(--a)}
+.banner{background:linear-gradient(135deg,#1c2f8f,#4a1f92 55%,#0f5a45);box-shadow:0 16px 32px -18px rgba(90,80,255,.7),inset 0 1px 0 rgba(255,255,255,.1)}
+.gc{box-shadow:0 12px 26px -16px var(--a),inset 0 1px 0 rgba(255,255,255,.05)}
+.gc .pl{box-shadow:0 8px 16px -10px var(--a)}
+.inp{background:rgba(5,10,26,.8);border-color:rgba(120,150,255,.3)}
+.link{background:rgba(5,10,26,.8)}
+#nav{box-shadow:0 -10px 30px -12px rgba(40,90,220,.6),0 0 0 1px rgba(255,255,255,.03)}
+#sh>div{box-shadow:0 -20px 50px -20px rgba(0,0,0,.9)}
+.skr{background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04))}
 </style>
 </head>
 <body>
@@ -464,7 +493,7 @@ function openGame(id) {
   $('shB').onclick = e => { const b = e.target.closest('[data-bet]'); if (b) $('bet').value = b.dataset.bet; };
   $('goPlay').onclick = async () => {
     const btn = $('goPlay'); btn.disabled = true;
-    try { const r = await api('game_play', { game: id, bet: Number($('bet').value) }); D.balance = r.balance; paint(); delete LC.act; if (r.win) fx(); if (tapi) tcall('notify_last').catch(() => {});
+    try { const r = await api('game_play', { game: id, bet: Number($('bet').value) }); D.balance = r.balance; paint(); delete LC.act; if (r.win) fx();
       const cf = r.win ? ['#ffd84d','#3dff7a','#ff4fd8','#3dd8ff','#ff9a3d','#c36bff','#ffd84d','#3dff7a'].map((c, i) => `<i class="cf" style="--x:${(i - 3.5) * 22}px;background:${c};animation-delay:${i * 30}ms"></i>`).join('') : '';
       $('gRes').innerHTML = `<div class="res">${cf}<span class="ibx" style="--a:${r.win ? '#ffd84d' : '#ff8a9a'};--b:${r.win ? '#f08a00' : '#e0204a'}">${ico(r.win ? 'trophy' : 'x')}</span><h2 class="${r.win ? 'pos' : 'neg'}">${r.win ? 'YOU WON +₹' + fm(r.profit) : 'You lost ₹' + fm(Math.abs(r.profit))}</h2><div class="mut">New balance ₹${fm(r.balance)}</div></div>`; btn.textContent = 'Play again ›';
     } catch (e) { toast(e.message); } btn.disabled = false;
