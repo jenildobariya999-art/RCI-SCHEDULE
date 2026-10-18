@@ -469,7 +469,7 @@ function setBrand(u, n) {
   if (brand.u) { const e = encodeURIComponent(brand.u), urls = ['https://t.me/i/userpic/320/' + e + '.jpg', 'https://telegram.me/i/userpic/320/' + e + '.jpg'];
     avatar($('lAv'), urls, nm[0]); avatar($('bAv'), urls, nm[0]); LS.set('lg_brand', { u: brand.u, n: brand.n }); }
 }
-function fail(msg) { $('load').hidden = false; $('app').hidden = true; $('lSpin').hidden = true; $('lMsg').textContent = msg; $('lRetry').hidden = false; }
+function fail(msg) { $('lMsg').style.whiteSpace = 'pre-line'; $('load').hidden = false; $('app').hidden = true; $('lSpin').hidden = true; $('lMsg').textContent = msg; $('lRetry').hidden = false; }
 $('lRetry').onclick = () => location.reload();
 function hideLoad() { $('load').hidden = true; booted = true; }
 function gate(kind) {
@@ -886,7 +886,12 @@ async function boot() {
   if (!brand.u) api('bot_info').then(i => setBrand(i.bot_username, i.bot_name)).catch(() => {});
   if (!(c && c.cfg && Date.now() - c.ts < 300000)) tcall('get_cfg').then(r => { cfg = Object.assign(cfg, r); applyCfg(); saveCache(); }).catch(() => {});   // config is re-fetched at most every 5 min
   try {
-    let d; try { d = await api('dashboard'); } catch (e1) { if (!e1.x && /network|slow/i.test(e1.message)) { await new Promise(r => setTimeout(r, 2500)); d = await api('dashboard'); } else throw e1; }
+    let d;
+    for (let n = 0; ; n++) {
+      try { d = await api('dashboard'); break; }
+      catch (e1) { const transient = (!e1.x && /network|slow/i.test(e1.message)) || /could not verify/i.test(e1.message);
+        if (transient && n < 2) { await new Promise(r => setTimeout(r, n ? 2500 : 1200)); continue; } throw e1; }
+    }
     if (d.banned) return fail('Your account has been banned from this bot.');
     if ((d.join_needed || []).length) return gate('join');
     if (d.verify_needed) return gate('verify');
@@ -895,6 +900,7 @@ async function boot() {
   } catch (e) {
     if (e.message === 'no-telegram') fail("Please open this app from Telegram using the bot's button.");
     else if (e.message === 'no-api') fail('Open this app from the bot (/start).');
+    else if (/could not verify/i.test(e.message)) fail('Could not verify your Telegram session.\n\nThis app link belongs to @' + (brand.u || 'another bot') + '. Open the app from the bot you are chatting with: send /start there and tap PLAY NOW (not from an old message or another bot).');
     else if (shown && /session|reopen|open this app/i.test(e.message)) fail(e.message);
     else if (shown) { toast(/network|slow/i.test(e.message) ? 'Offline — showing saved data' : e.message); if (/network|slow/i.test(e.message)) setTimeout(refresh, 4000); }
     else if (!booted) fail(e.message);
