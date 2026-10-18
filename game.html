@@ -488,23 +488,29 @@ let ACX = null, MASTER = null;
 function actx() {
   if (!ACX) { try { ACX = new (window.AudioContext || window.webkitAudioContext)();
     const comp = ACX.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 6; comp.attack.value = 0.003; comp.release.value = 0.2;
-    MASTER = ACX.createGain(); MASTER.gain.value = 1.8; MASTER.connect(comp); comp.connect(ACX.destination); } catch (e) {} }
+    MASTER = ACX.createGain(); MASTER.gain.value = 2.2; MASTER.connect(comp); comp.connect(ACX.destination); } catch (e) {} }
   if (ACX && ACX.state === 'suspended') { try { ACX.resume(); } catch (e) {} }
   return ACX;
 }
-function tone(f, d, type, vol, at) {
-  const a = actx(); if (!a || !MASTER) return; const t0 = a.currentTime + (at || 0), o = a.createOscillator(), g = a.createGain();
-  o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(vol || 0.15, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  o.connect(g); g.connect(MASTER); o.start(t0); o.stop(t0 + d + 0.03);
+function voice(o) {
+  const a = actx(); if (!a || !MASTER) return;
+  const t0 = a.currentTime + (o.at || 0), osc = a.createOscillator(), g = a.createGain(); let out = g;
+  osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(o.f, t0);
+  if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t0 + o.d);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.15, t0 + (o.atk || 0.01)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.d);
+  osc.connect(g);
+  if (o.lp) { const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = o.lp; g.connect(f); out = f; }
+  out.connect(MASTER); osc.start(t0); osc.stop(t0 + o.d + 0.05);
 }
+const bell = (f, at, d, vol) => [[1, 1], [2, .45], [2.76, .22], [5.4, .1]].forEach(([m, v]) => voice({ f: f * m, d: d / (m > 2 ? 1.6 : 1), vol: vol * v, at }));
+const sparkle = at => { for (let i = 0; i < 6; i++) voice({ f: 2200 + Math.random() * 2400, d: .13, vol: .04, at: at + i * .045 }); };
 const SFX = {
-  tap: () => { tone(1200, .04, 'triangle', .10); tone(800, .05, 'sine', .08, .01); },
-  pop: () => { tone(520, .09, 'sine', .16); tone(780, .09, 'triangle', .08, .03); },
-  ok: () => { [660, 880, 1320].forEach((f, i) => { tone(f, .16, 'triangle', .18, i * .1); tone(f * 2, .12, 'sine', .06, i * .1); }); },
-  win: () => { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => { tone(f, .22, 'triangle', .2, i * .085); tone(f * 2, .18, 'sine', .07, i * .085); }); tone(2093, .45, 'sine', .1, .55); },
-  lose: () => { tone(330, .25, 'sawtooth', .14); tone(247, .3, 'sawtooth', .14, .2); tone(165, .45, 'sawtooth', .14, .42); },
-  err: () => { tone(220, .14, 'square', .12); tone(165, .22, 'square', .12, .14); }
+  tap: () => voice({ f: 1700, f2: 1100, d: .05, vol: .10 }),
+  pop: () => voice({ f: 380, f2: 900, d: .1, vol: .17 }),
+  ok: () => { bell(784, 0, .6, .22); bell(1175, .11, .85, .22); },
+  win: () => { [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => bell(f, i * .09, .9, .22)); bell(1568, .5, 1.2, .2); sparkle(.55); },
+  lose: () => { [[392, 0], [329.6, .26], [261.6, .52]].forEach(([f, at]) => voice({ f, f2: f * .93, d: .36, vol: .26, at, type: 'triangle', lp: 900 })); voice({ f: 130, f2: 90, d: .75, vol: .2, at: .5 }); },
+  err: () => { voice({ f: 190, f2: 140, d: .15, vol: .22, type: 'triangle', lp: 700 }); voice({ f: 150, f2: 105, d: .22, vol: .22, at: .13, type: 'triangle', lp: 700 }); }
 };
 function sfx(n) { if (PREF.snd) { try { SFX[n](); } catch (e) {} } }
 function buzz(kind) {            // light | success | error | warn
@@ -512,6 +518,7 @@ function buzz(kind) {            // light | success | error | warn
   try { if (tg && tg.HapticFeedback) { if (kind === 'light') tg.HapticFeedback.impactOccurred('light'); else tg.HapticFeedback.notificationOccurred(kind === 'success' ? 'success' : kind === 'error' ? 'error' : 'warning'); done = true; } } catch (e) {}
   if (!done) { try { navigator.vibrate && navigator.vibrate(kind === 'light' ? 10 : kind === 'success' ? [30, 40, 60] : [60, 40, 60]); } catch (e) {} }
 }
+document.addEventListener('pointerdown', () => { actx(); }, { once: true, capture: true });
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button')) { sfx('tap'); buzz('light'); } }, true);
 function sndIcon() { $('snd').innerHTML = ico(PREF.snd ? 'sound' : 'mute'); }
 function fx(kind) {
@@ -613,8 +620,8 @@ $('snd').onclick = () => {
   sheet(`<h3><span>Sound &amp; vibration</span><button data-x>×</button></h3>
     <div class="sw"><span>Sound effects</span><button class="tg ${PREF.snd ? 'on' : ''}" data-pref="snd" aria-label="Sound"></button></div>
     <div class="sw"><span>Vibration</span><button class="tg ${PREF.vib ? 'on' : ''}" data-pref="vib" aria-label="Vibration"></button></div>
-    <div class="mut" style="margin-top:6px">Tap sounds, win jingles and haptic buzz. Saved on this device.</div>`);
-  $('shB').onclick = e => { const b = e.target.closest('[data-pref]'); if (!b) return; const k = b.dataset.pref; PREF[k] = !PREF[k]; LS.set('lg_' + k, PREF[k] ? 1 : 0); b.classList.toggle('on', PREF[k]); sndIcon(); if (k === 'snd' && PREF.snd) sfx('ok'); if (k === 'vib' && PREF.vib) buzz('success'); };
+    <div class="stp" style="margin-top:14px">Preview</div><div class="two"><button class="btn sm" data-prev="win">▶ Win sound</button><button class="btn sm red" data-prev="lose">▶ Loss sound</button></div><div class="mut" style="margin-top:10px">Tap sounds, win and loss sounds, and vibration. Saved on this device.</div>`);
+  $('shB').onclick = e => { const pv = e.target.closest('[data-prev]'); if (pv) { if (pv.dataset.prev === 'win') { sfx('win'); buzz('success'); } else { sfx('lose'); buzz('error'); } return; } const b = e.target.closest('[data-pref]'); if (!b) return; const k = b.dataset.pref; PREF[k] = !PREF[k]; LS.set('lg_' + k, PREF[k] ? 1 : 0); b.classList.toggle('on', PREF[k]); sndIcon(); if (k === 'snd' && PREF.snd) sfx('ok'); if (k === 'vib' && PREF.vib) buzz('success'); };
 };
 $('bell').onclick = async () => {
   sheet(`<h3><span>${ico('bell', 'h')} Notifications</span><button data-x>×</button></h3><div id="nB">${SK}</div>`);
@@ -879,7 +886,7 @@ async function boot() {
   if (!brand.u) api('bot_info').then(i => setBrand(i.bot_username, i.bot_name)).catch(() => {});
   if (!(c && c.cfg && Date.now() - c.ts < 300000)) tcall('get_cfg').then(r => { cfg = Object.assign(cfg, r); applyCfg(); saveCache(); }).catch(() => {});   // config is re-fetched at most every 5 min
   try {
-    const d = await api('dashboard');
+    let d; try { d = await api('dashboard'); } catch (e1) { if (!e1.x && /network|slow/i.test(e1.message)) { await new Promise(r => setTimeout(r, 2500)); d = await api('dashboard'); } else throw e1; }
     if (d.banned) return fail('Your account has been banned from this bot.');
     if ((d.join_needed || []).length) return gate('join');
     if (d.verify_needed) return gate('verify');
@@ -888,7 +895,8 @@ async function boot() {
   } catch (e) {
     if (e.message === 'no-telegram') fail("Please open this app from Telegram using the bot's button.");
     else if (e.message === 'no-api') fail('Open this app from the bot (/start).');
-    else if (shown) toast('Offline — showing saved data');
+    else if (shown && /session|reopen|open this app/i.test(e.message)) fail(e.message);
+    else if (shown) { toast(/network|slow/i.test(e.message) ? 'Offline — showing saved data' : e.message); if (/network|slow/i.test(e.message)) setTimeout(refresh, 4000); }
     else if (!booted) fail(e.message);
   }
 }
