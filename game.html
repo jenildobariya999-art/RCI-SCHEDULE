@@ -308,6 +308,17 @@ html::before{background:radial-gradient(ellipse 90% 40% at 50% -4%,rgba(50,110,2
 .row:active{transform:scale(.99)}
 #snd .ic,#bell .ic{transition:transform .2s}
 #snd:active .ic,#bell:active .ic{transform:scale(.85)}
+/* ===== withdraw as popup steps ===== */
+.pcard.f{text-align:left;max-height:88vh;overflow-y:auto;padding:22px 18px 18px}
+.px{position:absolute;right:14px;top:10px;font-size:28px;color:var(--sf);line-height:1;width:34px;height:34px}
+.ph{text-align:center;font-size:20px;font-weight:800;margin-bottom:4px}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mgrid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:13px 4px;border-radius:16px;background:var(--c2);border:1.5px solid var(--bd);font-size:12px;font-weight:700;transition:transform .12s}
+.mgrid button:active{transform:scale(.95)}
+.mgrid .ic{width:26px;height:26px}
+.mgrid .on{border-color:var(--g);background:rgba(61,255,122,.13);color:var(--g);box-shadow:0 8px 20px -12px var(--g)}
+.gwb{display:flex;align-items:center;gap:12px;width:100%;padding:12px;margin-bottom:8px;border-radius:16px;background:var(--c2);border:1px solid var(--bd);text-align:left}
+.gwb b{flex:1;font-weight:700}.gwb>.ic{color:var(--g)}
 </style>
 </head>
 <body>
@@ -331,6 +342,9 @@ html::before{background:radial-gradient(ellipse 90% 40% at 50% -4%,rgba(50,110,2
 <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
 <symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></symbol>
 <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-7 10 7z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
 <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.9L7 23l5-3 5 3-1.2-9.1"/></symbol>
 </svg>
@@ -470,20 +484,27 @@ setTimeout(() => { if (!booted) fail('Taking longer than usual…'); }, 14000);
 
 // ---------- sound + vibration (WebAudio — no files to download) ----------
 const PREF = { snd: LS.get('lg_snd') !== 0, vib: LS.get('lg_vib') !== 0 };
-let ACX = null;
-function actx() { if (!ACX) { try { ACX = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ACX && ACX.state === 'suspended') { try { ACX.resume(); } catch (e) {} } return ACX; }
+let ACX = null, MASTER = null;
+function actx() {
+  if (!ACX) { try { ACX = new (window.AudioContext || window.webkitAudioContext)();
+    const comp = ACX.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 6; comp.attack.value = 0.003; comp.release.value = 0.2;
+    MASTER = ACX.createGain(); MASTER.gain.value = 1.8; MASTER.connect(comp); comp.connect(ACX.destination); } catch (e) {} }
+  if (ACX && ACX.state === 'suspended') { try { ACX.resume(); } catch (e) {} }
+  return ACX;
+}
 function tone(f, d, type, vol, at) {
-  const a = actx(); if (!a) return; const t0 = a.currentTime + (at || 0), o = a.createOscillator(), g = a.createGain();
+  const a = actx(); if (!a || !MASTER) return; const t0 = a.currentTime + (at || 0), o = a.createOscillator(), g = a.createGain();
   o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(vol || 0.07, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + d + 0.03);
+  g.gain.exponentialRampToValueAtTime(vol || 0.15, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  o.connect(g); g.connect(MASTER); o.start(t0); o.stop(t0 + d + 0.03);
 }
 const SFX = {
-  tap: () => tone(900, .045, 'triangle', .04), pop: () => tone(520, .08, 'sine', .06),
-  ok: () => { tone(660, .1, 'sine', .08); tone(880, .1, 'sine', .08, .1); tone(1320, .2, 'sine', .08, .2); },
-  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .18, 'triangle', .09, i * .09)),
-  lose: () => { tone(320, .2, 'sawtooth', .05); tone(210, .3, 'sawtooth', .05, .18); },
-  err: () => { tone(200, .12, 'square', .04); tone(150, .18, 'square', .04, .1); }
+  tap: () => { tone(1200, .04, 'triangle', .10); tone(800, .05, 'sine', .08, .01); },
+  pop: () => { tone(520, .09, 'sine', .16); tone(780, .09, 'triangle', .08, .03); },
+  ok: () => { [660, 880, 1320].forEach((f, i) => { tone(f, .16, 'triangle', .18, i * .1); tone(f * 2, .12, 'sine', .06, i * .1); }); },
+  win: () => { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => { tone(f, .22, 'triangle', .2, i * .085); tone(f * 2, .18, 'sine', .07, i * .085); }); tone(2093, .45, 'sine', .1, .55); },
+  lose: () => { tone(330, .25, 'sawtooth', .14); tone(247, .3, 'sawtooth', .14, .2); tone(165, .45, 'sawtooth', .14, .42); },
+  err: () => { tone(220, .14, 'square', .12); tone(165, .22, 'square', .12, .14); }
 };
 function sfx(n) { if (PREF.snd) { try { SFX[n](); } catch (e) {} } }
 function buzz(kind) {            // light | success | error | warn
@@ -512,6 +533,7 @@ function resultPop(kind, o) {
   const C = { success: { t: 'Successful', c: '#12a84a', c2: '#3dff7a', icon: '<path class="chk" d="M14 28l9 9 17-19"/>', cls: 'pos', sub: 'Your money is on its way' },
               pending: { t: 'Submitted', c: '#e08a00', c2: '#ffd84d', icon: '<circle cx="27" cy="27" r="14"/><path d="M27 19v8l6 3"/>', cls: '', sub: 'Confirmation is pending' },
               fail: { t: 'Failed', c: '#e0204a', c2: '#ff7a8a', icon: '<path class="chk" d="M17 17l20 20M37 17L17 37"/>', cls: 'neg', sub: o.err || 'Please try again' } }[kind];
+  if (o.sub) C.sub = o.sub;
   const rows = [o.method ? ['Method', WM[o.method] || o.method] : null, o.gateway ? ['Gateway', o.gateway] : null, o.to ? ['To', o.to] : null, ['Status', kind === 'success' ? 'Completed' : kind === 'pending' ? 'Pending' : 'Failed']].filter(Boolean);
   $('pop').innerHTML = `<div class="pcard" style="--rc:linear-gradient(145deg,${C.c2},${C.c});--rc2:${C.c2}">
     <div class="ring"><svg viewBox="0 0 54 54">${C.icon}</svg></div>
@@ -656,54 +678,82 @@ function openGame(id) {
 }
 
 $('wdBtn').onclick = () => wdStart();
-const WM = { wallet: 'Wallet', upi: 'UPI', bank: 'Bank' };
+const WM = { wallet: 'Wallet', upi: 'UPI', bank: 'Bank' }, WI = { wallet: 'wallet', upi: 'phone', bank: 'bank' };
+const W = { info: null, cur: 'upi', ms: [], q: null, base: '', on: false };
+const popCard = h => { $('pop').innerHTML = `<div class="pcard f"><button class="px" data-pclose aria-label="Close">×</button>${h}</div>`; $('pop').hidden = false; };
+const wdSig = a => { const x = (a || []).find(e => e.kind === 'withdraw'); return x ? [x.note, x.date, x.time, x.status].join('|') : ''; };
 async function wdStart() {
-  sheet(`<h3><span>${ico('coin', 'h')} Withdraw</span><button data-x>×</button></h3><div id="wdB">${SK}</div>`);
-  let info; try { info = await tcall('wd_info'); } catch (e) { $('wdB').innerHTML = '<div class="mut">' + esc(e.message) + '</div>'; return; }
-  const ms = ['wallet', 'upi', 'bank'].filter(m => info[m] && info[m].on);
-  if (!ms.length) { $('wdB').innerHTML = '<div class="mut">Withdrawals are not available right now. Please try again later.</div>'; return; }
-  let cur = ms[0];
-  const draw = () => {
-    const i = info[cur];
-    const fields = cur === 'wallet' ? '<input class="inp" id="wNum" inputmode="numeric" maxlength="10" placeholder="10-digit wallet number">'
-      : cur === 'upi' ? '<input class="inp" id="wUpi" placeholder="yourname@bank" autocapitalize="off">'
-      : '<input class="inp" id="bNo" inputmode="numeric" maxlength="18" placeholder="Account number" style="margin-bottom:8px"><input class="inp" id="bIf" maxlength="11" placeholder="IFSC code" style="margin-bottom:8px;text-transform:uppercase"><input class="inp" id="bNm" maxlength="40" placeholder="Account holder name">';
-    $('wdB').innerHTML = `<div class="stp">1 · Method</div><div class="chips">${ms.map(m => `<button data-m="${m}" class="${m === cur ? 'on' : ''}">${WM[m]}</button>`).join('')}</div>
-      <div class="mut">Balance ₹${fm(D.balance)} · Min ₹${fm(i.min, 0)} · Max ₹${fm(i.max, 0)}</div>
-      <div class="stp">2 · Your ${WM[cur]} details</div><div style="margin:0 0 4px">${i.linked
-        ? `<div class="row"><div class="tx"><b>${esc(i.shown)}</b><small>${WM[cur]} linked</small></div><button class="btn sm ghost" id="wChg">Change</button></div>`
-        : `<div class="mut" style="margin-bottom:6px">Link your ${WM[cur]} details</div>${fields}<button class="btn sm" id="wLink" style="margin-top:10px">Link</button>`}</div>
-      ${i.linked ? '<div class="stp">3 · Amount</div><input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount"><div class="chips" id="wQ"><button data-q="min">Min</button><button data-q="25">25%</button><button data-q="50">50%</button><button data-q="max">Max</button></div><button class="btn" id="wGo" style="margin-top:12px">Continue ›</button><div id="wOut"></div>' : ''}`;
-  };
-  draw();
-  $('wdB').onclick = async e => {
-    const qb = e.target.closest('[data-q]');
-    if (qb) { const i = info[cur], bal = Number(info.balance != null ? info.balance : D.balance) || 0, lo = Number(i.min) || 0, hi = Math.min(Number(i.max) || bal, bal); const k = qb.dataset.q;
-      const v = k === 'min' ? lo : k === 'max' ? hi : Math.floor(bal * Number(k) / 100); $('wAmt').value = Math.max(0, Math.min(hi, v)) || ''; return; }
-    const m = e.target.closest('[data-m]'); if (m) { cur = m.dataset.m; draw(); return; }
-    if (e.target.closest('#wChg')) { info[cur].linked = false; draw(); return; }
-    if (e.target.closest('#wLink')) {
-      try {
-        let r;
-        if (cur === 'wallet') { const v = $('wNum').value.trim(); r = await api('link_wallet', { wallet: v }); r = { shown: v.length >= 10 ? v.slice(0, 3) + 'xxxxx' + v.slice(8) : v }; }
-        else if (cur === 'upi') r = await tcall('link_upi', { upi: $('wUpi').value.trim() });
-        else r = await tcall('link_bank', { account_no: $('bNo').value.trim(), ifsc: $('bIf').value.trim(), account_name: $('bNm').value.trim() });
-        info[cur].linked = true; info[cur].shown = r.shown; toast(WM[cur] + ' linked'); draw();
-      } catch (er) { toast(er.message); }
-      return;
-    }
-    if (e.target.closest('#wGo')) {
-      try { const q = await tcall('wd_quote', { amount: Number($('wAmt').value), method: cur });
-        $('wOut').innerHTML = `<div class="mut" style="margin:12px 0 6px">Withdrawing ₹${fm(q.amount)} to ${esc(q.shown)}. Choose a gateway:</div>` + q.gateways.map(g => `<button class="btn ghost" style="margin-bottom:8px" data-gw="${esc(g.key)}">${esc(g.name)}</button>`).join('');
-        $('wOut').onclick = async ev => { const b = ev.target.closest('[data-gw]'); if (!b) return; b.disabled = true;
-          procOn('Processing your withdrawal', ['Verifying your account', 'Contacting the payment gateway', 'Confirming the transfer']);
-          try { const r = await tcall('wd_execute', { amount: q.amount, method: cur, gateway: b.dataset.gw });
-            procOff(); closeSheet(); delete LC.act; refresh(); resultPop(r.status === 'pending' ? 'pending' : 'success', { amount: r.amount, gateway: r.gateway, to: r.to, method: r.method || cur }); }
-          catch (er) { procOff(); resultPop('fail', { amount: q.amount, err: er.message, method: cur }); b.disabled = false; } };
-      } catch (er) { toast(er.message); }
-    }
-  };
+  W.on = true; W.q = null;
+  popCard('<h2 class="ph">Withdraw</h2><div class="skr"></div><div class="skr"></div>');
+  api('get_activity').then(r => { W.base = wdSig(r.activity); }).catch(() => {});
+  try { W.info = await tcall('wd_info'); } catch (e) { popCard('<h2 class="ph">Withdraw</h2><div class="mut" style="text-align:center">' + esc(e.message) + '</div>'); return; }
+  W.ms = ['upi', 'wallet', 'bank'].filter(m => W.info[m] && W.info[m].on);
+  if (!W.ms.length) { popCard('<h2 class="ph">Withdraw</h2><div class="mut" style="text-align:center;padding:14px 0">Withdrawals are not available right now. Please try again later.</div>'); return; }
+  if (!W.ms.includes(W.cur)) W.cur = W.ms[0];
+  wdStep1();
 }
+function wdStep1() {
+  const m = W.cur, i = W.info[m], bal = Number(W.info.balance != null ? W.info.balance : D.balance) || 0;
+  const fields = m === 'wallet' ? '<input class="inp" id="wNum" inputmode="numeric" maxlength="10" placeholder="10-digit wallet number">'
+    : m === 'upi' ? '<input class="inp" id="wUpi" placeholder="yourname@bank" autocapitalize="off">'
+    : '<input class="inp" id="bNo" inputmode="numeric" maxlength="18" placeholder="Account number" style="margin-bottom:8px"><input class="inp" id="bIf" maxlength="11" placeholder="IFSC code" style="margin-bottom:8px;text-transform:uppercase"><input class="inp" id="bNm" maxlength="40" placeholder="Account holder name">';
+  popCard(`<h2 class="ph">Withdraw</h2>
+    <div class="stp">1 · Select method</div>
+    <div class="mgrid">${W.ms.map(x => `<button data-m="${x}" class="${x === m ? 'on' : ''}">${ico(WI[x])}<b>${WM[x]}</b></button>`).join('')}</div>
+    <div class="stp">2 · Your ${WM[m]} details</div>
+    ${i.linked ? `<div class="row" style="margin:0"><div class="tx"><b>${esc(i.shown)}</b><small>${WM[m]} linked</small></div><button class="btn sm ghost" id="wChg">Change</button></div>`
+      : `${fields}<button class="btn sm" id="wLink" style="margin-top:10px">Link ${WM[m]}</button>`}
+    ${i.linked ? `<div class="stp">3 · Amount</div><div class="mut" style="margin-bottom:8px">Balance ₹${fm(bal)} · Min ₹${fm(i.min, 0)} · Max ₹${fm(i.max, 0)}</div>
+      <input class="inp" id="wAmt" type="number" inputmode="decimal" placeholder="₹ amount">
+      <div class="chips"><button data-q="min">Min</button><button data-q="25">25%</button><button data-q="50">50%</button><button data-q="max">Max</button></div>
+      <button class="btn" id="wGo">Continue ›</button>` : ''}`);
+}
+function wdStep2() {
+  const q = W.q;
+  popCard(`<h2 class="ph">Select gateway</h2><div class="mut" style="text-align:center;margin-bottom:14px">Withdrawing ₹${fm(q.amount)} to ${esc(q.shown)}</div>
+    ${q.gateways.map(g => `<button class="gwb" data-gw="${esc(g.key)}"><span class="ibx" style="--a:#5cc8ff;--b:#2d5bff;width:38px;height:38px;border-radius:12px">${ico('bank')}</span><b>${esc(g.name)}</b>${ico('send')}</button>`).join('')}
+    <button class="btn ghost" id="wBack" style="margin-top:4px">‹ Back</button>`);
+}
+// If the answer never reached the page (slow gateway / proxy timeout) the payment may still have gone through — look at the real history instead of guessing "failed".
+async function wdVerify() {
+  for (let n = 0; n < 4; n++) {
+    await new Promise(res => setTimeout(res, n ? 3500 : 2000));
+    try { const r = await api('get_activity'), x = (r.activity || []).find(e => e.kind === 'withdraw');
+      if (x && [x.note, x.date, x.time, x.status].join('|') !== W.base) return { status: x.status === 'pending' ? 'pending' : 'success', gateway: x.gateway, amount: Math.abs(x.amount), method: W.cur, to: '' }; } catch (e) {}
+  }
+  return { status: 'unknown' };
+}
+async function wdRun(gid) {
+  const q = W.q, cur = W.cur; W.on = false; $('pop').hidden = true;
+  procOn('Processing your withdrawal', ['Verifying your account', 'Contacting the payment gateway', 'Confirming the transfer', 'Almost done']);
+  let r = null, errMsg = '';
+  try { r = await tcall('wd_execute', { amount: q.amount, method: cur, gateway: gid }, { timeout: 75000 }); }
+  catch (er) { errMsg = er.message; if (!er.x) r = await wdVerify(); }
+  procOff(); delete LC.act; refresh();
+  if (r && r.status === 'unknown') resultPop('pending', { amount: q.amount, method: cur, sub: "We couldn't confirm yet — check Notifications for the final result" });
+  else if (r) resultPop(r.status === 'pending' ? 'pending' : 'success', { amount: r.amount || q.amount, gateway: r.gateway, to: r.to || q.shown, method: r.method || cur });
+  else resultPop('fail', { amount: q.amount, err: errMsg, method: cur });
+}
+$('pop').addEventListener('click', async e => {
+  if (!W.on) return;
+  const t = e.target, m = t.closest('[data-m]'), qb = t.closest('[data-q]');
+  if (m) { W.cur = m.dataset.m; wdStep1(); return; }
+  if (qb) { const i = W.info[W.cur], bal = Number(W.info.balance != null ? W.info.balance : D.balance) || 0, lo = Number(i.min) || 0, hi = Math.min(Number(i.max) || bal, bal), k = qb.dataset.q;
+    const v = k === 'min' ? lo : k === 'max' ? hi : Math.floor(bal * Number(k) / 100); $('wAmt').value = Math.max(0, Math.min(hi, v)) || ''; return; }
+  if (t.closest('#wChg')) { W.info[W.cur].linked = false; wdStep1(); return; }
+  if (t.closest('#wBack')) { wdStep1(); return; }
+  if (t.closest('#wLink')) {
+    try { let r; const c = W.cur;
+      if (c === 'wallet') { const v = $('wNum').value.trim(); await api('link_wallet', { wallet: v }); r = { shown: v.length >= 10 ? v.slice(0, 3) + 'xxxxx' + v.slice(8) : v }; }
+      else if (c === 'upi') r = await tcall('link_upi', { upi: $('wUpi').value.trim() });
+      else r = await tcall('link_bank', { account_no: $('bNo').value.trim(), ifsc: $('bIf').value.trim(), account_name: $('bNm').value.trim() });
+      W.info[c].linked = true; W.info[c].shown = r.shown; toast(WM[c] + ' linked'); wdStep1();
+    } catch (er) { toast(er.message); }
+    return;
+  }
+  if (t.closest('#wGo')) { try { W.q = await tcall('wd_quote', { amount: Number($('wAmt').value), method: W.cur }); wdStep2(); } catch (er) { toast(er.message); } return; }
+  const gb = t.closest('[data-gw]'); if (gb) wdRun(gb.dataset.gw);
+});
 
 // ================= ADMIN PANEL (everything from the old panel) =================
 const AT = [['gifts','Gift Codes'],['over','Overview'],['ch','Channels'],['set','Settings'],['games','Games'],['users','Users'],['cast','Broadcast'],['pay','Payouts']];
